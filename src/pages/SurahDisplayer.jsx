@@ -1,0 +1,381 @@
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight, FaPlay } from "react-icons/fa";
+import { DiAptana } from "react-icons/di";
+import { convertToArabicNumbers } from "../utility/text-utilities";
+import { useNavigate } from "react-router-dom";
+import BasmalaWhite from "/src/assets/basmala_white.svg";
+import BasmalaBlack from "/src/assets/basmala_black.svg";
+import {
+  quranRecitations,
+  surahNames,
+  surahNumToPagesMap,
+} from "../data/quran-info";
+import Ayah from "../components/Ayah";
+import SideBar from "../components/SideBar";
+import BottomBar from "../components/BottomBar";
+import AudioPlayer from "../components/AudioPlayer";
+import LoadingView from "../components/LoadingView";
+import OutsideClickHandler from "../components/OutsideClickHandler";
+
+function SurahDisplayer({ isDarkMode }) {
+  const { surahNumber } = useParams();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [surahData, setSurahData] = useState([]);
+  const [tafsirData, setTafsirData] = useState([]);
+  const [tafsirId, setTafsirId] = useState(1);
+  const [isLoading, setIsLoading] = useState(true);
+  const containerRef = useRef(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [bottomBarDisplayed, setBottomBarDisplayed] = useState(false);
+  const [mode, setMode] = useState("reading");
+  const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
+  const [tafsirModeActive, setTafsirModeActive] = useState(false);
+  const [recitationId, setRecitationId] = useState(1);
+  const [loadingSurah, setLoadingSurah] = useState(false);
+  const textWidth = !tafsirModeActive ? `395px` : `495px`;
+  const [currentVerse, setCurrentVerse] = useState(1);
+
+  const currentVerseAudioSrc = `https://everyayah.com/data/${
+    quranRecitations[recitationId].subfolder
+  }/${String(surahNumber).padStart(3, "0")}${String(currentVerse).padStart(
+    3,
+    "0"
+  )}.mp3`;
+  let content = "";
+  let ayahsInCurrentPage = null;
+  //Retrieves the current surah data.
+  useEffect(() => {
+    let subscribed = true;
+
+    async function getSurah(num) {
+      if (subscribed) {
+        setLoadingSurah(true);
+
+        try {
+          const response = await fetch("/src/data/quranKFGQPC-data.json");
+          const data = await response.json();
+          const surah = data.filter((ayah) => {
+            return ayah["sura_no"] === +num;
+          });
+          setSurahData(surah);
+          setIsLoading(false);
+
+          if (location.state !== null) {
+            setCurrentPage(location.state.desiredPage);
+          } else {
+            setCurrentPage(
+              data.find((ayah) => {
+                return +ayah["sura_no"] === +num;
+              }).page
+            );
+          }
+        } catch (error) {
+          console.error("Error fetching surah data:", error);
+        } finally {
+          setLoadingSurah(false);
+        }
+      }
+    }
+
+    getSurah(surahNumber);
+
+    return () => {
+      subscribed = false;
+    };
+  }, [surahNumber, location.state]);
+
+  //Retrieves the current surah tafseer.
+  useEffect(() => {
+    if (tafsirModeActive && surahData) {
+      let subscribed = true;
+      const startAyah = surahData[0]["aya_no"];
+      const endAyah = surahData[surahData.length - 1]["aya_no"];
+
+      async function getTafsir(num) {
+        try {
+          const response = await fetch(
+            `http://api.quran-tafseer.com/tafseer/${tafsirId}/${num}/${startAyah}/${endAyah}`
+          );
+          const data = await response.json();
+          if (subscribed) {
+            setTafsirData(data);
+          }
+        } catch (error) {
+          console.error("Error fetching tafseer data:", error);
+        }
+      }
+      getTafsir(surahNumber);
+      return () => {
+        subscribed = false;
+      };
+    }
+  }, [tafsirModeActive, surahNumber, tafsirId]);
+
+  //scrolls to the top of the page everytime the page changes
+  useEffect(() => {
+    if (containerRef.current !== null) {
+      window.scrollTo("0", "0");
+    }
+  }, [currentPage, surahNumber]);
+
+  //sets default current verse on navigation
+  useEffect(() => {
+    if (ayahsInCurrentPage?.length > 0) {
+      console.log("SurahNumber: " + surahNumber);
+      console.log("currentPage: " + currentPage);
+      console.log(ayahsInCurrentPage);
+      console.log(
+        "ayahsInCurrentPage[0]['aya_no']: " + ayahsInCurrentPage[0]["aya_no"]
+      );
+      // setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
+      console.log("currentVerse: " + currentVerse);
+    }
+  }, [ayahsInCurrentPage, surahNumber, currentPage]);
+
+  if (isLoading == false) {
+    // ayahs = surahData;
+    ayahsInCurrentPage = surahData?.filter((ayah) => ayah.page === currentPage);
+    if (!tafsirModeActive)
+      content = ayahsInCurrentPage.map((ayah) => {
+        return (
+          <Ayah
+            key={ayah["aya_no"]}
+            ayahData={ayah}
+            currentVerse={currentVerse}
+            setCurrentVerse={setCurrentVerse}
+          />
+        );
+      });
+    else {
+      content = ayahsInCurrentPage.map((ayah) => {
+        return (
+          <div key={ayah["aya_no"]}>
+            <Ayah
+              ayahData={ayah}
+              currentVerse={currentVerse}
+              setCurrentVerse={setCurrentVerse}
+            />
+            <div className="text-gray-700 dark:text-gray-300 font-siteText text-xl">
+              {
+                tafsirData?.find((ayahTafsir) => {
+                  return ayahTafsir.ayah_number === ayah["aya_no"];
+                })?.text
+              }
+            </div>
+            <div className="my-4 bg-emerald-700 h-[2px]"></div>
+          </div>
+        );
+      });
+    }
+  } else {
+    content = <LoadingView />;
+  }
+
+  const handlePageChange = (e, changeType) => {
+    if (loadingSurah) {
+      return; // Do nothing if a surah is currently being loaded
+    }
+    if (changeType === "backward") {
+      const firstPage = surahData[0]?.page;
+      const lastPage = surahData[surahData.length - 1]?.page;
+      if (+surahData[0]["sura_no"] === 1) {
+        return;
+      }
+      if (currentPage - 1 >= firstPage) {
+        setCurrentPage(currentPage - 1);
+      } else {
+        const currAndPrevSurahsAreSharingPage =
+          surahNumToPagesMap[surahNumber][0] ===
+          surahNumToPagesMap[surahNumber - 1][1];
+
+        let passedData = currAndPrevSurahsAreSharingPage
+          ? { desiredPage: currentPage }
+          : { desiredPage: currentPage - 1 };
+
+        if (!isLoading) {
+          try {
+            setLoadingSurah(true);
+            navigate(`/surah/${+surahNumber - 1}`, {
+              state: passedData,
+            });
+          } catch (error) {
+            console.error("Error navigating to the previous surah:", error);
+          } finally {
+            setLoadingSurah(false);
+          }
+        }
+      }
+    } else if (changeType === "forward") {
+      if (+surahData[0]["sura_no"] === 114) {
+        return;
+      }
+      const lastPage = surahData[surahData.length - 1].page;
+      if (currentPage + 1 <= lastPage) {
+        setCurrentPage(currentPage + 1);
+      } else {
+        try {
+          setLoadingSurah(true);
+          navigate(`/surah/${+surahNumber + 1}`);
+        } catch (error) {
+          console.error("Error navigating to the next surah:", error);
+        } finally {
+          setLoadingSurah(false);
+        }
+      }
+    }
+  };
+
+  const handleAudioEnded = () => {
+    const nextVerseAvailable =
+      currentVerse !== surahData[surahData.length - 1]["aya_no"];
+    const nextPageAvailable = currentPage !== 604 && surahNumber !== 114;
+    const isLastVerseInPage =
+      ayahsInCurrentPage[ayahsInCurrentPage.length - 1]["aya_no"] ===
+      currentVerse;
+    if (nextVerseAvailable) {
+      setCurrentVerse(currentVerse + 1);
+      if (nextPageAvailable && isLastVerseInPage) {
+        handlePageChange(null, "forward");
+      }
+    }
+  };
+
+  return (
+    <div
+      ref={containerRef}
+      className="container min-h-screen flex mb-[80px] flex-col justify-between h-full text-black dark:text-white "
+    >
+      <div>
+        <div className="border-b-2 border-gray-400 p-2 text-white">
+          <div className="flex gap-[15px] justify-center">
+            <p className="text-black dark:text-white">وضع العرض:</p>
+            <button
+              className={
+                (mode === "reading"
+                  ? "outline-2 outline-amber-300 outline "
+                  : "") + "bg-emerald-700 w-[100px] py-1  hover:bg-emerald-600"
+              }
+              onClick={() => {
+                setMode("reading");
+              }}
+            >
+              القراءة
+            </button>
+            <button
+              className={
+                (mode === "listening"
+                  ? "outline-2 outline-amber-300 outline "
+                  : "") + "bg-emerald-700 w-[100px] py-1  hover:bg-emerald-600"
+              }
+              onClick={() => {
+                setMode("listening");
+              }}
+            >
+              الاستماع
+            </button>
+          </div>
+        </div>
+
+        <div>
+          {!isLoading
+            ? surahData[0]?.page === currentPage && (
+                <>
+                  <p className="font-surahName text-center text-3xl">
+                    {surahNames[+surahData[0]["sura_no"]]}
+                  </p>
+                  {surahNumber != 1 && (
+                    <img
+                      className="max-w-[180px] m-auto"
+                      src={isDarkMode ? BasmalaWhite : BasmalaBlack}
+                    />
+                  )}
+                </>
+              )
+            : ""}
+        </div>
+
+        <div
+          className={
+            "font-quranMain text-justify text-xl leading-extra-loose  m-auto"
+          }
+          style={{
+            maxWidth: textWidth,
+          }}
+        >
+          {content}
+        </div>
+      </div>
+      <div className="flex justify-center items-center gap-5">
+        <div
+          onClick={(e) => {
+            handlePageChange(e, "backward");
+          }}
+          className={
+            "bg-transparent cursor-pointer p-2 rounded hover:bg-gray-400 " +
+            (surahData?.number !== 1 ? " block" : " hidden")
+          }
+        >
+          <FaArrowRight />
+        </div>
+        {convertToArabicNumbers(currentPage)}
+        <div
+          onClick={(e) => {
+            handlePageChange(e, "forward");
+          }}
+          className={
+            "bg-transparent cursor-pointer p-2 rounded hover:bg-gray-400 " +
+            (surahData?.number !== 114 ? " block" : " hidden")
+          }
+        >
+          <FaArrowLeft />
+        </div>
+      </div>
+      <DiAptana
+        className="fixed right-0 bottom-20 text-3xl z-10  rounded hover:text-amber-500 hover:cursor-pointer"
+        onClick={() => {
+          setBottomBarDisplayed(!bottomBarDisplayed);
+        }}
+      />
+      <BottomBar
+        surahData={surahData}
+        isDisplayed={bottomBarDisplayed}
+        isSideBarDisplayed={sideBarDisplayed}
+        onSideBarDisplayedChange={setSideBarDisplayed}
+        onPageChange={handlePageChange}
+        tafsirModeActive={tafsirModeActive}
+        onTafsirModeStateChange={setTafsirModeActive}
+        tafsirId={tafsirId}
+        onTafsirTypeChange={setTafsirId}
+      />
+      <OutsideClickHandler
+        onOutsideClick={() => {
+          setSideBarDisplayed(false);
+        }}
+        excludedSelectors={["#sidebar", "#sidebarToggler"]}
+      >
+        {sideBarDisplayed && bottomBarDisplayed ? (
+          <SideBar
+            surahData={surahData}
+            currentPage={currentPage}
+            currentVerse={currentVerse}
+            setCurrentVerse={setCurrentVerse}
+          />
+        ) : (
+          ""
+        )}
+      </OutsideClickHandler>
+      {surahData.length > 0 && (
+        <AudioPlayer
+          mode={mode}
+          recitationId={recitationId}
+          onRecitationChange={setRecitationId}
+          audioSrc={currentVerseAudioSrc}
+          onAudioEnded={handleAudioEnded}
+        />
+      )}
+    </div>
+  );
+}
+export default SurahDisplayer;

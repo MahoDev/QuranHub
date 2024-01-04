@@ -1,0 +1,47 @@
+@import url("https://fonts.googleapis.com/css2?family=Lateef:wght@200;300;400;500;600;700;800&display=swap");
+
+@font-face {
+  font-family: "UthmanicHafs_v22";
+  src: url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff2") format("woff2"),
+    url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Surah Name - Ejazah style";
+  src: url("./assets/fonts/SurahNameEjazahstyle-Regular.woff2") format("woff2"),
+    url("./assets/fonts/SurahNameEjazahstyle-Regular.woff") format("woff"),
+    url("./assets/fonts/SurahNameEjazahstyle-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "me_quran";
+  src: url("./assets/fonts/me_quran.woff2") format("woff2"),
+    url("./assets/fonts/me_quran.woff") format("woff"),
+    url("./assets/fonts/me_quran.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "icomoon";
+  src: url("./assets/fonts/icomoon.woff2") format("woff2"),
+    url("./assets/fonts/icomoon.woff") format("woff"),
+    url("./assets/fonts/icomoon.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.activeFilter {
+  background-color: rgb(245 158 11);
+  border-radius: 50px;
+}
