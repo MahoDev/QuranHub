@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { surahNames, tafseerTypes } from "../data/quran-info";
+import { surahNames, tafseerTypes } from "../assets/data/quran-info";
 import { FaArrowLeft, FaArrowRight, FaBars, FaFont } from "react-icons/fa";
 
 function BottomBar({

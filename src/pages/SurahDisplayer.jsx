@@ -10,7 +10,7 @@ import {
   quranRecitations,
   surahNames,
   surahNumToPagesMap,
-} from "../data/quran-info";
+} from "../assets/data/quran-info";
 import Ayah from "../components/Ayah";
 import SideBar from "../components/SideBar";
 import BottomBar from "../components/BottomBar";
@@ -48,17 +48,17 @@ function SurahDisplayer({ isDarkMode }) {
   //Retrieves the current surah data.
   useEffect(() => {
     let subscribed = true;
-
     async function getSurah(num) {
       if (subscribed) {
         setLoadingSurah(true);
-
         try {
-          const response = await fetch("/src/data/quranKFGQPC-data.json");
-          const data = await response.json();
-          const surah = data.filter((ayah) => {
-            return ayah["sura_no"] === +num;
-          });
+          const quranText = await import(
+            `../assets/data/quranKFGQPC-data.json`
+          );
+
+          const surah = quranText.default.filter(
+            (ayah) => ayah["sura_no"] === +num
+          );
           setSurahData(surah);
           setIsLoading(false);
 
@@ -66,7 +66,7 @@ function SurahDisplayer({ isDarkMode }) {
             setCurrentPage(location.state.desiredPage);
           } else {
             setCurrentPage(
-              data.find((ayah) => {
+              quranText.default.find((ayah) => {
                 return +ayah["sura_no"] === +num;
               }).page
             );

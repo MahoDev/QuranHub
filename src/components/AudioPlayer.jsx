@@ -3,7 +3,7 @@ import { IoMdPause, IoMdPlay } from "react-icons/io";
 import { MdSpatialAudioOff, MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { useAudio } from "react-use";
 import { formatTime } from "../utility/text-utilities";
-import { quranRecitations } from "../data/quran-info";
+import { quranRecitations } from "../assets/data/quran-info";
 import OutsideClickHandler from "./OutsideClickHandler";
 
 function AudioPlayer({

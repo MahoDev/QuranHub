@@ -9,7 +9,7 @@ function SurahsSection() {
     let subscribed = true;
     (async function getSurahs() {
       if (subscribed) {
-        const response = await fetch("http://api.alquran.cloud/v1/surah");
+        const response = await fetch("https://api.alquran.cloud/v1/surah");
         const processedData = await response.json();
         setSurahs(processedData["data"]);
       }

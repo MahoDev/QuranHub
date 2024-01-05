@@ -1,5 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { quranPages, surahNames, surahNumToPagesMap } from "../data/quran-info";
+import {
+  quranPages,
+  surahNames,
+  surahNumToPagesMap,
+} from "../assets/data/quran-info";
 import { useNavigate } from "react-router-dom";
 
 function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {

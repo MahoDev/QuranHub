@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import quranPic1 from "../assets/imgs/quran1.png";
+import quranPic2 from "../assets/imgs/quran2.png";
 
 function HeroSection() {
   const navigate = useNavigate();
-
+  console.log(quranPic1);
   return (
     <div className="container pt-10 ">
       <h1 className="pb-8 text-4xl dark:text-white text-emerald-950  font-quranMain text-justify leading-relaxed">
@@ -13,12 +15,12 @@ function HeroSection() {
       <div className="hero flex flex-wrap justify-center">
         <div className="flex flex-wrap justify-center gap-[15px] w-full lg:w-[calc(100%*2/3)] h-auto lg:order-1">
           <img
-            src="/src/assets/imgs/quran1.png"
+            src={quranPic1}
             alt="قرآن 1"
             className="w-full lg:w-[calc(100%/2-30px)] h-[350px] object-cover rounded-xl"
           />
           <img
-            src="/src/assets/imgs/quran2.png"
+            src={quranPic2}
             alt="قرآن 1"
             className="hidden  w-full  h-[350px] object-cover rounded-xl lg:w-[calc(100%/2-30px)] lg:block"
           />
