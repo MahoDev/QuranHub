@@ -26,7 +26,7 @@ function AudioPlayer({
     if (audioElement) {
       audioElement.addEventListener("ended", handleAudioEnded);
       //ensure no playback issues occurs when the audio source changes
-      audioElement.autoplay = true;
+      audioElement.autoplay = false;
       // Cleanup function
       return () => {
         audioElement.removeEventListener("ended", handleAudioEnded);
@@ -180,7 +180,7 @@ function AudioPlayer({
             id="recitersBox"
             className={`${
               !recitersDisplayed ? "hidden" : ""
-            } absolute left-4 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[-1]`}
+            } absolute left-4 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
           >
             <div>{recitationsContent}</div>
           </div>

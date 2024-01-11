@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { surahNames, tafseerTypes } from "../assets/data/quran-info";
 import { FaArrowLeft, FaArrowRight, FaBars, FaFont } from "react-icons/fa";
+import OutsideClickHandler from "./OutsideClickHandler";
 
 function BottomBar({
   surahData,
@@ -58,13 +59,13 @@ function BottomBar({
                 style={{
                   position: "absolute",
                   left: isTafirBoxVisible ? "25px" : "auto",
-                  top: isTafirBoxVisible ? "-250px" : "auto",
+                  top: isTafirBoxVisible ? "-175px" : "auto",
                   display: isTafirBoxVisible ? "block" : "none",
                   color: "black",
                   transition: "all 0.5s ",
                 }}
               >
-                <div className="w-[120px] h-[220px] bg-emerald-800/70 m-auto p-2 ">
+                {/* <div className="w-[120px] h-[220px] bg-emerald-800/70 m-auto p-2 ">
                   <div className="h-[calc(90%)]">
                     <span className="block m-auto mb-2 w-fit  text-white">
                       نوع التفسير
@@ -91,10 +92,42 @@ function BottomBar({
                       setIsTafirBoxVisible(!isTafirBoxVisible);
                     }}
                   >
+                    
                     <span className="">X</span>
                   </div>
-                </div>
-                <div className="border-8 border-transparent border-t-emerald-800/70 w-fit m-auto"></div>
+                </div> */}
+                <OutsideClickHandler
+                  onOutsideClick={() => {
+                    onTafsirTypeChange(false);
+                  }}
+                  excludedSelectors={["#tafseerBox", "#recitersBoxToggler"]}
+                >
+                  <div
+                    id="tafseerBox"
+                    className={`${
+                      !isTafirBoxVisible ? "hidden" : ""
+                    }  rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[-1] scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)]`}
+                  >
+                    <div>
+                      {Array.from(Array(604).keys()).map((num) => (
+                        <div>num</div>
+                      ))}
+                      {Object.keys(tafseerTypes).map((tafId) => {
+                        <div
+                          key={tafseerTypes[tafsirId]}
+                          className={`${
+                            tafId === tafsirId ? "bg-emerald-500" : ""
+                          } hover:bg-emerald-500 p-1 cursor-pointer `}
+                          onClick={() => {
+                            onTafsirTypeChange(tafId);
+                          }}
+                        >
+                          {`${tafseerTypes[tafId]} 5`}
+                        </div>;
+                      })}
+                    </div>
+                  </div>
+                </OutsideClickHandler>
               </div>
             ) : (
               ""
