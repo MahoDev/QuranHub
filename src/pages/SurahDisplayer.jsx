@@ -23,8 +23,9 @@ function SurahDisplayer({ isDarkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [surahData, setSurahData] = useState([]);
   const [tafsirData, setTafsirData] = useState([]);
-  const [tafsirId, setTafsirId] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
+  const [tafsirId, setTafsirId] = useState(16);
+  const [tafsirPage, setTafsirPage] = useState({ current: 1, last: null });
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,8 +35,8 @@ function SurahDisplayer({ isDarkMode }) {
   const [tafsirModeActive, setTafsirModeActive] = useState(false);
   const [recitationId, setRecitationId] = useState(1);
   const [loadingSurah, setLoadingSurah] = useState(false);
-  const textWidth = !tafsirModeActive ? `395px` : `495px`;
   const [currentVerse, setCurrentVerse] = useState(1);
+  const textWidth = !tafsirModeActive ? `395px` : `495px`;
 
   const currentVerseAudioSrc = `https://everyayah.com/data/${
     quranRecitations[recitationId].subfolder
@@ -93,14 +94,20 @@ function SurahDisplayer({ isDarkMode }) {
       const startAyah = surahData[0]["aya_no"];
       const endAyah = surahData[surahData.length - 1]["aya_no"];
 
-      async function getTafsir(num) {
+      async function getTafsir(surah) {
         try {
+          console.log(surah);
+          console.log(tafsirId);
           const response = await fetch(
-            `http://api.quran-tafseer.com/tafseer/${tafsirId}/${num}/${startAyah}/${endAyah}`
+            `https://api.quran.com/api/v4/tafsirs/${tafsirId}/by_page/${currentPage}?locale=ar&mushaf=2`
           );
           const data = await response.json();
           if (subscribed) {
             setTafsirData(data);
+            setTafsirPage({
+              current: data.pagination.current_page + 1,
+              last: data.pagination.total_pages,
+            });
           }
         } catch (error) {
           console.error("Error fetching tafseer data:", error);
@@ -111,7 +118,7 @@ function SurahDisplayer({ isDarkMode }) {
         subscribed = false;
       };
     }
-  }, [tafsirModeActive, surahNumber, tafsirId]);
+  }, [tafsirModeActive, surahNumber, tafsirId, currentPage]);
 
   //scrolls to the top of the page everytime the page changes
   useEffect(() => {
@@ -159,8 +166,16 @@ function SurahDisplayer({ isDarkMode }) {
             />
             <div className="text-gray-700 dark:text-gray-300 font-siteText text-xl">
               {
-                tafsirData?.find((ayahTafsir) => {
-                  return ayahTafsir.ayah_number === ayah["aya_no"];
+                tafsirData.tafsirs?.find((ayahTafsir) => {
+                  let ayahTafsirNum = ayahTafsir["verse_key"].split(":").pop();
+                  if (Number.parseInt(ayahTafsirNum) === ayah["aya_no"]) {
+                    console.log(ayahTafsirNum);
+                    console.log(ayah["aya_no"]);
+                    console.log(
+                      Number.parseInt(ayahTafsirNum) === ayah["aya_no"]
+                    );
+                  }
+                  return Number.parseInt(ayahTafsirNum) === ayah["aya_no"];
                 })?.text
               }
             </div>
@@ -345,8 +360,8 @@ function SurahDisplayer({ isDarkMode }) {
         onSideBarDisplayedChange={setSideBarDisplayed}
         onPageChange={handlePageChange}
         tafsirModeActive={tafsirModeActive}
-        onTafsirModeStateChange={setTafsirModeActive}
-        tafsirId={tafsirId}
+        onTafsirActiveChange={setTafsirModeActive}
+        currentTafsirId={tafsirId}
         onTafsirTypeChange={setTafsirId}
       />
       <OutsideClickHandler

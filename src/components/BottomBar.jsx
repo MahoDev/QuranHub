@@ -9,9 +9,9 @@ function BottomBar({
   isSideBarDisplayed,
   onSideBarDisplayedChange,
   onPageChange,
-  onTafsirModeStateChange,
+  onTafsirActiveChange,
   tafsirModeActive,
-  tafsirId,
+  currentTafsirId,
   onTafsirTypeChange,
 }) {
   let bottomBarStyles = "";
@@ -65,42 +65,11 @@ function BottomBar({
                   transition: "all 0.5s ",
                 }}
               >
-                {/* <div className="w-[120px] h-[220px] bg-emerald-800/70 m-auto p-2 ">
-                  <div className="h-[calc(90%)]">
-                    <span className="block m-auto mb-2 w-fit  text-white">
-                      نوع التفسير
-                    </span>
-                    <select
-                      className="w-full"
-                      value={tafsirId}
-                      onChange={(e) => {
-                        onTafsirTypeChange(e.target.value);
-                      }}
-                    >
-                      {Object.keys(tafseerTypes).map((tafsirId) => {
-                        return (
-                          <option value={tafsirId} key={tafsirId}>
-                            {tafseerTypes[tafsirId]}
-                          </option>
-                        );
-                      })}
-                    </select>
-                  </div>
-                  <div
-                    className="mx-auto cursor-pointer w-6 h-6 p-2 rounded-full bg-red-500/70 flex justify-center items-center"
-                    onClick={() => {
-                      setIsTafirBoxVisible(!isTafirBoxVisible);
-                    }}
-                  >
-                    
-                    <span className="">X</span>
-                  </div>
-                </div> */}
                 <OutsideClickHandler
                   onOutsideClick={() => {
-                    onTafsirTypeChange(false);
+                    setIsTafirBoxVisible(false);
                   }}
-                  excludedSelectors={["#tafseerBox", "#recitersBoxToggler"]}
+                  excludedSelectors={["#tafseerBox", "#tafseerBoxToggler"]}
                 >
                   <div
                     id="tafseerBox"
@@ -109,21 +78,20 @@ function BottomBar({
                     }  rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[-1] scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)]`}
                   >
                     <div>
-                      {Array.from(Array(604).keys()).map((num) => (
-                        <div>num</div>
-                      ))}
                       {Object.keys(tafseerTypes).map((tafId) => {
-                        <div
-                          key={tafseerTypes[tafsirId]}
-                          className={`${
-                            tafId === tafsirId ? "bg-emerald-500" : ""
-                          } hover:bg-emerald-500 p-1 cursor-pointer `}
-                          onClick={() => {
-                            onTafsirTypeChange(tafId);
-                          }}
-                        >
-                          {`${tafseerTypes[tafId]} 5`}
-                        </div>;
+                        return (
+                          <div
+                            key={tafseerTypes[tafId]}
+                            className={`${
+                              tafId === currentTafsirId ? "bg-emerald-500" : ""
+                            } hover:bg-emerald-500 p-1 cursor-pointer `}
+                            onClick={() => {
+                              onTafsirTypeChange(tafId);
+                            }}
+                          >
+                            {`${tafseerTypes[tafId]}`}
+                          </div>
+                        );
                       })}
                     </div>
                   </div>
@@ -139,11 +107,13 @@ function BottomBar({
               className="hidden"
               checked={tafsirModeActive}
               onChange={() => {
-                onTafsirModeStateChange(!tafsirModeActive);
+                onTafsirActiveChange(!tafsirModeActive);
                 setIsTafirBoxVisible(!isTafirBoxVisible);
               }}
             />
+
             <span
+              id="tafseerBoxToggler"
               className="relative pb-1 cursor-pointer hover:before:absolute hover:before:bottom-0 hover:before:bg-amber-500 hover:before:w-full hover:before:h-[2px] select-none"
               onClick={() => {
                 setIsTafirBoxVisible(!isTafirBoxVisible);
