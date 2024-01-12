@@ -13,6 +13,8 @@ function BottomBar({
   tafsirModeActive,
   currentTafsirId,
   onTafsirTypeChange,
+  fontSettings,
+  onFontSettingsChanged,
 }) {
   let bottomBarStyles = "";
   if (isDisplayed) {
@@ -20,7 +22,8 @@ function BottomBar({
   } else {
     bottomBarStyles = "hidden w-0 ";
   }
-  const [isTafirBoxVisible, setIsTafirBoxVisible] = useState(true);
+  const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(true);
+  const [fontBoxVisible, setFontBoxVisible] = useState(false);
 
   return (
     <div
@@ -50,7 +53,55 @@ function BottomBar({
             <span className="hidden sm:inline">التالي</span>
             <FaArrowLeft className="inline text-xl" />
           </div>
-          <FaFont className="ml-2 text-xl" />
+          <FaFont
+            id="fontBoxToggler"
+            className="ml-2 text-xl hover:cursor-pointer"
+            onClick={() => {
+              setFontBoxVisible(!fontBoxVisible);
+            }}
+          />
+          <OutsideClickHandler
+            onOutsideClick={() => {
+              setFontBoxVisible(false);
+            }}
+            excludedSelectors={["#fontBox", "#fontBoxToggler"]}
+          >
+            <div
+              id="fontBox"
+              className={`${
+                !fontBoxVisible ? "hidden" : ""
+              } absolute right-16 translate-y-[-192px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
+            >
+              <div className="flex gap-2">
+                <div>حجم الخط</div>
+                <div
+                  className="rounded-full text-lg flex justify-center items-center hover:cursor-pointer w-6 h-6 bg-emerald-700"
+                  onClick={() => {
+                    onFontSettingsChanged(
+                      fontSettings.sizeModifier === 9
+                        ? { ...fontSettings }
+                        : { sizeModifier: fontSettings.sizeModifier + 1 }
+                    );
+                  }}
+                >
+                  +
+                </div>
+                <div>{fontSettings.sizeModifier}</div>
+                <div
+                  className="rounded-full text-lg  flex justify-center items-center hover:cursor-pointer w-6 h-6  bg-emerald-700"
+                  onClick={() => {
+                    onFontSettingsChanged(
+                      fontSettings.sizeModifier === 3
+                        ? { ...fontSettings }
+                        : { sizeModifier: fontSettings.sizeModifier - 1 }
+                    );
+                  }}
+                >
+                  -
+                </div>
+              </div>
+            </div>
+          </OutsideClickHandler>
         </div>
         <div className="flex gap-1 items-center">
           <div className="flex items-center space-x-2 sm:space-x-4 p-1 relative">
@@ -58,11 +109,10 @@ function BottomBar({
               <div
                 style={{
                   position: "absolute",
-                  left: isTafirBoxVisible ? "25px" : "auto",
-                  top: isTafirBoxVisible ? "-175px" : "auto",
-                  display: isTafirBoxVisible ? "block" : "none",
+                  left: tafsirBoxVisible ? "25px" : "auto",
+                  top: tafsirBoxVisible ? "-175px" : "auto",
+                  display: tafsirBoxVisible ? "block" : "none",
                   color: "black",
-                  transition: "all 0.5s ",
                 }}
               >
                 <OutsideClickHandler
@@ -74,7 +124,7 @@ function BottomBar({
                   <div
                     id="tafseerBox"
                     className={`${
-                      !isTafirBoxVisible ? "hidden" : ""
+                      !tafsirBoxVisible ? "hidden" : ""
                     }  rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[-1] scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)]`}
                   >
                     <div>
@@ -108,7 +158,7 @@ function BottomBar({
               checked={tafsirModeActive}
               onChange={() => {
                 onTafsirActiveChange(!tafsirModeActive);
-                setIsTafirBoxVisible(!isTafirBoxVisible);
+                setIsTafirBoxVisible(!tafsirBoxVisible);
               }}
             />
 
@@ -116,7 +166,7 @@ function BottomBar({
               id="tafseerBoxToggler"
               className="relative pb-1 cursor-pointer hover:before:absolute hover:before:bottom-0 hover:before:bg-amber-500 hover:before:w-full hover:before:h-[2px] select-none"
               onClick={() => {
-                setIsTafirBoxVisible(!isTafirBoxVisible);
+                setIsTafirBoxVisible(!tafsirBoxVisible);
               }}
             >
               التفسير

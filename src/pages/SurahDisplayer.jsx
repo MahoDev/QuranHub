@@ -36,7 +36,9 @@ function SurahDisplayer({ isDarkMode }) {
   const [recitationId, setRecitationId] = useState(1);
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
-  const textWidth = !tafsirModeActive ? `395px` : `495px`;
+  const [fontSettings, setFontSettings] = useState({ sizeModifier: 3 });
+  //const textWidth = !tafsirModeActive ? `395px` : `495px`;
+  const textWidth = "";
 
   const currentVerseAudioSrc = `https://everyayah.com/data/${
     quranRecitations[recitationId].subfolder
@@ -310,11 +312,8 @@ function SurahDisplayer({ isDarkMode }) {
               )
             : ""}
         </div>
-
         <div
-          className={
-            "font-quranMain text-justify text-xl leading-extra-loose  m-auto"
-          }
+          className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose  m-auto`}
           style={{
             maxWidth: textWidth,
           }}
@@ -363,6 +362,8 @@ function SurahDisplayer({ isDarkMode }) {
         onTafsirActiveChange={setTafsirModeActive}
         currentTafsirId={tafsirId}
         onTafsirTypeChange={setTafsirId}
+        fontSettings={fontSettings}
+        onFontSettingsChanged={setFontSettings}
       />
       <OutsideClickHandler
         onOutsideClick={() => {
