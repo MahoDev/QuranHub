@@ -247,17 +247,30 @@ function SurahDisplayer({ isDarkMode }) {
     }
   };
 
-  const handleAudioEnded = () => {
-    const nextVerseAvailable =
-      currentVerse !== surahData[surahData.length - 1]["aya_no"];
-    const nextPageAvailable = currentPage !== 604 && surahNumber !== 114;
-    const isLastVerseInPage =
-      ayahsInCurrentPage[ayahsInCurrentPage.length - 1]["aya_no"] ===
-      currentVerse;
-    if (nextVerseAvailable) {
-      setCurrentVerse(currentVerse + 1);
-      if (nextPageAvailable && isLastVerseInPage) {
-        handlePageChange(null, "forward");
+  const handleVerseNavigation = (direction) => {
+    if (direction === "forward") {
+      const nextVerseAvailable =
+        currentVerse !== surahData[surahData.length - 1]["aya_no"];
+      const nextPageAvailable = currentPage !== 604 && surahNumber !== 114;
+      const isLastVerseInPage =
+        ayahsInCurrentPage[ayahsInCurrentPage.length - 1]["aya_no"] ===
+        currentVerse;
+      if (nextVerseAvailable) {
+        setCurrentVerse(currentVerse + 1);
+        if (nextPageAvailable && isLastVerseInPage) {
+          handlePageChange(null, "forward");
+        }
+      }
+    } else if (direction === "backward") {
+      const previousVerseAvailable = currentVerse !== surahData[0]["aya_no"];
+      const previousPageAvailable = currentPage !== 1;
+      const isFirstVerseInPage =
+        ayahsInCurrentPage[0]["aya_no"] === currentVerse;
+      if (previousVerseAvailable) {
+        setCurrentVerse(currentVerse - 1);
+        if (previousPageAvailable && isFirstVerseInPage) {
+          handlePageChange(null, "backward");
+        }
       }
     }
   };
@@ -393,7 +406,7 @@ function SurahDisplayer({ isDarkMode }) {
           bitrate={bitrate}
           onBitrateChange={setBitrate}
           audioSrc={currentVerseAudioSrc}
-          onAudioEnded={handleAudioEnded}
+          onVerseNavigation={handleVerseNavigation}
         />
       )}
     </div>

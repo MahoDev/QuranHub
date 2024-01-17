@@ -14,7 +14,7 @@ function AudioPlayer({
   bitrate,
   onBitrateChange,
   audioSrc,
-  onAudioEnded,
+  onVerseNavigation,
 }) {
   const [audio, state, controls, ref] = useAudio({ src: audioSrc });
   const [hoverData, setHoverData] = useState({ xPosition: null, time: null });
@@ -25,7 +25,7 @@ function AudioPlayer({
   useEffect(() => {
     const audioElement = ref.current;
     const handleAudioEnded = () => {
-      onAudioEnded();
+      onVerseNavigation("forward");
     };
     if (audioElement) {
       audioElement.addEventListener("ended", handleAudioEnded);
@@ -149,6 +149,9 @@ function AudioPlayer({
         <MdSkipNext
           size={30}
           className="cursor-pointer hover:text-emerald-500 dark:text-white"
+          onClick={() => {
+            onVerseNavigation("backward");
+          }}
         />
         <div className="cursor-pointer rounded-full p-2 bg-emerald-500 relative w-[40px] h-[40px] flex justify-center items-center ">
           {state.playing ? (
@@ -172,6 +175,9 @@ function AudioPlayer({
         <MdSkipPrevious
           size={30}
           className="cursor-pointer hover:text-emerald-500 dark:text-white"
+          onClick={() => {
+            onVerseNavigation("forward");
+          }}
         />
       </div>
       <span className="current-time text-gray-500 text-md absolute left-1 top-1">
