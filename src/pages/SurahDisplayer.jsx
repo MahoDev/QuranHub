@@ -166,17 +166,15 @@ function SurahDisplayer({ isDarkMode }) {
               currentVerse={currentVerse}
               setCurrentVerse={setCurrentVerse}
             />
-            <div className="text-gray-700 dark:text-gray-300 font-siteText text-xl">
+            <div
+              className={`text-gray-700 dark:text-gray-300 font-siteText text-${
+                fontSettings.sizeModifier - 1
+              }xl`}
+            >
               {
                 tafsirData.tafsirs?.find((ayahTafsir) => {
                   let ayahTafsirNum = ayahTafsir["verse_key"].split(":").pop();
-                  if (Number.parseInt(ayahTafsirNum) === ayah["aya_no"]) {
-                    console.log(ayahTafsirNum);
-                    console.log(ayah["aya_no"]);
-                    console.log(
-                      Number.parseInt(ayahTafsirNum) === ayah["aya_no"]
-                    );
-                  }
+
                   return Number.parseInt(ayahTafsirNum) === ayah["aya_no"];
                 })?.text
               }

@@ -4,19 +4,19 @@ export default {
   darkMode: "class",
   theme: {
     extend: {
-      screens: {
-        xs: "375px",
-      },
+      screens: {},
       container: {
         padding: {
           DEFAULT: "2rem",
           xs: "2rem",
-          sm: "0",
-          md: "0",
-          lg: "0",
-          xl: "0",
+          sm: "2rem",
+          md: "2rem",
+          lg: "2rem",
+          xl: "2rem",
         },
-
+        width: {
+          md: "100%",
+        },
         center: true,
       },
       lineHeight: {

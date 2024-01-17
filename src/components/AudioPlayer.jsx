@@ -26,7 +26,7 @@ function AudioPlayer({
     if (audioElement) {
       audioElement.addEventListener("ended", handleAudioEnded);
       //ensure no playback issues occurs when the audio source changes
-      audioElement.autoplay = false;
+      audioElement.autoplay = true;
       // Cleanup function
       return () => {
         audioElement.removeEventListener("ended", handleAudioEnded);

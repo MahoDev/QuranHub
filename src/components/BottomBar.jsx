@@ -175,10 +175,10 @@ function BottomBar({
             <label htmlFor="toggle" className="cursor-pointer">
               <div className="relative w-10 h-4 bg-gray-300 rounded-full">
                 <div
-                  className={`toggle-dot absolute left-0 top-0 w-6 h-6 bg-red-700 rounded-full shadow-md transform transition-transform  translate-y-[calc(-15%)] ${
+                  className={`toggle-dot absolute left-0 top-0 w-6 h-6  rounded-full shadow-md transform transition-transform translate-y-[calc(-15%)] ${
                     tafsirModeActive
-                      ? "translate-x-full bg-emerald-600"
-                      : "translate-x-[-40%]"
+                      ? "bg-emerald-600 translate-x-full "
+                      : "bg-red-700 translate-x-[-40%]"
                   }`}
                 ></div>
               </div>
