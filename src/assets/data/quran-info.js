@@ -726,325 +726,285 @@ export const tafseerTypes = {
 //to deal with different qualties I can hide repeating names and then filter
 //the objects with the same "name" property, and later display these objects
 //in a seperate box to give the option to choose qualties.
+
 export const quranRecitations = {
   1: {
-    subfolder: "Abdul_Basit_Murattal_64kbps",
     name: "عبدالباسط عبد الصمد (مرتل)",
-    bitrate: "64kbps",
+    bitrate: {
+      "64kbps": "Abdul_Basit_Murattal_64kbps",
+      "192kbps": "Abdul_Basit_Murattal_192kbps",
+    },
   },
   2: {
-    subfolder: "Abdul_Basit_Murattal_192kbps",
-    name: "عبدالباسط عبد الصمد (مرتل)",
-    bitrate: "192kbps",
+    name: "عبدالباسط عبد الصمد (مجود)",
+    bitrate: {
+      "64kbps": "AbdulSamad_64kbps_QuranExplorer.Com",
+      "128kbps": "Abdul_Basit_Mujawwad_128kbps",
+    },
   },
   3: {
-    subfolder: "Abdul_Basit_Mujawwad_128kbps",
-    name: "عبدالباسط عبد الصمد (مجود)",
-    bitrate: "128kbps",
+    name: "عبدالله بصفر",
+    bitrate: {
+      "32kbps": "Abdullah_Basfar_32kbps",
+      "64kbps": "Abdullah_Basfar_64kbps",
+      "192kbps": "Abdullah_Basfar_192kbps",
+    },
   },
   4: {
-    subfolder: "Abdullah_Basfar_32kbps",
-    name: "عبدالله بصفر",
-    bitrate: "32kbps",
+    name: "عبدالرحمن السديس",
+    bitrate: {
+      "64kbps": "Abdurrahmaan_As-Sudais_64kbps",
+      "192kbps": "Abdurrahmaan_As-Sudais_192kbps",
+    },
   },
   5: {
-    subfolder: "Abdullah_Basfar_64kbps",
-    name: "عبدالله بصفر",
-    bitrate: "64kbps",
+    name: "ابو بكر الشاطري",
+    bitrate: {
+      "64kbps": "Abu_Bakr_Ash-Shaatree_64kbps",
+      "128kbps": "Abu_Bakr_Ash-Shaatree_128kbps",
+    },
   },
   6: {
-    subfolder: "Abdullah_Basfar_192kbps",
-    name: "عبدالله بصفر",
-    bitrate: "192kbps",
+    name: "أحمد العجمي",
+    bitrate: {
+      "64kbps": "Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com",
+      "128kbps": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
+    },
   },
   7: {
-    subfolder: "Abdurrahmaan_As-Sudais_64kbps",
-    name: "عبدالرحمن السديس",
-    bitrate: "64kbps",
+    name: "مشاري العفاسي",
+    bitrate: {
+      "64kbps": "Alafasy_64kbps",
+      "128kbps": "Alafasy_128kbps",
+    },
   },
   8: {
-    subfolder: "Abdurrahmaan_As-Sudais_192kbps",
-    name: "عبدالرحمن السديس",
-    bitrate: "192kbps",
+    name: "سعد الغامدي",
+    bitrate: {
+      "40kbps": "Ghamadi_40kbps",
+    },
   },
   9: {
-    subfolder: "AbdulSamad_64kbps_QuranExplorer.Com",
-    name: "عبدالباسط عبد الصمد (مجود)",
-    bitrate: "64kbps",
+    name: "هاني الرفاعي",
+    bitrate: {
+      "64kbps": "Hani_Rifai_64kbps",
+      "192kbps": "Hani_Rifai_192kbps",
+    },
   },
   10: {
-    subfolder: "Abu_Bakr_Ash-Shaatree_64kbps",
-    name: "ابو بكر الشاطري",
-    bitrate: "64kbps",
+    name: "محمود خليل الحصري (مرتل)",
+    bitrate: {
+      "64kbps": "Husary_64kbps",
+      "128kbps": "Husary_128kbps",
+    },
   },
   11: {
-    subfolder: "Abu_Bakr_Ash-Shaatree_128kbps",
-    name: "ابو بكر الشاطري",
-    bitrate: "128kbps",
+    name: "محمود خليل الحصري (مجود)",
+    bitrate: {
+      "64kbps": "Husary_Mujawwad_64kbps",
+      "128kbps": "Husary_128kbps_Mujawwad",
+    },
   },
   12: {
-    subfolder: "Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com",
-    name: "أحمد العجمي",
-    bitrate: "64kbps",
+    name: "علي الحذيفي",
+    bitrate: {
+      "32kbps": "Hudhaify_32kbps",
+      "64kbps": "Hudhaify_64kbps",
+      "128kbps": "Hudhaify_128kbps",
+    },
   },
   13: {
-    subfolder: "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
-    name: "أحمد العجمي",
-    bitrate: "128kbps",
+    name: "ابراهيم الاخضر",
+    bitrate: {
+      "32kbps": "Ibrahim_Akhdar_32kbps",
+    },
   },
   14: {
-    subfolder: "Alafasy_64kbps",
-    name: "مشاري العفاسي",
-    bitrate: "64kbps",
+    name: "ماهر المعيقلي",
+    bitrate: {
+      "64kbps": "Maher_AlMuaiqly_64kbps",
+      "128kbps": "MaherAlMuaiqly128kbps",
+    },
   },
   15: {
-    subfolder: "Alafasy_128kbps",
-    name: "مشاري العفاسي",
-    bitrate: "128kbps",
+    name: "محمد صديق المنشاوي (مرتل)",
+    bitrate: {
+      "16kbps": "Menshawi_16kbps",
+      "128kbps": "Minshawy_Murattal_128kbps",
+    },
   },
   16: {
-    subfolder: "Ghamadi_40kbps",
-    name: "سعد الغامدي",
-    bitrate: "40kbps",
+    name: "محمد صديق المنشاوي (مجود)",
+    bitrate: {
+      "64kbps": "Minshawy_Mujawwad_64kbps",
+      "192kbps": "Minshawy_Mujawwad_192kbps",
+    },
   },
   17: {
-    subfolder: "Hani_Rifai_64kbps",
-    name: "هاني الرفاعي",
-    bitrate: "64kbps",
+    name: "محمد الطبلاوي (مرتل)",
+    bitrate: {
+      "64kbps": "Mohammad_al_Tablaway_64kbps",
+      "128kbps": "Mohammad_al_Tablaway_128kbps",
+    },
   },
   18: {
-    subfolder: "Hani_Rifai_192kbps",
-    name: "هاني الرفاعي",
-    bitrate: "192kbps",
+    name: "محمد أيوب",
+    bitrate: {
+      "32kbps": "Muhammad_Ayyoub_32kbps",
+      "64kbps": "Muhammad_Ayyoub_64kbps",
+      "128kbps": "Muhammad_Ayyoub_128kbps",
+    },
   },
   19: {
-    subfolder: "Husary_64kbps",
-    name: "محمود خليل الحصري (مرتل)",
-    bitrate: "64kbps",
+    name: "محمد جبريل",
+    bitrate: {
+      "64kbps": "Muhammad_Jibreel_64kbps",
+      "128kbps": "Muhammad_Jibreel_128kbps",
+    },
   },
   20: {
-    subfolder: "Husary_128kbps",
-    name: "محمود خليل الحصري (مرتل)",
-    bitrate: "128kbps",
+    name: "سعود الشريم",
+    bitrate: {
+      "64kbps": "Saood_ash-Shuraym_64kbps",
+      "128kbps": "Saood_ash-Shuraym_128kbps",
+    },
   },
   21: {
-    subfolder: "Husary_Mujawwad_64kbps",
-    name: "محمود خليل الحصري (مجود)",
-    bitrate: "64kbps",
+    name: "صلاح بوخاطر",
+    bitrate: {
+      "128kbps": "Salaah_AbdulRahman_Bukhatir_128kbps",
+    },
   },
   22: {
-    subfolder: "Husary_128kbps_Mujawwad",
-    name: "محمود خليل الحصري (مجود)",
-    bitrate: "128kbps",
+    name: "عبدالمحسن القاسم",
+    bitrate: {
+      "192kbps": "Muhsin_Al_Qasim_192kbps",
+    },
   },
   23: {
-    subfolder: "Hudhaify_32kbps",
-    name: "علي الحذيفي",
-    bitrate: "32kbps",
+    name: "عبدالله عواد الجهني",
+    bitrate: {
+      "128kbps": "Abdullaah_3awwaad_Al-Juhaynee_128kbps",
+    },
   },
   24: {
-    subfolder: "Hudhaify_64kbps",
-    name: "علي الحذيفي",
-    bitrate: "64kbps",
+    name: "صلاح البدير",
+    bitrate: {
+      "128kbps": "Salah_Al_Budair_128kbps",
+    },
   },
   25: {
-    subfolder: "Hudhaify_128kbps",
-    name: "علي الحذيفي",
-    bitrate: "128kbps",
+    name: "عبد الله المطرود",
+    bitrate: {
+      "128kbps": "Abdullah_Matroud_128kbps",
+    },
   },
   26: {
-    subfolder: "Ibrahim_Akhdar_32kbps",
-    name: "ابراهيم الاخضر",
-    bitrate: "32kbps",
+    name: "أحمد نعينع (مرتل)",
+    bitrate: {
+      "128kbps": "Ahmed_Neana_128kbps",
+    },
   },
   27: {
-    subfolder: "Maher_AlMuaiqly_64kbps",
-    name: "ماهر المعيقلي",
-    bitrate: "64kbps",
+    name: "محمد عبد الكريم",
+    bitrate: {
+      "128kbps": "Muhammad_AbdulKareem_128kbps",
+    },
   },
   28: {
-    subfolder: "MaherAlMuaiqly128kbps",
-    name: "ماهر المعيقلي",
-    bitrate: "128kbps",
+    name: "خليفة الطنيجي",
+    bitrate: {
+      "64kbps": "khalefa_al_tunaiji_64kbps",
+    },
   },
   29: {
-    subfolder: "Menshawi_16kbps",
-    name: "محمد صديق المنشاوي (مرتل)",
-    bitrate: "16kbps",
+    name: "محمود علي البنا (مجود)",
+    bitrate: {
+      "32kbps": "mahmoud_ali_al_banna_32kbps",
+    },
   },
   30: {
-    subfolder: "Minshawy_Mujawwad_64kbps",
-    name: "محمد صديق المنشاوي (مجود)",
-    bitrate: "64kbps",
+    name: "ياسر الدوسري",
+    bitrate: {
+      "128kbps": "Yasser_Ad-Dussary_128kbps",
+    },
   },
   31: {
-    subfolder: "Minshawy_Mujawwad_192kbps",
-    name: "محمد صديق المنشاوي (مجود)",
-    bitrate: "192kbps",
+    name: "ناصر القطامي",
+    bitrate: {
+      "128kbps": "Nasser_Alqatami_128kbps",
+    },
   },
   32: {
-    subfolder: "Minshawy_Murattal_128kbps",
-    name: "محمد صديق المنشاوي (مرتل)",
-    bitrate: "128kbps",
+    name: "علي حجاج السويسي",
+    bitrate: {
+      "128kbps": "Ali_Hajjaj_AlSuesy_128kbps",
+    },
   },
   33: {
-    subfolder: "Mohammad_al_Tablaway_64kbps",
-    name: "محمد الطبلاوي (مرتل)",
-    bitrate: "64kbps",
+    name: "سهل زين يس",
+    bitrate: {
+      "128kbps": "Sahl_Yassin_128kbps",
+    },
   },
   34: {
-    subfolder: "Mohammad_al_Tablaway_128kbps",
-    name: "محمد الطبلاوي (مرتل)",
-    bitrate: "128kbps",
+    name: "احمد العجمي",
+    bitrate: {
+      "128kbps": "ahmed_ibn_ali_al_ajamy_128kbps",
+    },
   },
   35: {
-    subfolder: "Muhammad_Ayyoub_128kbps",
-    name: "محمد أيوب",
-    bitrate: "128kbps",
+    name: "كريم منصوري",
+    bitrate: {
+      "40kbps": "Karim_Mansoori_40kbps",
+    },
   },
   36: {
-    subfolder: "Muhammad_Ayyoub_64kbps",
-    name: "محمد أيوب",
-    bitrate: "64kbps",
+    name: "عزيز العليلي",
+    bitrate: {
+      "128kbps": "aziz_alili_128kbps",
+    },
   },
   37: {
-    subfolder: "Muhammad_Ayyoub_32kbps",
-    name: "محمد أيوب",
-    bitrate: "32kbps",
+    name: "ياسر سلامة",
+    bitrate: {
+      "128kbps": "Yaser_Salamah_128kbps",
+    },
   },
   38: {
-    subfolder: "Muhammad_Jibreel_64kbps",
-    name: "محمد جبريل",
-    bitrate: "64kbps",
+    name: "أكرم العلاقمي",
+    bitrate: {
+      "128kbps": "Akram_AlAlaqimy_128kbps",
+    },
   },
   39: {
-    subfolder: "Muhammad_Jibreel_128kbps",
-    name: "محمد جبريل",
-    bitrate: "128kbps",
+    name: "علي جابر",
+    bitrate: {
+      "64kbps": "Ali_Jaber_64kbps",
+    },
   },
   40: {
-    subfolder: "Saood_ash-Shuraym_64kbps",
-    name: "سعود الشريم",
-    bitrate: "64kbps",
+    name: "فارس عباد",
+    bitrate: {
+      "64kbps": "Fares_Abbad_64kbps",
+    },
   },
   41: {
-    subfolder: "Saood_ash-Shuraym_128kbps",
-    name: "سعود الشريم",
-    bitrate: "128kbps",
+    name: "أيمن سويد",
+    bitrate: {
+      "64kbps": "Ayman_Sowaid_64kbps",
+    },
   },
   42: {
-    subfolder: "Salaah_AbdulRahman_Bukhatir_128kbps",
-    name: "صلاح بوخاطر",
-    bitrate: "128kbps",
+    name: "محمود خليل الحصري (مُعلِم)",
+    bitrate: {
+      "128kbps": "Husary_Muallim_128kbps",
+    },
   },
   43: {
-    subfolder: "Muhsin_Al_Qasim_192kbps",
-    name: "عبدالمحسن القاسم",
-    bitrate: "192kbps",
-  },
-  44: {
-    subfolder: "Abdullaah_3awwaad_Al-Juhaynee_128kbps",
-    name: "عبدالله عواد الجهني",
-    bitrate: "128kbps",
-  },
-  45: {
-    subfolder: "Salah_Al_Budair_128kbps",
-    name: "صلاح البدير",
-    bitrate: "128kbps",
-  },
-  46: {
-    subfolder: "Abdullah_Matroud_128kbps",
-    name: "عبد الله المطرود",
-    bitrate: "128kbps",
-  },
-  47: {
-    subfolder: "Ahmed_Neana_128kbps",
-    name: "أحمد نعينع (مرتل)",
-    bitrate: "128kbps",
-  },
-  48: {
-    subfolder: "Muhammad_AbdulKareem_128kbps",
-    name: "محمد عبد الكريم",
-    bitrate: "128kbps",
-  },
-  49: {
-    subfolder: "khalefa_al_tunaiji_64kbps",
-    name: "خليفة الطنيجي",
-    bitrate: "64kbps",
-  },
-  50: {
-    subfolder: "mahmoud_ali_al_banna_32kbps",
-    name: "محمود علي البنا (مجود)",
-    bitrate: "32kbps",
-  },
-  51: {
-    subfolder: "Yasser_Ad-Dussary_128kbps",
-    name: "ياسر الدوسري",
-    bitrate: "128kbps",
-  },
-  52: {
-    subfolder: "Nasser_Alqatami_128kbps",
-    name: "ناصر القطامي",
-    bitrate: "128kbps",
-  },
-  53: {
-    subfolder: "Ali_Hajjaj_AlSuesy_128kbps",
-    name: "علي حجاج السويسي",
-    bitrate: "128kbps",
-  },
-  54: {
-    subfolder: "Sahl_Yassin_128kbps",
-    name: "سهل زين يس",
-    bitrate: "128kbps",
-  },
-  55: {
-    subfolder: "ahmed_ibn_ali_al_ajamy_128kbps",
-    name: "احمد العجمي",
-    bitrate: "128kbps",
-  },
-  56: {
-    subfolder: "Karim_Mansoori_40kbps",
-    name: "كريم منصوري",
-    bitrate: "40kbps",
-  },
-  57: {
-    subfolder: "aziz_alili_128kbps",
-    name: "عزيز العليلي",
-    bitrate: "128kbps",
-  },
-  58: {
-    subfolder: "Yaser_Salamah_128kbps",
-    name: "ياسر سلامة",
-    bitrate: "128kbps",
-  },
-  59: {
-    subfolder: "Akram_AlAlaqimy_128kbps",
-    name: "أكرم العلاقمي",
-    bitrate: "128kbps",
-  },
-  60: {
-    subfolder: "Ali_Jaber_64kbps",
-    name: "علي جابر",
-    bitrate: "64kbps",
-  },
-  61: {
-    subfolder: "Fares_Abbad_64kbps",
-    name: "فارس عباد",
-    bitrate: "64kbps",
-  },
-  62: {
-    subfolder: "Ayman_Sowaid_64kbps",
-    name: "أيمن سويد",
-    bitrate: "64kbps",
-  },
-  63: {
-    subfolder: "Husary_Muallim_128kbps",
-    name: "محمود خليل الحصري (مُعلِم)",
-    bitrate: "128kbps",
-  },
-  64: {
-    subfolder: "Khaalid_Abdullaah_al-Qahtaanee_192kbps",
     name: "خالد عبدالله القحطاني",
-    bitrate: "192kbps",
+    bitrate: {
+      "192kbps": "Khaalid_Abdullaah_al-Qahtaanee_192kbps",
+    },
   },
 };

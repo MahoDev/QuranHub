@@ -34,18 +34,23 @@ function SurahDisplayer({ isDarkMode }) {
   const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
   const [tafsirModeActive, setTafsirModeActive] = useState(false);
   const [recitationId, setRecitationId] = useState(1);
+  const [bitrate, setBitrate] = useState(null);
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
   const [fontSettings, setFontSettings] = useState({ sizeModifier: 3 });
   //const textWidth = !tafsirModeActive ? `395px` : `495px`;
   const textWidth = "";
+  console.log("current bitrate: " + bitrate);
+  const subfolder =
+    bitrate == null
+      ? quranRecitations[recitationId].bitrate[
+          Object.keys(quranRecitations[recitationId].bitrate)[0]
+        ]
+      : quranRecitations[recitationId].bitrate[bitrate];
 
-  const currentVerseAudioSrc = `https://everyayah.com/data/${
-    quranRecitations[recitationId].subfolder
-  }/${String(surahNumber).padStart(3, "0")}${String(currentVerse).padStart(
-    3,
-    "0"
-  )}.mp3`;
+  const currentVerseAudioSrc = `https://everyayah.com/data/${subfolder}/${String(
+    surahNumber
+  ).padStart(3, "0")}${String(currentVerse).padStart(3, "0")}.mp3`;
   let content = "";
   let ayahsInCurrentPage = null;
   //Retrieves the current surah data.
@@ -385,6 +390,8 @@ function SurahDisplayer({ isDarkMode }) {
           mode={mode}
           recitationId={recitationId}
           onRecitationChange={setRecitationId}
+          bitrate={bitrate}
+          onBitrateChange={setBitrate}
           audioSrc={currentVerseAudioSrc}
           onAudioEnded={handleAudioEnded}
         />

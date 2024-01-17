@@ -5,11 +5,14 @@ import { useAudio } from "react-use";
 import { formatTime } from "../utility/text-utilities";
 import { quranRecitations } from "../assets/data/quran-info";
 import OutsideClickHandler from "./OutsideClickHandler";
+import { FaGear } from "react-icons/fa6";
 
 function AudioPlayer({
   mode,
   recitationId,
   onRecitationChange,
+  bitrate,
+  onBitrateChange,
   audioSrc,
   onAudioEnded,
 }) {
@@ -17,6 +20,7 @@ function AudioPlayer({
   const [hoverData, setHoverData] = useState({ xPosition: null, time: null });
   const progressPercentage = ((state.time * 100) / state.duration).toFixed(2);
   const [recitersDisplayed, setRecitersDisplayed] = useState(false);
+  const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
 
   useEffect(() => {
     const audioElement = ref.current;
@@ -65,28 +69,42 @@ function AudioPlayer({
     });
   };
 
-  const uniqueNamesSet = new Set();
-  const uniqueRecitations = Object.values(quranRecitations).filter(
-    (recitation) => {
-      const isUnique = !uniqueNamesSet.has(recitation.name);
-      if (isUnique) {
-        uniqueNamesSet.add(recitation.name);
-      }
-      return isUnique;
-    }
-  );
-  const recitationsContent = Object.keys(uniqueRecitations).map((recId) => {
+  const recitationsContent = Object.keys(quranRecitations).map((recId) => {
     return (
       <div
-        key={uniqueRecitations[recId].name}
+        key={quranRecitations[recId].name}
         className={`${
           recId === recitationId ? "bg-emerald-500" : ""
         } hover:bg-emerald-500 p-1 cursor-pointer `}
         onClick={() => {
           onRecitationChange(recId);
+          onBitrateChange(null);
         }}
       >
-        {`${uniqueRecitations[recId].name}`}
+        {`${quranRecitations[recId].name}`}
+      </div>
+    );
+  });
+  const bitratesContent = Object.keys(
+    quranRecitations[recitationId].bitrate
+  ).map((bitr, index) => {
+    return (
+      <div
+        key={bitr}
+        className={`${
+          bitrate === null
+            ? index == 0
+              ? "bg-emerald-500"
+              : ""
+            : bitrate === bitr
+            ? "bg-emerald-500"
+            : ""
+        } hover:bg-emerald-500 p-1 cursor-pointer `}
+        onClick={() => {
+          onBitrateChange(bitr);
+        }}
+      >
+        {`${bitr}`}
       </div>
     );
   });
@@ -183,6 +201,30 @@ function AudioPlayer({
             } absolute left-4 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
           >
             <div>{recitationsContent}</div>
+          </div>
+        </OutsideClickHandler>
+      </div>
+      <div className="relative h-fit ">
+        <FaGear
+          id="bitratesBoxToggler"
+          className="absolute left-12 bottom-[8px] text-2xl cursor-pointer"
+          onClick={() => {
+            setBitratesDisplayed(!bitratesDisplayed);
+          }}
+        />
+        <OutsideClickHandler
+          onOutsideClick={() => {
+            setBitratesDisplayed(false);
+          }}
+          excludedSelectors={["#bitratesBox", "#bitratesBoxToggler"]}
+        >
+          <div
+            id="bitratesBox"
+            className={`${
+              !bitratesDisplayed ? "hidden" : ""
+            } absolute left-12 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
+          >
+            <div>{bitratesContent}</div>
           </div>
         </OutsideClickHandler>
       </div>
