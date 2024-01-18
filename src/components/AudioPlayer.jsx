@@ -14,6 +14,7 @@ function AudioPlayer({
   bitrate,
   onBitrateChange,
   audioSrc,
+  nextAudioSrc,
   onVerseNavigation,
 }) {
   const [audio, state, controls, ref] = useAudio({ src: audioSrc });
@@ -31,6 +32,21 @@ function AudioPlayer({
       audioElement.addEventListener("ended", handleAudioEnded);
       //ensure no playback issues occurs when the audio source changes
       audioElement.autoplay = true;
+      //load the next verse,placing it automatically in cache.
+      //This is done for smooth audio playing regardless of connection speed.
+      if (nextAudioSrc != null) {
+        new Promise((resolve) => {
+          const nextAudio = new Audio(nextAudioSrc);
+          nextAudio.preload = "auto";
+          nextAudio.volume = 0;
+          nextAudio.play().then(() => {
+            nextAudio.pause();
+            nextAudio.currentTime = 0; // Reset the currentTime to the beginning
+          });
+          resolve();
+        });
+      }
+
       // Cleanup function
       return () => {
         audioElement.removeEventListener("ended", handleAudioEnded);
