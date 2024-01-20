@@ -71,7 +71,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       if (subscribed) {
         setLoadingSurah(true);
         try {
-          console.log(quranText);
           const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
           setSurahData(surah);
           setIsLoading(false);
