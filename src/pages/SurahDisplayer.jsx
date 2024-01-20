@@ -19,7 +19,7 @@ import AudioPlayer from "../components/AudioPlayer";
 import LoadingView from "../components/LoadingView";
 import OutsideClickHandler from "../components/OutsideClickHandler";
 
-function SurahDisplayer({ isDarkMode }) {
+function SurahDisplayer({ isDarkMode, quranText }) {
   const { surahNumber } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [surahData, setSurahData] = useState([]);
@@ -63,20 +63,16 @@ function SurahDisplayer({ isDarkMode }) {
 
   let content = "";
   let ayahsInCurrentPage = null;
-  //Retrieves the current surah data.
+
+  //sets the current surah data.
   useEffect(() => {
     let subscribed = true;
     async function getSurah(num) {
       if (subscribed) {
         setLoadingSurah(true);
         try {
-          const quranText = await import(
-            `../assets/data/quranKFGQPC-data.json`
-          );
-
-          const surah = quranText.default.filter(
-            (ayah) => ayah["sura_no"] === +num
-          );
+          console.log(quranText);
+          const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
           setSurahData(surah);
           setIsLoading(false);
 
@@ -84,7 +80,7 @@ function SurahDisplayer({ isDarkMode }) {
             setCurrentPage(location.state.desiredPage);
           } else {
             setCurrentPage(
-              quranText.default.find((ayah) => {
+              quranText.find((ayah) => {
                 return +ayah["sura_no"] === +num;
               }).page
             );
@@ -97,7 +93,9 @@ function SurahDisplayer({ isDarkMode }) {
       }
     }
 
-    getSurah(surahNumber);
+    if (quranText) {
+      getSurah(surahNumber);
+    }
 
     return () => {
       subscribed = false;
@@ -108,13 +106,9 @@ function SurahDisplayer({ isDarkMode }) {
   useEffect(() => {
     if (tafsirModeActive && surahData) {
       let subscribed = true;
-      const startAyah = surahData[0]["aya_no"];
-      const endAyah = surahData[surahData.length - 1]["aya_no"];
 
       async function getTafsir(surah) {
         try {
-          console.log(surah);
-          console.log(tafsirId);
           const response = await fetch(
             `https://api.quran.com/api/v4/tafsirs/${tafsirId}/by_page/${currentPage}?locale=ar&mushaf=2`
           );
@@ -147,16 +141,9 @@ function SurahDisplayer({ isDarkMode }) {
   //sets default current verse on navigation
   useEffect(() => {
     if (ayahsInCurrentPage?.length > 0) {
-      console.log("SurahNumber: " + surahNumber);
-      console.log("currentPage: " + currentPage);
-      console.log(ayahsInCurrentPage);
-      console.log(
-        "ayahsInCurrentPage[0]['aya_no']: " + ayahsInCurrentPage[0]["aya_no"]
-      );
-      // setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
-      console.log("currentVerse: " + currentVerse);
+      setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
     }
-  }, [ayahsInCurrentPage, surahNumber, currentPage]);
+  }, [surahData, currentPage]);
 
   if (isLoading == false) {
     // ayahs = surahData;

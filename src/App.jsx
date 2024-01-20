@@ -6,9 +6,23 @@ import { useEffect, useState } from "react";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
+  const [quranText, setQuranText] = useState(null);
 
   useEffect(() => {
     document.body.classList.add("dark:bg-[rgb(33,33,33)]");
+  }, []);
+
+  useEffect(() => {
+    async function getQuranText() {
+      try {
+        const quranData = await import(`./assets/data/quranKFGQPC-data.json`);
+        setQuranText(quranData.default);
+      } catch (error) {
+        console.error("Error importing Quran text:", error);
+      }
+    }
+
+    getQuranText();
   }, []);
 
   useEffect(() => {
@@ -24,7 +38,9 @@ function App() {
         <Route path="/signup" element="Sign up page" />
         <Route
           path="/surah/:surahNumber"
-          element={<SurahDisplayer isDarkMode={isDarkMode} />}
+          element={
+            <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
+          }
         />
         <Route path="*" element="Page not found" />
       </Routes>
