@@ -14,14 +14,6 @@ function SurahsSection() {
         const response = await fetch("https://api.alquran.cloud/v1/surah");
         const processedData = await response.json();
         setSurahs(processedData["data"]);
-        /*
-        "number": 112,
-        "name": "سُورَةُ الإِخۡلَاصِ",
-        "englishName": "Al-Ikhlaas",
-        "englishNameTranslation": "Sincerity",
-        "numberOfAyahs": 4,
-        "revelationType": "Meccan" 
-        */
       }
     })();
     return () => {

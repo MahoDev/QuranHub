@@ -5,13 +5,16 @@ import {
   surahNumToPagesMap,
 } from "../assets/data/quran-info";
 import { useNavigate } from "react-router-dom";
+import { FaSearch } from "react-icons/fa";
 
 function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
   const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses
+  const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const surahNumber = surahData[0].sura_no;
   const focusStyle = "bg-emerald-700";
   const scrollToRef = useRef(null);
+
   let content = "";
 
   useEffect(() => {
@@ -22,25 +25,47 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
     }
   }, [filter]);
 
-  if (filter === "Surahs") {
-    content = Object.keys(surahNames).map((surahNum) => {
-      return (
-        <div
-          key={surahNum}
-          onClick={() => {
-            navigate(`/surah/${surahNum}`);
-          }}
-          ref={surahNumber === +surahNum ? scrollToRef : null}
-          className={`${
-            surahNumber === +surahNum ? focusStyle : ""
-          } hover:bg-emerald-700 p-1 cursor-pointer`}
-        >
-          {surahNames[surahNum]}
-        </div>
+  const applySearch = (filter) => {
+    let searchResults = null;
+    if (filter === "Surahs") {
+      searchResults = Object.keys(surahNames).filter((surahNum) =>
+        surahNames[surahNum].includes(searchText)
       );
-    });
+    } else if (filter === "Pages") {
+      searchResults = quranPages.filter((page) => page == searchText);
+    } else {
+      searchResults = surahData.filter((ayah) => ayah.aya_no == searchText);
+    }
+    return searchResults;
+  };
+
+  if (filter === "Surahs") {
+    let searchResults = applySearch(filter);
+    content =
+      searchResults.length != 0 ? (
+        searchResults.map((surahNum) => {
+          return (
+            <div
+              key={surahNum}
+              onClick={() => {
+                navigate(`/surah/${surahNum}`);
+              }}
+              ref={surahNumber === +surahNum ? scrollToRef : null}
+              className={`${
+                surahNumber === +surahNum ? focusStyle : ""
+              } hover:bg-emerald-700 p-1 cursor-pointer`}
+            >
+              {surahNames[surahNum]}
+            </div>
+          );
+        })
+      ) : (
+        <p>لم يتم العثور على سورة</p>
+      );
   } else if (filter == "Pages") {
-    content = quranPages.map((page) => {
+    let searchResults = applySearch(filter);
+    const toBeMapped = searchResults.length == 1 ? searchResults : quranPages;
+    content = toBeMapped.map((page) => {
       return (
         <div
           key={page}
@@ -66,8 +91,15 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
         </div>
       );
     });
+
+    if (searchText != "" && searchResults.length == 0) {
+      content = <p>لا يوجد صفحة بهذا الرقم</p>;
+    }
   } else {
-    content = surahData.map((ayah) => {
+    let searchResults = applySearch(filter);
+    const toBeMapped = searchResults.length == 1 ? searchResults : surahData;
+
+    content = toBeMapped.map((ayah) => {
       return (
         <div
           onClick={() => {
@@ -75,7 +107,10 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
               (ayahObj) => ayahObj.aya_no === ayah.aya_no
             ).page;
             navigate(`/surah/${surahNumber}`, {
-              state: { desiredPage: pageHoldingAyah },
+              state: {
+                desiredPage: pageHoldingAyah,
+                comingFrom: "SideBar"
+              },
             });
             setCurrentVerse(ayah.aya_no);
           }}
@@ -88,6 +123,9 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
         </div>
       );
     });
+    if (searchText != "" && searchResults.length == 0) {
+      content = <p>لا يوجد آية بهذا الرقم</p>;
+    }
   }
 
   return (
@@ -105,6 +143,7 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
           }
           onClick={() => {
             setFilter("Surahs");
+            setSearchText("");
           }}
         >
           السور
@@ -118,6 +157,7 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
           }
           onClick={() => {
             setFilter("Pages");
+            setSearchText("");
           }}
         >
           الصفحات
@@ -131,12 +171,31 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
           }
           onClick={() => {
             setFilter("Verses");
+            setSearchText("");
           }}
         >
           الآيات
         </li>
       </ul>
-      <div className="overflow-y-scroll h-[96%] space-y-1">{content}</div>
+      <div className="flex items-center w-fit h-12 p-2 mb-2 rounded-lg border-solid border-2 border-stone-400 border-opacity-70">
+        <input
+          placeholder={
+            filter === "Surahs"
+              ? "أدخل السورة"
+              : filter === "Pages"
+              ? "أدخل رقم الصفحة"
+              : "أدخل رقم الآية"
+          }
+          className="h-full w-[99%] outline-none bg-transparent dark:text-white dark:caret-slate-200"
+          maxLength={20}
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
+        />
+        <FaSearch className="text-white text-3xl bg-emerald-700 p-2 rounded-full cursor-pointer" />
+      </div>
+      <div className="overflow-y-scroll h-[87%] space-y-1">{content}</div>
     </div>
   );
 }

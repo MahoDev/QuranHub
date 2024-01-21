@@ -1,12 +1,21 @@
+import { useEffect, useRef } from "react";
 import {
   convertToArabicNumbers,
   fixDiacritics,
 } from "../utility/text-utilities";
 function Ayah({ ayahData, currentVerse, setCurrentVerse }) {
   const text = ayahData["aya_text"];
+  const highlightedAyah = useRef();
+
+  useEffect(() => {
+    if (highlightedAyah.current) {
+      highlightedAyah.current.scrollIntoView({ block: "start" });
+    }
+  }, [currentVerse]);
 
   return (
     <div
+      ref={ayahData["aya_no"] === currentVerse ? highlightedAyah : null}
       className={`${
         currentVerse === ayahData["aya_no"] ? "text-emerald-700" : ""
       } inline hover:text-emerald-700 hover:cursor-pointer`}

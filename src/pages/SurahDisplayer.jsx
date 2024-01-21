@@ -139,8 +139,14 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 
   //sets default current verse on navigation
   useEffect(() => {
+    console.log(location.state);
     if (ayahsInCurrentPage?.length > 0) {
-      setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
+      if (
+        location.state == null ||
+        (location.state && location.state.comingFrom !== "SideBar")
+      ) {
+        setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
+      }
     }
   }, [surahData, currentPage]);
 
