@@ -34,7 +34,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   const [mode, setMode] = useState("reading");
   const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
   const [tafsirModeActive, setTafsirModeActive] = useState(false);
-  const [recitationId, setRecitationId] = useState(1);
+  const [recitationId, setRecitationId] = useState(30);
   const [bitrate, setBitrate] = useState(null);
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
@@ -274,7 +274,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   return (
     <div
       ref={containerRef}
-      className="container min-h-screen flex mb-[80px] flex-col justify-between h-full text-black dark:text-white "
+      className="container min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
     >
       <div>
         <div className="border-b-2 border-gray-400 p-2 text-white">
@@ -307,39 +307,41 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           </div>
         </div>
 
-        <div>
-          {!isLoading
-            ? surahData[0]?.page === currentPage && (
-                <>
-                  <p className="font-surahName text-center text-3xl">
-                    {surahNames[+surahData[0]["sura_no"]]}
-                  </p>
-                  {surahNumber != 1 && (
-                    <img
-                      className="max-w-[180px] m-auto"
-                      src={isDarkMode ? BasmalaWhite : BasmalaBlack}
-                    />
-                  )}
-                </>
-              )
-            : ""}
-        </div>
-        <div
-          className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose  m-auto`}
-          style={{
-            maxWidth: textWidth,
-          }}
-        >
-          {content}
+        <div className="">
+          <div>
+            {!isLoading
+              ? surahData[0]?.page === currentPage && (
+                  <>
+                    <p className="font-surahName text-center text-3xl">
+                      {surahNames[+surahData[0]["sura_no"]]}
+                    </p>
+                    {surahNumber != 1 && (
+                      <img
+                        className="max-w-[180px] m-auto"
+                        src={isDarkMode ? BasmalaWhite : BasmalaBlack}
+                      />
+                    )}
+                  </>
+                )
+              : ""}
+          </div>
+          <div
+            className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose m-auto`}
+            style={{
+              maxWidth: textWidth,
+            }}
+          >
+            {content}
+          </div>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-5">
+      <div className="flex justify-center items-center gap-5 select-none">
         <div
           onClick={(e) => {
             handlePageChange(e, "backward");
           }}
           className={
-            "bg-transparent cursor-pointer p-2 rounded hover:bg-gray-400 " +
+            "bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " +
             (surahData?.number !== 1 ? " block" : " hidden")
           }
         >
@@ -351,7 +353,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             handlePageChange(e, "forward");
           }}
           className={
-            "bg-transparent cursor-pointer p-2 rounded hover:bg-gray-400 " +
+            "bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " +
             (surahData?.number !== 114 ? " block" : " hidden")
           }
         >
