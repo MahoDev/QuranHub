@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { IoMdPause, IoMdPlay } from "react-icons/io";
 import { MdSpatialAudioOff, MdSkipNext, MdSkipPrevious } from "react-icons/md";
+import { IoVolumeHigh, IoVolumeMedium } from "react-icons/io5";
+import { HiVolumeOff } from "react-icons/hi";
+
 import { useAudio } from "react-use";
 import { formatTime } from "../utility/text-utilities";
 import { quranRecitations } from "../assets/data/quran-info";
@@ -22,6 +25,12 @@ function AudioPlayer({
   const progressPercentage = ((state.time * 100) / state.duration).toFixed(2);
   const [recitersDisplayed, setRecitersDisplayed] = useState(false);
   const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
+  const [volume, setVolume] = useState(1); // Initial volume (can be adjusted)
+  const [volumeDisplayed, setVolumeDisplayed] = useState(false);
+  useEffect(() => {
+    const audioElement = ref.current;
+    audioElement.volume = volume; // Set volume when audio source changes
+  }, [volume, audioSrc]);
 
   useEffect(() => {
     const audioElement = ref.current;
@@ -52,9 +61,6 @@ function AudioPlayer({
         audioElement.removeEventListener("ended", handleAudioEnded);
       };
     }
-
-    // Additional cleanup in case ref.current is null
-    return () => {};
   }, [audioSrc]);
 
   const jumpToClickPosition = (event) => {
@@ -161,7 +167,55 @@ function AudioPlayer({
         </span>
       </div>
 
-      <div className="w-fit m-auto mt-3 flex justify-center items-center gap-7 text-black">
+      <div className="flex flex-col items-center relative">
+        <div
+          onMouseEnter={() => {
+            setVolumeDisplayed(true);
+          }}
+          onClick={() => {
+            setVolume(0);
+          }}
+          className=" absolute right-10 top-[20px] z-[2] cursor-pointer"
+          id="volumeBoxToggler"
+        >
+          {volume === 0 ? (
+            <HiVolumeOff size={25} />
+          ) : volume > 0 && volume <= 0.5 ? (
+            <IoVolumeMedium size={25} />
+          ) : (
+            <IoVolumeHigh size={25} />
+          )}
+        </div>
+        <OutsideClickHandler
+          onOutsideClick={() => {
+            setVolumeDisplayed(false);
+          }}
+          excludedSelectors={["#volumeBox", "#volumeBoxToggler"]}
+        >
+          <div
+            id="volumeBox"
+            className={`${
+              !volumeDisplayed ? "hidden" : ""
+            } transform rotate-[-270deg] absolute right-[-30px] top-[-45px]  pr-8 pl-[2px] pt-[3px]  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60  z-[1]`}
+          >
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              className="appearance-none w-full h-4 rounded-full bg-gray-300"
+              style={{
+                background: `linear-gradient(to left, #68d391 0%, #68d391 ${
+                  volume * 100
+                }%, #cbd5e0 ${volume * 100}%, #cbd5e0 100%)`,
+              }}
+            />
+          </div>
+        </OutsideClickHandler>
+      </div>
+      <div className="w-fit m-auto mt-3 flex justify-center items-center gap-3 md:gap-7 text-black">
         <MdSkipNext
           size={30}
           className="cursor-pointer hover:text-emerald-500 dark:text-white"
@@ -244,7 +298,7 @@ function AudioPlayer({
             id="bitratesBox"
             className={`${
               !bitratesDisplayed ? "hidden" : ""
-            } absolute left-12 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
+            } absolute left-12 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px]   bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none  z-[-1]`}
           >
             <div>{bitratesContent}</div>
           </div>

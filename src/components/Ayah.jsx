@@ -9,7 +9,7 @@ function Ayah({ ayahData, currentVerse, setCurrentVerse }) {
 
   useEffect(() => {
     if (highlightedAyah.current) {
-      highlightedAyah.current.scrollIntoView({ block: "start" });
+      highlightedAyah.current.scrollIntoView({ block: "center" });
     }
   }, [currentVerse]);
 
