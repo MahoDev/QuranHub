@@ -9,7 +9,7 @@ function Navbar({ isDarkMode, onDarkModeChange }) {
   const [menuDisplayed, setMenuDisplayed] = useState(isMediumScreen);
 
   return (
-    <div className="px-8 mb-4 z-[1] bg-emerald-50 dark:bg-emerald-800 drop-shadow-lg sticky w-full top-0">
+    <div className="px-8  z-[1] bg-emerald-50 dark:bg-emerald-800 drop-shadow-lg sticky w-full top-0">
       <ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
         <li className="font-extrabold ">
           <Link to="/">
@@ -40,13 +40,13 @@ function Navbar({ isDarkMode, onDarkModeChange }) {
               md:static md:flex-row md:z-0 md:w-full md:bg-transparent md:border-none md:shadow-none md:dark:bg-transparent`}
               >
                 <li>
-                  <Link to="/signin" className=" font-bold">
+                  <Link to="user/login" className=" font-bold">
                     تسجيل الدخول
                   </Link>
                 </li>
                 <li>
                   <Link
-                    to="/signup"
+                    to="user/signup"
                     className="text-white font-bold py-3 px-6 rounded-full bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
                   >
                     تسجيل

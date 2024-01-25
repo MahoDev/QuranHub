@@ -39,7 +39,7 @@ function AudioPlayer({
     }
     ayahWordAudio.play();
   }, [currentWordAudioSrc]);
-  
+
   useEffect(() => {
     const audioElement = ref.current;
     audioElement.volume = volume; // Set volume when audio source changes
@@ -110,7 +110,7 @@ function AudioPlayer({
         key={quranRecitations[recId].name}
         className={`${
           recId === recitationId ? "bg-emerald-500" : ""
-        } hover:bg-emerald-500 p-1 cursor-pointer `}
+        } hover:bg-emerald-500 p-1 mb-1 cursor-pointer `}
         onClick={() => {
           onRecitationChange(recId);
           onBitrateChange(null);

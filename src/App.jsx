@@ -1,8 +1,12 @@
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SurahDisplayer from "./pages/SurahDisplayer";
 import { useEffect, useState } from "react";
+import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
+import Signup from "./pages/Signup";
+import ResetPasswordConfirmation from "./pages/ResetPasswordConfirmation";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -34,8 +38,23 @@ function App() {
       <Navbar isDarkMode={isDarkMode} onDarkModeChange={setIsDarkMode} />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/signin" element="Sign in page" />
-        <Route path="/signup" element="Sign up page" />
+        <Route
+          path="user"
+          element={
+            <div>
+              <Outlet />
+            </div>
+          }
+        >
+          <Route path="login" element={<Login />} />
+          <Route path="reset" element={<ResetPassword />} />
+          <Route
+            path="reset-confirmation"
+            element={<ResetPasswordConfirmation />}
+          />
+          <Route path="signup" element={<Signup />} />
+        </Route>
+
         <Route
           path="/surah/:surahNumber"
           element={

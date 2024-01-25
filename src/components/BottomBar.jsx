@@ -86,7 +86,7 @@ function BottomBar({
                 >
                   +
                 </div>
-                <div>{fontSettings.sizeModifier}</div>
+                <div>{fontSettings.sizeModifier - 2}</div>
                 <div
                   className="rounded-full text-lg  flex justify-center items-center hover:cursor-pointer w-6 h-6  bg-emerald-700"
                   onClick={() => {
