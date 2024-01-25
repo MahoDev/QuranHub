@@ -38,6 +38,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   const [bitrate, setBitrate] = useState(null);
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
+  const [currentWordInfo, setCurrentWordInfo] = useState(null);
   const [fontSettings, setFontSettings] = useState({ sizeModifier: 3 });
   //const textWidth = !tafsirModeActive ? `395px` : `495px`;
   const textWidth = "";
@@ -61,6 +62,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       )}${String(currentVerse + 1).padStart(3, "0")}.mp3`
     : null;
 
+    const currentWordAudioSrc = currentWordInfo ? `https://words.audios.quranwbw.com/${currentWordInfo.surahNo}/${String(currentWordInfo.surahNo).padStart(3,"0")}_${String(currentWordInfo.ayahNo).padStart(3,"0")}_${String(currentWordInfo.index).padStart(3,"0")}.mp3` : null;
   let content = "";
   let ayahsInCurrentPage = null;
 
@@ -139,7 +141,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 
   //sets default current verse on navigation
   useEffect(() => {
-    console.log(location.state);
     if (ayahsInCurrentPage?.length > 0) {
       if (
         location.state == null ||
@@ -157,6 +158,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       content = ayahsInCurrentPage.map((ayah) => {
         return (
           <Ayah
+            onCurrentWordChange={setCurrentWordInfo}
             key={ayah["aya_no"]}
             ayahData={ayah}
             currentVerse={currentVerse}
@@ -167,8 +169,10 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     else {
       content = ayahsInCurrentPage.map((ayah) => {
         return (
-          <div key={ayah["aya_no"]}>
+          <div>
             <Ayah
+              onCurrentWordChange={setCurrentWordInfo}
+              key={ayah["aya_no"]}
               ayahData={ayah}
               currentVerse={currentVerse}
               setCurrentVerse={setCurrentVerse}
@@ -280,7 +284,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   return (
     <div
       ref={containerRef}
-      className="container min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
+      className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
     >
       <div>
         <div className="border-b-2 border-gray-400 p-2 text-white">
@@ -332,7 +336,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               : ""}
           </div>
           <div
-            className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose m-auto`}
+            className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose m-auto `}
             style={{
               maxWidth: textWidth,
             }}
@@ -341,7 +345,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           </div>
         </div>
       </div>
-      <div className="flex justify-center items-center gap-5 select-none">
+      <div className="flex justify-center items-center gap-5 select-none ">
         <div
           onClick={(e) => {
             handlePageChange(e, "backward");
@@ -409,8 +413,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           onRecitationChange={setRecitationId}
           bitrate={bitrate}
           onBitrateChange={setBitrate}
-          audioSrc={currentVerseAudioSrc}
-          nextAudioSrc={nextVerseAudioSrc}
+          verseAudioSrc={currentVerseAudioSrc}
+          nextVerseAudioSrc={nextVerseAudioSrc}
+          currentWordAudioSrc={currentWordAudioSrc}
           onVerseNavigation={handleVerseNavigation}
         />
       )}

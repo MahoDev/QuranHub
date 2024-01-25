@@ -16,21 +16,34 @@ function AudioPlayer({
   onRecitationChange,
   bitrate,
   onBitrateChange,
-  audioSrc,
-  nextAudioSrc,
+  verseAudioSrc,
+  nextVerseAudioSrc,
+  currentWordAudioSrc,
   onVerseNavigation,
 }) {
-  const [audio, state, controls, ref] = useAudio({ src: audioSrc });
+  const [audio, state, controls, ref] = useAudio({
+    src: verseAudioSrc,
+  });
   const [hoverData, setHoverData] = useState({ xPosition: null, time: null });
   const progressPercentage = ((state.time * 100) / state.duration).toFixed(2);
   const [recitersDisplayed, setRecitersDisplayed] = useState(false);
   const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
   const [volume, setVolume] = useState(1); // Initial volume (can be adjusted)
   const [volumeDisplayed, setVolumeDisplayed] = useState(false);
+
+  useEffect(() => {
+    const ayahWordAudio = new Audio(currentWordAudioSrc);
+    ayahWordAudio.preload = "auto";
+    if (state.playing) {
+      controls.pause();
+    }
+    ayahWordAudio.play();
+  }, [currentWordAudioSrc]);
+  
   useEffect(() => {
     const audioElement = ref.current;
     audioElement.volume = volume; // Set volume when audio source changes
-  }, [volume, audioSrc]);
+  }, [volume, verseAudioSrc]);
 
   useEffect(() => {
     const audioElement = ref.current;
@@ -43,9 +56,9 @@ function AudioPlayer({
       audioElement.autoplay = true;
       //load the next verse,placing it automatically in cache.
       //This is done for smooth audio playing regardless of connection speed.
-      if (nextAudioSrc != null) {
+      if (nextVerseAudioSrc != null) {
         new Promise((resolve) => {
-          const nextAudio = new Audio(nextAudioSrc);
+          const nextAudio = new Audio(nextVerseAudioSrc);
           nextAudio.preload = "auto";
           nextAudio.volume = 0;
           nextAudio.play().then(() => {
@@ -61,7 +74,7 @@ function AudioPlayer({
         audioElement.removeEventListener("ended", handleAudioEnded);
       };
     }
-  }, [audioSrc]);
+  }, [verseAudioSrc]);
 
   const jumpToClickPosition = (event) => {
     const elementWidth = event.currentTarget.getBoundingClientRect().width;
