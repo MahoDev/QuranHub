@@ -7,10 +7,13 @@ import Login from "./pages/Login";
 import ResetPassword from "./pages/ResetPassword";
 import Signup from "./pages/Signup";
 import ResetPasswordConfirmation from "./pages/ResetPasswordConfirmation";
+import { auth } from "./config/firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [quranText, setQuranText] = useState(null);
+  const [currentUser, setCurrentUser] = useState(auth.currentUser);
 
   useEffect(() => {
     document.body.classList.add("dark:bg-[rgb(33,33,33)]");
@@ -33,27 +36,48 @@ function App() {
     document.documentElement.className = isDarkMode ? "dark" : "light";
   }, [isDarkMode]);
 
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+    });
+  }, []);
+
+  useEffect(() => {
+    setCurrentUser(auth.currentUser);
+  }, [auth?.currentUser?.emailVerified]);
+
+  console.log(currentUser);
+
   return (
     <div>
-      <Navbar isDarkMode={isDarkMode} onDarkModeChange={setIsDarkMode} />
+      <Navbar
+        currentUser={currentUser}
+        isDarkMode={isDarkMode}
+        onDarkModeChange={setIsDarkMode}
+      />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route
-          path="user"
-          element={
-            <div>
-              <Outlet />
-            </div>
-          }
-        >
-          <Route path="login" element={<Login />} />
-          <Route path="reset" element={<ResetPassword />} />
+        {currentUser == null ||
+        (currentUser != null && currentUser.emailVerified == false) ? (
           <Route
-            path="reset-confirmation"
-            element={<ResetPasswordConfirmation />}
-          />
-          <Route path="signup" element={<Signup />} />
-        </Route>
+            path="user"
+            element={
+              <div>
+                <Outlet />
+              </div>
+            }
+          >
+            <Route path="login" element={<Login />} />
+            <Route path="reset" element={<ResetPassword />} />
+            <Route
+              path="reset-confirmation"
+              element={<ResetPasswordConfirmation />}
+            />
+            <Route path="signup" element={<Signup />} />
+          </Route>
+        ) : (
+          ""
+        )}
 
         <Route
           path="/surah/:surahNumber"
@@ -61,7 +85,7 @@ function App() {
             <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
           }
         />
-        <Route path="*" element="Page not found" />
+        <Route path="*" element={<Home />} />
       </Routes>
     </div>
   );

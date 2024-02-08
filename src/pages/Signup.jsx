@@ -1,75 +1,74 @@
 import React, { useState } from "react";
-import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
+import { auth } from "../config/firebase";
 
 function Signup() {
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleSignup = (e) => {
+  const handleFormSignup = async (e) => {
     e.preventDefault();
+    setError("");
+    try {
+      if (!email || !password || !confirmPassword) {
+        setError("يرجى تعبئة جميع الحقول");
+        return;
+      }
 
-    // Perform signup logic here using name, email, password, and confirmPassword states
-    console.log("Name:", name);
-    console.log("Email:", email);
-    console.log("Password:", password);
-    console.log("Confirm Password:", confirmPassword);
+      if (password !== confirmPassword) {
+        setError("كلمة المرور غير مطابقة");
+        return;
+      }
 
-    // Clear form fields after submission if needed
-    setName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError("يرجى إدخال عنوان بريد إلكتروني صحيح");
+        return;
+      }
+
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
+      const actionCodeSettings = {
+        url: "https://quran-hub.vercel.app/user/login",
+      };
+      await sendEmailVerification(auth.currentUser, actionCodeSettings);
+      if (!auth.currentUser.emailVerified) {
+        setMessage("يرجى تأكيد بريدك الالكتروني");
+        setError("");
+      }
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      //navigate("login");
+    } catch (err) {
+      setError(err.message);
+      setMessage("");
+    }
   };
 
   return (
     <div className="flex h-screen justify-center items-center text-emerald-700 dark:text-white">
       <div className="bg-white p-8 mx-4 rounded border border-gray-300 dark:border-0 shadow-2xl w-full max-w-md dark:bg-emerald-900 dark:text-white">
         <h2 className="text-2xl font-semibold mb-4">إنشاء حساب جديد</h2>
-
-        <div className="flex flex-col space-y-4 mb-4 text-xs md:text-base">
-          <button className="bg-blue-600 hover:bg-blue-600/90 text-white px-3 py-2 rounded-full flex items-center justify-center">
-            التسجيل بواسطة فيسبوك
-            <FaFacebook className="h-5 w-5 mr-2" />
-          </button>
-
-          <button className="bg-red-500 hover:bg-red-500/90 text-white px-3 py-2 rounded-full flex items-center justify-center">
-            التسجيل بواسطة جوجل
-            <FaGoogle className="h-5 w-5 mr-2" />
-          </button>
-
-          <button className="bg-black hover:bg-black/90 text-white px-3 py-2 rounded-full flex items-center justify-center ">
-            تسجيل الدخول بواسطة آبل
-            <FaApple className="h-5 w-5 mr-2" />
-          </button>
-        </div>
-
+        {error && <p className="text-red-500 py-1">{error}</p>}
+        {message && <p className="text-emerald-600 py-1">{message}</p>}
         <hr />
-        <p className="my-3 text-center">أو بواسطة الايميل</p>
+        <p className="my-3 text-center">بواسطة الايميل</p>
 
-        <form onSubmit={handleSignup}>
-          <div className="my-4">
-            <label
-              htmlFor="name"
-              className="block text-sm font-medium text-gray-600 dark:text-gray-300"
-            >
-              اسم الحساب
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="mt-1 p-2 w-full border border-gray-400 rounded dark:bg-sky-100 dark:text-black focus:outline-none"
-              placeholder="ادخل اسم الحساب"
-              required
-            />
-          </div>
-          <div className="mb-4">
+        <form onSubmit={handleFormSignup}>
+          <div className="my-4 mb-4">
             <label
               htmlFor="email"
               className="block text-sm font-medium text-gray-600 dark:text-gray-300"

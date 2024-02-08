@@ -1,49 +1,99 @@
 // Login.js
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  applyActionCode,
+} from "firebase/auth";
+import { auth } from "../config/firebase";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const handleLogin = (e) => {
+  const handleFormLogin = async (e) => {
     e.preventDefault();
-
-    // Perform login logic here using email and password states
-    console.log("Email:", email);
-    console.log("Password:", password);
-
-    // Clear form fields after submission if needed
-    setEmail("");
-    setPassword("");
+    setError("");
+    try {
+      if (!email || !password) {
+        setError("يرجى تعبئة جميع الحقول");
+        return;
+      }
+      if (
+        auth?.currentUser?.emailVerified == false &&
+        searchParams.get("oobCode") == null
+      ) {
+        setError("يرجى تأكيد بريدك الالكتروني");
+      }
+      const userCredentials = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
   };
+  const handleGoogleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const provider = new GoogleAuthProvider();
+      // Check if the user is on a mobile device
+      if (/Mobi|Android/i.test(navigator.userAgent)) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Redirect user to Google login page for login on non-mobile devices
+        await signInWithPopup(auth, provider);
+      }
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  useEffect(() => {
+    const handleVerification = async () => {
+      try {
+        if (searchParams !== null && searchParams.get("oobCode") !== null)
+          applyActionCode(auth, searchParams.get("oobCode"));
+      } catch (err) {
+        setError(err.message);
+      }
+    };
+    handleVerification();
+  }, []);
+
   return (
     <div className="flex h-screen justify-center items-center text-emerald-700 dark:text-white">
       <div className="bg-white p-8 mx-4 rounded border border-gray-300 dark:border-0 shadow-2xl w-full max-w-md dark:bg-emerald-900 dark:text-white">
+        {error && <p className="text-red-500">{error}</p>}
+
         <h2 className="text-2xl font-semibold mb-4">تسجيل الدخول</h2>
 
         <div className="flex flex-col space-y-4 mb-4 text-xs md:text-base">
-          <button className="bg-blue-600 hover:bg-blue-600/90 text-white px-3 py-2 rounded-full flex items-center justify-center">
-            تسجيل الدخول بواسطة فيسبوك
-            <FaFacebook className="h-5 w-5 mr-2" />
-          </button>
-
-          <button className="bg-red-500 hover:bg-red-500/90 text-white px-3 py-2 rounded-full flex items-center justify-center">
+          <button
+            className="bg-red-500 hover:bg-red-500/90 text-white px-3 py-2 rounded-full flex items-center justify-center"
+            onClick={(e) => {
+              handleGoogleLogin(e);
+            }}
+          >
             تسجيل الدخول بواسطة جوجل
             <FaGoogle className="h-5 w-5 mr-2" />
-          </button>
-
-          <button className="bg-black hover:bg-black/90 text-white px-3 py-2 rounded-full flex items-center justify-center ">
-            تسجيل الدخول بواسطة آبل
-            <FaApple className="h-5 w-5 mr-2" />
           </button>
         </div>
 
         <hr />
         <p className="my-3 text-center">أو بواسطة الايميل</p>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleFormLogin}>
           <div className="mb-4">
             <label
               htmlFor="email"

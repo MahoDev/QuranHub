@@ -1,23 +1,40 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-
+import { auth } from "../config/firebase";
+import { sendPasswordResetEmail } from "firebase/auth";
 function ResetPassword() {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const [message, setMessage] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    // Add your logic here to handle the form submission
-    // For example, you can make an API call to send the reset link to the provided email
+    try {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setError("يرجى إدخال عنوان بريد إلكتروني صحيح");
+        return;
+      }
+      await sendPasswordResetEmail(auth, email, {
+        url: "https://quran-hub.vercel.app/user/reset-confirmation",
+      });
+      setMessage("تم ارسال رسالة التأكيد بنجاح");
+      setEmail("");
+      setError("");
+    } catch (err) {
+      setError(err.message);
+      setMessage("");
+    }
   };
 
   return (
     <div className="flex h-screen justify-center items-center text-emerald-700 dark:text-white">
       <div className="bg-white p-8 mx-4 rounded shadow-2xl w-full max-w-md dark:bg-emerald-900 dark:text-white">
         <h2 className="text-2xl font-semibold mb-4">إعادة تعيين كلمة المرور</h2>
+        {error && <p className="text-red-500 py-1">{error}</p>}
+        {message && <p className="text-emerald-600 py-1">{message}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit}>
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -36,7 +53,6 @@ function ResetPassword() {
               required
             />
           </div>
-          {error && <p className="text-red-500">{error}</p>}
           <div className="flex items-center justify-between">
             <button
               type="submit"

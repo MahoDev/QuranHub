@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import { FaBookOpen, FaMoon, FaSun, FaUser } from "react-icons/fa";
 import { useMedia } from "react-use";
 import OutsideClickHandler from "./OutsideClickHandler";
+import { signOut } from "firebase/auth";
+import { auth } from "../config/firebase";
 
-function Navbar({ isDarkMode, onDarkModeChange }) {
+function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
   const isMediumScreen = useMedia("(min-width: 768px)");
   const [menuDisplayed, setMenuDisplayed] = useState(isMediumScreen);
 
+  console.log(currentUser);
   return (
     <div className="px-8  z-[1] bg-emerald-50 dark:bg-emerald-800 drop-shadow-lg sticky w-full top-0">
       <ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
@@ -36,22 +39,38 @@ function Navbar({ isDarkMode, onDarkModeChange }) {
             {menuDisplayed && (
               <ul
                 id="menuBox"
-                className={`absolute w-[160px] left-0 top-[30px] z-3 flex flex-col items-center gap-5 p-4 bg-white dark:bg-[rgb(41,41,41)] border-[1px] border-gray-500 shadow-lg shadow-black/20
+                className={`absolute w-[180px] left-0 top-[30px] z-3 flex flex-col items-center gap-5 p-4 bg-white dark:bg-[rgb(41,41,41)] border-[1px] border-gray-500 shadow-lg shadow-black/20
               md:static md:flex-row md:z-0 md:w-full md:bg-transparent md:border-none md:shadow-none md:dark:bg-transparent`}
               >
-                <li>
-                  <Link to="user/login" className=" font-bold">
-                    تسجيل الدخول
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    to="user/signup"
-                    className="text-white font-bold py-3 px-6 rounded-full bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
+                {currentUser == null ||
+                (currentUser != null && currentUser.emailVerified == false) ? (
+                  <>
+                    <li>
+                      <Link to="user/login" className=" font-bold">
+                        تسجيل الدخول
+                      </Link>
+                    </li>
+                    <li>
+                      <Link
+                        to="user/signup"
+                        className="text-white font-bold py-3 px-6 rounded-full bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
+                      >
+                        تسجيل
+                      </Link>
+                    </li>
+                  </>
+                ) : (
+                  <li
+                    className="text-white font-bold py-3 px-6 rounded-full cursor-pointer bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
+                    onClick={() => {
+                      console.log("test");
+                      console.log("currentUser" + auth.currentUser);
+                      signOut(auth);
+                    }}
                   >
-                    تسجيل
-                  </Link>
-                </li>
+                    تسجيل الخروج
+                  </li>
+                )}
                 <li className="text-gray-700 dark:text-white">
                   {isDarkMode ? (
                     <FaSun

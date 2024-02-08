@@ -1,26 +1,73 @@
 // ResetPasswordConfirmation.js
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  verifyPasswordResetCode,
+  confirmPasswordReset,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { auth } from "../config/firebase";
 
 function ResetPasswordConfirmation() {
-  const { token } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleSubmit = (e) => {
+  const handleFormSubmit = async (e) => {
     e.preventDefault();
-
-    // Make a request to the server to reset the password using the token and new password
-    // Handle success and error scenarios
+    setError("");
+    try {
+      if (newPassword !== confirmPassword) {
+        setError("كلمة المرور غير مطابقة");
+        return;
+      }
+      await confirmPasswordReset(
+        auth,
+        searchParams.get("oobCode"),
+        newPassword
+      );
+      signInWithEmailAndPassword(auth, email, newPassword);
+      navigate("/", {
+        state: {
+          successMessage: "تم تغيير كلمة السر بنجاح",
+        },
+      });
+    } catch (err) {
+      setError(err.message);
+    }
   };
+
+  useEffect(() => {
+    const handleVerification = async () => {
+      try {
+        const emailAddress = await verifyPasswordResetCode(
+          auth,
+          searchParams.get("oobCode")
+        );
+        setEmail(emailAddress);
+      } catch (err) {
+        navigate("/", {
+          state: {
+            errorMessage: err.message,
+          },
+        });
+      }
+    };
+    if (searchParams.get("oobCode")) {
+      handleVerification();
+    }
+  }, []);
 
   return (
     <div className="flex h-screen mx-4 justify-center items-center text-emerald-700 dark:text-white">
       <div className="bg-white p-8 border border-gray-300 dark:border-0 rounded shadow-2xl w-full max-w-md dark:bg-emerald-900 dark:text-white">
         <h2 className="text-2xl font-semibold mb-4">إعادة تعيين كلمة المرور</h2>
+        {error && <p className="text-red-500 py-1">{error}</p>}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleFormSubmit}>
           <div className="mb-4">
             <label
               htmlFor="newPassword"
@@ -55,13 +102,12 @@ function ResetPasswordConfirmation() {
               required
             />
           </div>
-          {error && <p className="text-red-500">{error}</p>}
           <div className="flex justify-center  text-xs md:text-base">
             <button
               type="submit"
               className="bg-emerald-700 text-white px-4 py-2 rounded-full hover:bg-emerald-800"
             >
-              إعادة تعيين كلمة المرور
+              تأكيد
             </button>
           </div>
         </form>
