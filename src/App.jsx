@@ -82,7 +82,9 @@ function App() {
         <Route
           path="/surah/:surahNumber"
           element={
-            <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
+            quranText && (
+              <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
+            )
           }
         />
         <Route path="*" element={<Home />} />
