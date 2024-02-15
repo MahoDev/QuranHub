@@ -9,6 +9,7 @@ import Signup from "./pages/Signup";
 import ResetPasswordConfirmation from "./pages/ResetPasswordConfirmation";
 import { auth } from "./config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import Profile from "./pages/Profile";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
@@ -42,6 +43,7 @@ function App() {
     });
   }, []);
 
+  //onAuthStateChanged doesn't detect emailVerified changes
   useEffect(() => {
     setCurrentUser(auth.currentUser);
   }, [auth?.currentUser?.emailVerified]);
@@ -57,27 +59,30 @@ function App() {
       />
       <Routes>
         <Route path="/" element={<Home />} />
-        {currentUser == null ||
-        (currentUser != null && currentUser.emailVerified == false) ? (
-          <Route
-            path="user"
-            element={
-              <div>
-                <Outlet />
-              </div>
-            }
-          >
-            <Route path="login" element={<Login />} />
-            <Route path="reset" element={<ResetPassword />} />
-            <Route
-              path="reset-confirmation"
-              element={<ResetPasswordConfirmation />}
-            />
-            <Route path="signup" element={<Signup />} />
-          </Route>
-        ) : (
-          ""
-        )}
+
+        <Route
+          path="user"
+          element={
+            <div>
+              <Outlet />
+            </div>
+          }
+        >
+          {currentUser == null ||
+          (currentUser != null && currentUser.emailVerified == false) ? (
+            <>
+              <Route path="login" element={<Login />} />
+              <Route path="reset" element={<ResetPassword />} />
+              <Route
+                path="reset-confirmation"
+                element={<ResetPasswordConfirmation />}
+              />
+              <Route path="signup" element={<Signup />} />
+            </>
+          ) : (
+            <Route path="profile" element={<Profile />} />
+          )}
+        </Route>
 
         <Route
           path="/surah/:surahNumber"

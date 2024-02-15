@@ -18,6 +18,7 @@ import BottomBar from "../components/BottomBar";
 import AudioPlayer from "../components/AudioPlayer";
 import LoadingView from "../components/LoadingView";
 import OutsideClickHandler from "../components/OutsideClickHandler";
+import AddBookmarkForm from "../components/AddBookmarkForm";
 
 function SurahDisplayer({ isDarkMode, quranText }) {
   const { surahNumber } = useParams();
@@ -62,7 +63,14 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       )}${String(currentVerse + 1).padStart(3, "0")}.mp3`
     : null;
 
-    const currentWordAudioSrc = currentWordInfo ? `https://words.audios.quranwbw.com/${currentWordInfo.surahNo}/${String(currentWordInfo.surahNo).padStart(3,"0")}_${String(currentWordInfo.ayahNo).padStart(3,"0")}_${String(currentWordInfo.index).padStart(3,"0")}.mp3` : null;
+  const currentWordAudioSrc = currentWordInfo
+    ? `https://words.audios.quranwbw.com/${currentWordInfo.surahNo}/${String(
+        currentWordInfo.surahNo
+      ).padStart(3, "0")}_${String(currentWordInfo.ayahNo).padStart(
+        3,
+        "0"
+      )}_${String(currentWordInfo.index).padStart(3, "0")}.mp3`
+    : null;
   let content = "";
   let ayahsInCurrentPage = null;
 
@@ -287,37 +295,33 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
     >
       <div>
-        <div className="border-b-2 border-gray-400 p-2 text-white">
-          <div className="flex gap-[15px] justify-center">
-            <p className="text-black dark:text-white">وضع العرض:</p>
-            <button
-              className={
-                (mode === "reading"
-                  ? "outline-2 outline-amber-300 outline "
-                  : "") + "bg-emerald-700 w-[100px] py-1  hover:bg-emerald-600"
-              }
-              onClick={() => {
-                setMode("reading");
-              }}
-            >
-              القراءة
-            </button>
-            <button
-              className={
-                (mode === "listening"
-                  ? "outline-2 outline-amber-300 outline "
-                  : "") + "bg-emerald-700 w-[100px] py-1  hover:bg-emerald-600"
-              }
-              onClick={() => {
-                setMode("listening");
-              }}
-            >
-              الاستماع
-            </button>
+        <div className=" gap-3 rounded-lg flex flex-col md:flex-row justify-center items-center ">
+          <div className="md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white md:self-end">
+            <div className="flex gap-[4px] justify-center items-center">
+              <p className="text-black dark:text-white">وضع العرض:</p>
+              <select
+                className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                value={mode}
+                onChange={(e) => setMode(e.target.value)}
+              >
+                {["reading", "listening"].map((displayMode) => {
+                  return (
+                    <option key={displayMode} value={displayMode}>
+                      {displayMode == "reading" ? "القراءة" : "الأستماع"}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
           </div>
+          <AddBookmarkForm
+            ayahsInSurah={surahData}
+            currentPage={currentPage}
+            currentSurahNum={surahNumber}
+          />
         </div>
-
-        <div className="">
+        <div className="h-[1px] w-full bg-gray-900 my-2"></div>
+        <div>
           <div>
             {!isLoading
               ? surahData[0]?.page === currentPage && (
@@ -345,6 +349,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           </div>
         </div>
       </div>
+
       <div className="flex justify-center items-center gap-5 select-none ">
         <div
           onClick={(e) => {

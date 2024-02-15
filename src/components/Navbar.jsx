@@ -39,7 +39,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
             {menuDisplayed && (
               <ul
                 id="menuBox"
-                className={`absolute w-[180px] left-0 top-[30px] z-3 flex flex-col items-center gap-5 p-4 bg-white dark:bg-[rgb(41,41,41)] border-[1px] border-gray-500 shadow-lg shadow-black/20
+                className={`absolute w-[186px]  left-0 top-[30px] z-3 flex flex-col items-center gap-5 p-4 bg-white dark:bg-[rgb(41,41,41)] border-[1px] border-gray-500 shadow-lg shadow-black/20
               md:static md:flex-row md:z-0 md:w-full md:bg-transparent md:border-none md:shadow-none md:dark:bg-transparent`}
               >
                 {currentUser == null ||
@@ -60,16 +60,24 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
                     </li>
                   </>
                 ) : (
-                  <li
-                    className="text-white font-bold py-3 px-6 rounded-full cursor-pointer bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
-                    onClick={() => {
-                      console.log("test");
-                      console.log("currentUser" + auth.currentUser);
-                      signOut(auth);
-                    }}
-                  >
-                    تسجيل الخروج
-                  </li>
+                  <>
+                    <li className="mt-2">
+                      <Link
+                        to="user/profile"
+                        className="text-white font-bold py-3 px-6 rounded-full bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
+                      >
+                        الملف الشخصي
+                      </Link>
+                    </li>
+                    <li
+                      className="text-white font-bold py-3 px-6 rounded-full cursor-pointer bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500"
+                      onClick={() => {
+                        signOut(auth);
+                      }}
+                    >
+                      تسجيل الخروج
+                    </li>
+                  </>
                 )}
                 <li className="text-gray-700 dark:text-white">
                   {isDarkMode ? (
