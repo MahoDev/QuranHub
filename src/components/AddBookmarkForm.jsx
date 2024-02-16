@@ -1,17 +1,53 @@
 import React, { useEffect, useState } from "react";
 import { surahNames, quranPages } from "../assets/data/quran-info";
+import { auth, firestore } from "../config/firebase";
+import { addDoc, collection, Timestamp } from "firebase/firestore";
 
-function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInSurah }) {
+function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
   const [surahName, setSurahName] = useState(surahNames[currentSurahNum]);
   const [pageNumber, setPageNumber] = useState(currentPage);
   const [ayahNumber, setAyahNumber] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleAddBookmark = async () => {};
+  const handleAddBookmark = async () => {
+    try {
+      const ayahText = ayahsInCurrentPage?.find(
+        (ayah) => ayahNumber == ayah.aya_no
+      )?.aya_text;
+
+      const bookmarkObj = {
+        userId: auth.currentUser.uid,
+        surahNumber: currentSurahNum,
+        surahName: surahNames[currentSurahNum],
+        pageNumber: currentPage,
+        ayahNumber: ayahNumber,
+        ayahText: ayahText?.slice(0, ayahText?.length - 2),
+        bookmarkDate: Timestamp.fromDate(new Date()),
+      };
+      const collectionRef = collection(firestore, "bookmarks");
+
+      await addDoc(collectionRef, bookmarkObj);
+      setSuccess(true);
+      setError("");
+    } catch (err) {
+      console.error("Error adding bookmark: " + err.message);
+      setError("فشل الحفظ");
+      setSuccess(false);
+    } finally {
+      if (auth.currentUser === null) {
+        setError("يجب تسجيل الدخول أولا");
+      }
+      setTimeout(() => {
+        setSuccess(false);
+        setError("");
+      }, 3000); // Clear success or error message after 3 seconds
+    }
+  };
 
   useEffect(() => {
-    setAyahNumber(
-      ayahsInSurah.find((ayah) => ayah.page == currentPage)?.aya_no
-    );
+    const firstAyahInPage = ayahsInCurrentPage?.at(0).aya_no;
+    setAyahNumber(firstAyahInPage);
     setPageNumber(currentPage);
   }, [currentPage]);
 
@@ -21,60 +57,50 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInSurah }) {
       <div className="flex flex-col  md:flex-row gap-1  justify-center items-center">
         <div>
           <p>السورة</p>
-          <select
-            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-            value={surahName}
-            onChange={(e) => setSurahName(e.target.value)}
+          <input
+            type="text"
+            className="w-[150px] text-center md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
+            value={surahNames[currentSurahNum]}
+            readOnly
             disabled
-          >
-            {/* Iterate over your list of surahs and render options */}
-            <option value={surahNames[currentSurahNum]}>
-              {surahNames[currentSurahNum]}
-            </option>
-          </select>
+          />
         </div>
         <div>
-          <p>اختر الصفحة</p>
-          <select
-            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+          <p>الصفحة</p>
+          <input
+            type="text"
+            className="w-[150px]  text-center md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
             value={pageNumber}
-            onChange={(e) => setPageNumber(e.target.value)}
-            required
-          >
-            {/* Iterate over your list of pages and render options */}
-            {quranPages.map((page) => {
-              return (
-                <option key={page} value={page}>
-                  {page}
-                </option>
-              );
-            })}
-          </select>
+            readOnly
+            disabled
+          />
         </div>
         <div>
           <p>اختر الآية</p>
           <select
-            className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+            className="w-[150px] md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500"
             value={ayahNumber}
             onChange={(e) => setAyahNumber(e.target.value)}
             required
           >
             {/* Iterate over your list of ayahs and render options */}
-            {ayahsInSurah.map((ayah) => (
-              <option key={ayah.id} value={ayah.aya_no}>
-                {ayah.aya_no}
+            {ayahsInCurrentPage?.map((ayah) => (
+              <option key={ayah?.id} value={ayah?.aya_no}>
+                {ayah?.aya_no}
               </option>
             ))}
           </select>
         </div>
         <button
           type="submit"
-          className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-md inline md:self-end"
+          className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-md  md:self-end translate-y-[-2px] "
           onClick={handleAddBookmark}
         >
           حفظ
         </button>
       </div>
+      {success && <p className="text-green-500">تم الحفظ بنجاح</p>}
+      {error && <p className="text-red-500">{error}</p>}
     </div>
   );
 }

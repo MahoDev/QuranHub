@@ -1,7 +1,12 @@
 // Login.js
 import React, { useEffect, useState } from "react";
 import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import {
   signInWithEmailAndPassword,
   GoogleAuthProvider,
@@ -10,6 +15,7 @@ import {
   applyActionCode,
 } from "firebase/auth";
 import { auth } from "../config/firebase";
+import SlidingNotification from "../components/SlidingNotifaction";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -17,6 +23,14 @@ function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [showNotification, setShowNotification] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state && location.state.recentLoginNeeded) {
+      setShowNotification(true);
+    }
+  });
 
   const handleFormLogin = async (e) => {
     e.preventDefault();
@@ -153,6 +167,9 @@ function Login() {
           </div>
         </form>
       </div>
+      {showNotification && (
+        <SlidingNotification message="يجب تسجيل الدخول مرة أخرى قبل القيام بالحذف" />
+      )}
     </div>
   );
 }

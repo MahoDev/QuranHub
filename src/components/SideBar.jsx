@@ -7,7 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 
-function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
+function SideBar({ surahData, currentPage, currentVerse }) {
   const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
@@ -109,10 +109,10 @@ function SideBar({ surahData, currentPage, currentVerse, setCurrentVerse }) {
             navigate(`/surah/${surahNumber}`, {
               state: {
                 desiredPage: pageHoldingAyah,
-                comingFrom: "SideBar"
+                externalVerseChangeRequest: true,
+                verseToNavigateTo: ayah.aya_no,
               },
             });
-            setCurrentVerse(ayah.aya_no);
           }}
           ref={ayah.aya_no === currentVerse ? scrollToRef : null}
           className={`${

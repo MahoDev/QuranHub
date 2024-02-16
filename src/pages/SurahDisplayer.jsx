@@ -148,13 +148,18 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   }, [currentPage, surahNumber]);
 
   //sets default current verse on navigation
+  //or to any verse requested from external components
   useEffect(() => {
     if (ayahsInCurrentPage?.length > 0) {
       if (
         location.state == null ||
-        (location.state && location.state.comingFrom !== "SideBar")
+        (location.state && location.state.externalVerseChangeRequest !== true)
       ) {
         setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
+      } else {
+        setCurrentVerse(location.state.verseToNavigateTo);
+        //To avoid repeated verse navigation
+        location.state.externalVerseChangeRequest = false;
       }
     }
   }, [surahData, currentPage]);
@@ -295,12 +300,12 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
     >
       <div>
-        <div className=" gap-3 rounded-lg flex flex-col md:flex-row justify-center items-center ">
+        <div className=" gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
           <div className="md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white md:self-end">
             <div className="flex gap-[4px] justify-center items-center">
               <p className="text-black dark:text-white">وضع العرض:</p>
               <select
-                className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+                className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
                 value={mode}
                 onChange={(e) => setMode(e.target.value)}
               >
@@ -315,7 +320,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             </div>
           </div>
           <AddBookmarkForm
-            ayahsInSurah={surahData}
+            ayahsInCurrentPage={ayahsInCurrentPage}
             currentPage={currentPage}
             currentSurahNum={surahNumber}
           />

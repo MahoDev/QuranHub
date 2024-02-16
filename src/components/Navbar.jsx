@@ -9,8 +9,6 @@ import { auth } from "../config/firebase";
 function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
   const isMediumScreen = useMedia("(min-width: 768px)");
   const [menuDisplayed, setMenuDisplayed] = useState(isMediumScreen);
-
-  console.log(currentUser);
   return (
     <div className="px-8  z-[1] bg-emerald-50 dark:bg-emerald-800 drop-shadow-lg sticky w-full top-0">
       <ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">

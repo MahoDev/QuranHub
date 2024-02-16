@@ -48,8 +48,6 @@ function App() {
     setCurrentUser(auth.currentUser);
   }, [auth?.currentUser?.emailVerified]);
 
-  console.log(currentUser);
-
   return (
     <div>
       <Navbar
