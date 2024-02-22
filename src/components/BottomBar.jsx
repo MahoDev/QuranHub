@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { surahNames, tafseerTypes } from "../assets/data/quran-info";
 import { FaArrowLeft, FaArrowRight, FaBars, FaFont } from "react-icons/fa";
 import OutsideClickHandler from "./OutsideClickHandler";
@@ -16,14 +16,16 @@ function BottomBar({
   fontSettings,
   onFontSettingsChanged,
 }) {
+  const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(true);
+  const [fontBoxVisible, setFontBoxVisible] = useState(false);
+  const scrollToRef = useRef();
+
   let bottomBarStyles = "";
   if (isDisplayed) {
     bottomBarStyles = "fixed w-full ";
   } else {
     bottomBarStyles = "hidden w-0 ";
   }
-  const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(true);
-  const [fontBoxVisible, setFontBoxVisible] = useState(false);
 
   return (
     <div
@@ -133,11 +135,12 @@ function BottomBar({
                           <div
                             key={tafseerTypes[tafId]}
                             className={`${
-                              tafId === currentTafsirId ? "bg-emerald-500" : ""
+                              tafId == currentTafsirId ? "bg-emerald-500" : ""
                             } hover:bg-emerald-500 p-1 cursor-pointer `}
                             onClick={() => {
                               onTafsirTypeChange(tafId);
                             }}
+                            ref={tafId == currentTafsirId ? scrollToRef : null}
                           >
                             {`${tafseerTypes[tafId]}`}
                           </div>

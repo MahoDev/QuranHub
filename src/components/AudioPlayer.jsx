@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { IoMdPause, IoMdPlay } from "react-icons/io";
 import { MdSpatialAudioOff, MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { IoVolumeHigh, IoVolumeMedium } from "react-icons/io5";
@@ -30,6 +30,15 @@ function AudioPlayer({
   const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
   const [volume, setVolume] = useState(1); // Initial volume (can be adjusted)
   const [volumeDisplayed, setVolumeDisplayed] = useState(false);
+  const scrollToRef = useRef();
+
+  useEffect(() => {
+    if (scrollToRef.current) {
+      scrollToRef.current.scrollIntoView({
+        block: "start",
+      });
+    }
+  }, [recitersDisplayed]);
 
   useEffect(() => {
     const ayahWordAudio = new Audio(currentWordAudioSrc);
@@ -109,12 +118,13 @@ function AudioPlayer({
       <div
         key={quranRecitations[recId].name}
         className={`${
-          recId === recitationId ? "bg-emerald-500" : ""
+          recId == recitationId ? "bg-emerald-500" : ""
         } hover:bg-emerald-500 p-1 mb-1 cursor-pointer `}
         onClick={() => {
           onRecitationChange(recId);
           onBitrateChange(null);
         }}
+        ref={recId == recitationId ? scrollToRef : null}
       >
         {`${quranRecitations[recId].name}`}
       </div>
