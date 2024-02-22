@@ -46,7 +46,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
   };
 
   useEffect(() => {
-    const firstAyahInPage = ayahsInCurrentPage?.at(0).aya_no;
+    const firstAyahInPage = ayahsInCurrentPage?.at(0)?.aya_no;
     setAyahNumber(firstAyahInPage);
     setPageNumber(currentPage);
   }, [currentPage]);

@@ -10,11 +10,20 @@ import ResetPasswordConfirmation from "./pages/ResetPasswordConfirmation";
 import { auth } from "./config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Profile from "./pages/Profile";
+import { useDisplaySettings } from "./contexts/display-settings-context";
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(
+    useDisplaySettings().displaySettings.isDarkMode
+  );
   const [quranText, setQuranText] = useState(null);
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
+  const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
+
+  const handleDarkModeChange = (value) => {
+    onDisplaySettingsChange({ ...displaySettings, isDarkMode: value });
+    setIsDarkMode(value);
+  };
 
   useEffect(() => {
     document.body.classList.add("dark:bg-[rgb(33,33,33)]");
@@ -53,7 +62,7 @@ function App() {
       <Navbar
         currentUser={currentUser}
         isDarkMode={isDarkMode}
-        onDarkModeChange={setIsDarkMode}
+        onDarkModeChange={handleDarkModeChange}
       />
       <Routes>
         <Route path="/" element={<Home />} />

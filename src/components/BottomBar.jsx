@@ -9,12 +9,10 @@ function BottomBar({
   isSideBarDisplayed,
   onSideBarDisplayedChange,
   onPageChange,
-  onTafsirActiveChange,
   tafsirModeActive,
   currentTafsirId,
-  onTafsirTypeChange,
-  fontSettings,
-  onFontSettingsChanged,
+  fontSize,
+  onDisplayStateChange,
 }) {
   const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(true);
   const [fontBoxVisible, setFontBoxVisible] = useState(false);
@@ -79,24 +77,20 @@ function BottomBar({
                 <div
                   className="rounded-full text-lg flex justify-center items-center hover:cursor-pointer w-6 h-6 bg-emerald-700"
                   onClick={() => {
-                    onFontSettingsChanged(
-                      fontSettings.sizeModifier === 9
-                        ? { ...fontSettings }
-                        : { sizeModifier: fontSettings.sizeModifier + 1 }
-                    );
+                    onDisplayStateChange({
+                      fontSize: fontSize === 9 ? fontSize : fontSize + 1,
+                    });
                   }}
                 >
                   +
                 </div>
-                <div>{fontSettings.sizeModifier - 2}</div>
+                <div>{fontSize - 2}</div>
                 <div
                   className="rounded-full text-lg  flex justify-center items-center hover:cursor-pointer w-6 h-6  bg-emerald-700"
                   onClick={() => {
-                    onFontSettingsChanged(
-                      fontSettings.sizeModifier === 3
-                        ? { ...fontSettings }
-                        : { sizeModifier: fontSettings.sizeModifier - 1 }
-                    );
+                    onDisplayStateChange({
+                      fontSize: fontSize === 3 ? fontSize : fontSize - 1,
+                    });
                   }}
                 >
                   -
@@ -138,7 +132,7 @@ function BottomBar({
                               tafId == currentTafsirId ? "bg-emerald-500" : ""
                             } hover:bg-emerald-500 p-1 cursor-pointer `}
                             onClick={() => {
-                              onTafsirTypeChange(tafId);
+                              onDisplayStateChange({ tafsirId: tafId });
                             }}
                             ref={tafId == currentTafsirId ? scrollToRef : null}
                           >
@@ -160,7 +154,7 @@ function BottomBar({
               className="hidden"
               checked={tafsirModeActive}
               onChange={() => {
-                onTafsirActiveChange(!tafsirModeActive);
+                onDisplayStateChange({ tafsirModeActive: !tafsirModeActive });
                 setIsTafirBoxVisible(!tafsirBoxVisible);
               }}
             />

@@ -19,15 +19,16 @@ import AudioPlayer from "../components/AudioPlayer";
 import LoadingView from "../components/LoadingView";
 import OutsideClickHandler from "../components/OutsideClickHandler";
 import AddBookmarkForm from "../components/AddBookmarkForm";
+import { useDisplaySettings } from "../contexts/display-settings-context";
 
 function SurahDisplayer({ isDarkMode, quranText }) {
+  const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
   const { surahNumber } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [surahData, setSurahData] = useState([]);
   const [tafsirData, setTafsirData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tafsirId, setTafsirId] = useState(16);
-  const [tafsirPage, setTafsirPage] = useState({ current: 1, last: null });
   const containerRef = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,9 +41,53 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
   const [currentWordInfo, setCurrentWordInfo] = useState(null);
-  const [fontSettings, setFontSettings] = useState({ sizeModifier: 3 });
-  //const textWidth = !tafsirModeActive ? `395px` : `495px`;
-  const textWidth = "";
+  const [fontSize, setFontSize] = useState(3);
+
+  //Used to retrieve the previously chosen display settings after reload
+  useEffect(() => {
+    setTafsirModeActive(displaySettings.tafsirModeActive);
+    setMode(displaySettings.displayMode);
+    setTafsirId(displaySettings.tafsirId);
+    setFontSize(displaySettings.fontSize);
+    setRecitationId(displaySettings.recitationId);
+    setBitrate(
+      displaySettings.bitrate == null ? null : displaySettings.bitrate
+    );
+  }, []);
+
+  // Updates each state based on the key-value pairs in newState
+  // Usage:
+  // handleStateChange({ tafsirModeActive: true, displayMode: 'night' });
+  const handleDisplayStateChange = (newState) => {
+    Object.entries(newState).forEach(([key, value]) => {
+      switch (key) {
+        case "tafsirModeActive":
+          setTafsirModeActive(value);
+          break;
+        case "displayMode":
+          setMode(value);
+          break;
+        case "tafsirId":
+          setTafsirId(value);
+          break;
+        case "fontSize":
+          setFontSize(value);
+          break;
+        case "recitationId":
+          setRecitationId(value);
+          break;
+        case "bitrate":
+          setBitrate(value);
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Store the new state in sessionStorage
+    onDisplaySettingsChange({ ...displaySettings, ...newState });
+  };
+
   const subfolder =
     bitrate == null
       ? quranRecitations[recitationId].bitrate[
@@ -124,10 +169,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           const data = await response.json();
           if (subscribed) {
             setTafsirData(data);
-            setTafsirPage({
-              current: data.pagination.current_page + 1,
-              last: data.pagination.total_pages,
-            });
           }
         } catch (error) {
           console.error("Error fetching tafseer data:", error);
@@ -192,7 +233,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             />
             <div
               className={`text-gray-700 dark:text-gray-300 font-siteText text-${
-                fontSettings.sizeModifier - 1
+                fontSize - 1
               }xl`}
             >
               {
@@ -307,7 +348,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               <select
                 className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
                 value={mode}
-                onChange={(e) => setMode(e.target.value)}
+                onChange={(e) =>
+                  handleDisplayStateChange({ displayMode: e.target.value })
+                }
               >
                 {["reading", "listening"].map((displayMode) => {
                   return (
@@ -345,10 +388,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               : ""}
           </div>
           <div
-            className={`font-quranMain text-justify text-${fontSettings.sizeModifier}xl leading-extra-loose m-auto `}
-            style={{
-              maxWidth: textWidth,
-            }}
+            className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto `}
           >
             {content}
           </div>
@@ -393,11 +433,10 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         onSideBarDisplayedChange={setSideBarDisplayed}
         onPageChange={handlePageChange}
         tafsirModeActive={tafsirModeActive}
-        onTafsirActiveChange={setTafsirModeActive}
         currentTafsirId={tafsirId}
-        onTafsirTypeChange={setTafsirId}
-        fontSettings={fontSettings}
-        onFontSettingsChanged={setFontSettings}
+        fontSize={fontSize}
+        //used to set TafsirMode and TafsirId and fontSize
+        onDisplayStateChange={handleDisplayStateChange}
       />
       <OutsideClickHandler
         onOutsideClick={() => {
@@ -420,9 +459,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         <AudioPlayer
           mode={mode}
           recitationId={recitationId}
-          onRecitationChange={setRecitationId}
           bitrate={bitrate}
-          onBitrateChange={setBitrate}
+          //used to set recitationId and bitrate
+          onDisplayStateChange={handleDisplayStateChange}
           verseAudioSrc={currentVerseAudioSrc}
           nextVerseAudioSrc={nextVerseAudioSrc}
           currentWordAudioSrc={currentWordAudioSrc}

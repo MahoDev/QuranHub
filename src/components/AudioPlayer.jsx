@@ -9,18 +9,20 @@ import { formatTime } from "../utility/text-utilities";
 import { quranRecitations } from "../assets/data/quran-info";
 import OutsideClickHandler from "./OutsideClickHandler";
 import { FaGear } from "react-icons/fa6";
+import { useDisplaySettings } from "../contexts/display-settings-context";
 
 function AudioPlayer({
   mode,
   recitationId,
-  onRecitationChange,
   bitrate,
-  onBitrateChange,
   verseAudioSrc,
   nextVerseAudioSrc,
   currentWordAudioSrc,
   onVerseNavigation,
+  onDisplayStateChange,
 }) {
+  const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
+
   const [audio, state, controls, ref] = useAudio({
     src: verseAudioSrc,
   });
@@ -28,9 +30,14 @@ function AudioPlayer({
   const progressPercentage = ((state.time * 100) / state.duration).toFixed(2);
   const [recitersDisplayed, setRecitersDisplayed] = useState(false);
   const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
-  const [volume, setVolume] = useState(1); // Initial volume (can be adjusted)
+  const [volume, setVolume] = useState(displaySettings.volume); // Initial volume (can be adjusted)
   const [volumeDisplayed, setVolumeDisplayed] = useState(false);
   const scrollToRef = useRef();
+
+  const handleVolumeChange = (newValue) => {
+    onDisplaySettingsChange({ ...displaySettings, volume: newValue });
+    setVolume(newValue);
+  };
 
   useEffect(() => {
     if (scrollToRef.current) {
@@ -121,8 +128,7 @@ function AudioPlayer({
           recId == recitationId ? "bg-emerald-500" : ""
         } hover:bg-emerald-500 p-1 mb-1 cursor-pointer `}
         onClick={() => {
-          onRecitationChange(recId);
-          onBitrateChange(null);
+          onDisplayStateChange({ recitationId: recId, bitrate: null });
         }}
         ref={recId == recitationId ? scrollToRef : null}
       >
@@ -146,7 +152,7 @@ function AudioPlayer({
             : ""
         } hover:bg-emerald-500 p-1 cursor-pointer `}
         onClick={() => {
-          onBitrateChange(bitr);
+          onDisplayStateChange({ bitrate: bitr });
         }}
       >
         {`${bitr}`}
@@ -196,7 +202,7 @@ function AudioPlayer({
             setVolumeDisplayed(true);
           }}
           onClick={() => {
-            setVolume(0);
+            handleVolumeChange(0);
           }}
           className=" absolute right-10 top-[20px] z-[2] cursor-pointer"
           id="volumeBoxToggler"
@@ -227,7 +233,7 @@ function AudioPlayer({
               max="1"
               step="0.05"
               value={volume}
-              onChange={(e) => setVolume(parseFloat(e.target.value))}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
               className="appearance-none w-full h-4 rounded-full bg-gray-300"
               style={{
                 background: `linear-gradient(to left, #68d391 0%, #68d391 ${

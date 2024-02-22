@@ -4,7 +4,6 @@ import quranPic2 from "../assets/imgs/quran2.png";
 
 function HeroSection() {
   const navigate = useNavigate();
-  console.log(quranPic1);
   return (
     <div className="container pt-10 ">
       <h1 className="pb-8 text-4xl dark:text-white text-emerald-950  font-quranMain text-justify leading-relaxed">
@@ -37,7 +36,7 @@ function HeroSection() {
             }}
             className="w-full py-4 bg-emerald-700 text-white rounded-full mb-4 hover:bg-emerald-600"
           >
-            ابدء القراءة
+            أقرأ القرآن
           </button>
           <button
             onClick={() => {
@@ -45,7 +44,7 @@ function HeroSection() {
             }}
             className="w-full py-4 bg-amber-500 text-black rounded-full hover:bg-amber-400"
           >
-            ابدء الاستماع
+            أستمع للقرآن
           </button>
         </div>
       </div>
