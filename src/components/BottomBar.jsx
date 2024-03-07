@@ -187,8 +187,6 @@ function BottomBar({
             id="sidebarToggler"
             className="text-2xl min-w-[15px] hover:cursor-pointer"
             onClick={() => {
-              console.log("clicked on bars icon");
-              console.log(!isSideBarDisplayed);
               onSideBarDisplayedChange(!isSideBarDisplayed);
             }}
           />

@@ -2,8 +2,8 @@ export function convertToArabicNumbers(inputString) {
   const englishNumerals = /[0-9]/g;
   const arabicNumerals = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];
   return inputString
-    .toString()
-    .replace(englishNumerals, (match) => arabicNumerals[parseInt(match)]);
+    ?.toString()
+    ?.replace(englishNumerals, (match) => arabicNumerals[parseInt(match)]);
 }
 //
 export function fixDiacritics(arabicText) {
