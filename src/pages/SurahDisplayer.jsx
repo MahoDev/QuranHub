@@ -20,9 +20,11 @@ import LoadingView from "../components/LoadingView";
 import OutsideClickHandler from "../components/OutsideClickHandler";
 import AddBookmarkForm from "../components/AddBookmarkForm";
 import { useDisplaySettings } from "../contexts/display-settings-context";
+import { useSurahSettings } from "../contexts/surah-settings-context";
 
 function SurahDisplayer({ isDarkMode, quranText }) {
   const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
+  const { surahSettings, onSurahSettingsChange } = useSurahSettings();
   const { surahNumber } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [surahData, setSurahData] = useState([]);
@@ -44,7 +46,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   const [fontSize, setFontSize] = useState(3);
   const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
   const internalPageChangeRequest = useRef({ exist: false, page: 1 });
-  const isFirstRun = useRef(true);
 
   //Used to retrieve the previously chosen display settings after reload
   useEffect(() => {
@@ -58,9 +59,16 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     );
   }, []);
 
+  //Used to retrieve previously chosen surah settings after reload
+  useEffect(() => {
+    onSurahSettingsChange({ ...surahSettings, currentSurah: surahNumber });
+    setCurrentPage(surahSettings.currentPage);
+    setCurrentVerse(surahSettings.currentVerse);
+  }, []);
+
   // Updates each state based on the key-value pairs in newState
   // Usage:
-  // handleStateChange({ tafsirModeActive: true, displayMode: 'night' });
+  // handleDisplayStateChange({ tafsirModeActive: true, displayMode: 'night' });
   const handleDisplayStateChange = (newState) => {
     Object.entries(newState).forEach(([key, value]) => {
       switch (key) {
@@ -87,8 +95,26 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       }
     });
 
-    // Store the new state/s in sessionStorage
+    // Store the new state/s in localStorage
     onDisplaySettingsChange({ ...displaySettings, ...newState });
+  };
+
+  const handleSurahSettingsChange = (newState) => {
+    Object.entries(newState).forEach(([key, value]) => {
+      switch (key) {
+        case "currentPage":
+          setCurrentPage(value);
+          break;
+        case "CurrentVerse":
+          setCurrentVerse(value);
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Store the new state/s in sessionStorage
+    onSurahSettingsChange({ ...surahSettings, ...newState });
   };
 
   const subfolder =
@@ -136,7 +162,8 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
           setSurahData(surah);
           setIsLoading(false);
-
+          ///test
+          ///ssd
           //sets to first page in surah
           setCurrentPage(
             quranText.find((ayah) => {
