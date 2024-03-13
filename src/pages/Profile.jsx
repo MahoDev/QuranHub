@@ -172,7 +172,18 @@ function Profile() {
                   </p>
                   <p className="text-gray-600 dark:text-gray-200">
                     وقت الاضافة:{" "}
-                    {bookmark.bookmarkDate.toDate().toLocaleString()}
+                    <span>
+                      {bookmark.bookmarkDate.toDate().toLocaleString("ar", {
+                        weekday: "long",
+                        day: "numeric",
+                        month: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "numeric",
+                        second: "numeric",
+                        hour12: true,
+                      })}
+                    </span>
                   </p>
 
                   <span

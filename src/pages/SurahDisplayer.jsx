@@ -377,9 +377,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
     >
       <div>
-        <div className=" gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
-          <div className="md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white md:self-end">
-            <div className="flex gap-[4px] justify-center items-center">
+        <div className="relative gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
+          <div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[18px]">
+            <div className="flex gap-[4px] justify-center items-center ">
               <p className="text-black dark:text-white">وضع العرض:</p>
               <select
                 className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
@@ -404,7 +404,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             currentSurahNum={surahNumber}
           />
         </div>
-        <div className="h-[1px] w-full bg-gray-900 my-2"></div>
+        <div className="h-[1px] w-full bg-gray-900 my-[30px]"></div>
         <div>
           <div>
             {!isLoading
@@ -437,7 +437,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             handlePageChange(e, "backward");
           }}
           className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " ${
-            +surahData[0]["sura_no"] !== 1 ? "" : "opacity-50"
+            +surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50"
           }`}
         >
           <FaArrowRight />
@@ -448,7 +448,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             handlePageChange(e, "forward");
           }}
           className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 ${
-            +surahData[0]["sura_no"] !== 114 ? "" : "opacity-50"
+            +surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50"
           }`}
         >
           <FaArrowLeft />

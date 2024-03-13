@@ -4,7 +4,6 @@ import { auth, firestore } from "../config/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 
 function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
-  const [surahName, setSurahName] = useState(surahNames[currentSurahNum]);
   const [pageNumber, setPageNumber] = useState(currentPage);
   const [ayahNumber, setAyahNumber] = useState("");
   const [success, setSuccess] = useState(false);
@@ -59,8 +58,9 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
           <p>السورة</p>
           <input
             type="text"
-            className="w-[150px] text-center md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
+            className="w-[150px] text-center py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
             value={surahNames[currentSurahNum]}
+            title={surahNames[currentSurahNum]}
             readOnly
             disabled
           />
@@ -99,8 +99,10 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
           حفظ
         </button>
       </div>
-      {success && <p className="text-green-500">تم الحفظ بنجاح</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      <div className=" absolute bottom--6 right-[50%] translate-x-[50%]  ">
+        {success && <p className="text-green-500">تم الحفظ بنجاح</p>}
+        {error && <p className="text-red-500">{error}</p>}
+      </div>
     </div>
   );
 }
