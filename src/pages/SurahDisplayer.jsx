@@ -98,27 +98,33 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         ]
       : quranRecitations[recitationId].bitrate[bitrate];
 
-  const currentVerseAudioSrc = `https://everyayah.com/data/${subfolder}/${String(
-    surahNumber
-  ).padStart(3, "0")}${String(currentVerse).padStart(3, "0")}.mp3`;
+  const generateVerseAudioSrc = (subfolder, surahNumber, verseNumber) => {
+    return `https://everyayah.com/data/${subfolder}/${surahNumber
+      .toString()
+      .padStart(3, "0")}${verseNumber.toString().padStart(3, "0")}.mp3`;
+  };
 
+  const generateWordAudioSrc = (currentWordInfo) => {
+    if (!currentWordInfo) return null;
+    const { surahNo, ayahNo, index, hash } = currentWordInfo;
+    return `https://words.audios.quranwbw.com/${surahNo}/${surahNo
+      .toString()
+      .padStart(3, "0")}_${ayahNo.toString().padStart(3, "0")}_${index
+      .toString()
+      .padStart(3, "0")}.mp3#${hash}`;
+  };
+
+  const currentVerseAudioSrc = generateVerseAudioSrc(
+    subfolder,
+    surahNumber,
+    currentVerse
+  );
   const nextVerseAvailable = currentVerse !== surahVerses[surahNumber][1];
-
   const nextVerseAudioSrc = nextVerseAvailable
-    ? `https://everyayah.com/data/${subfolder}/${String(surahNumber).padStart(
-        3,
-        "0"
-      )}${String(currentVerse + 1).padStart(3, "0")}.mp3`
+    ? generateVerseAudioSrc(subfolder, surahNumber, currentVerse + 1)
     : null;
+  const currentWordAudioSrc = generateWordAudioSrc(currentWordInfo);
 
-  const currentWordAudioSrc = currentWordInfo
-    ? `https://words.audios.quranwbw.com/${currentWordInfo.surahNo}/${String(
-        currentWordInfo.surahNo
-      ).padStart(3, "0")}_${String(currentWordInfo.ayahNo).padStart(
-        3,
-        "0"
-      )}_${String(currentWordInfo.index).padStart(3, "0")}.mp3`
-    : null;
   let content = "";
   let ayahsInCurrentPage = null;
 

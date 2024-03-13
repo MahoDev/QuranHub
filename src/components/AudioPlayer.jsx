@@ -32,6 +32,7 @@ function AudioPlayer({
   const [bitratesDisplayed, setBitratesDisplayed] = useState(false);
   const [volume, setVolume] = useState(displaySettings.volume); // Initial volume (can be adjusted)
   const [volumeDisplayed, setVolumeDisplayed] = useState(false);
+  const [ayahWordAudio, setAyahWordAudio] = useState(null);
   const scrollToRef = useRef();
 
   const handleVolumeChange = (newValue) => {
@@ -48,13 +49,26 @@ function AudioPlayer({
   }, [recitersDisplayed]);
 
   useEffect(() => {
-    const ayahWordAudio = new Audio(currentWordAudioSrc);
-    ayahWordAudio.preload = "auto";
+    if (ayahWordAudio) {
+      ayahWordAudio.pause();
+      ayahWordAudio.currentTime = 0;
+    }
+    const newAudio = new Audio(currentWordAudioSrc);
+    newAudio.preload = "auto";
+
     if (state.playing) {
       controls.pause();
     }
-    ayahWordAudio.play();
+    newAudio.play();
+    setAyahWordAudio(newAudio);
   }, [currentWordAudioSrc]);
+
+  useEffect(() => {
+    if (state.playing == true && !ayahWordAudio.paused) {
+      ayahWordAudio.pause();
+      ayahWordAudio.currentTime = 0;
+    }
+  }, [state.playing]);
 
   useEffect(() => {
     const audioElement = ref.current;

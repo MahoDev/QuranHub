@@ -48,6 +48,7 @@ function Ayah({
                   surahNo: ayahData["sura_no"],
                   ayahNo: ayahData["aya_no"],
                   index: index + 1,
+                  hash: Math.floor(Math.random() * 1000),
                 });
               }}
             >
