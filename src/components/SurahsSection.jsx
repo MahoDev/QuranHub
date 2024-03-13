@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import SurahCards from "./SurahCards";
 import { surahNames } from "../assets/data/quran-info";
+import { convertAlifToAlifWasl } from "../utility/text-utilities";
 
 function SurahsSection() {
   const [surahs, setSurahs] = useState([]);
@@ -25,10 +26,11 @@ function SurahsSection() {
     searchText === ""
       ? surahs
       : surahs.filter((surah) => {
-          console.log(surah.name);
           return (
             surah.name.includes(searchText) ||
-            surahNames[surah.number].includes(searchText)
+            convertAlifToAlifWasl(surahNames[surah.number]).includes(
+              convertAlifToAlifWasl(searchText)
+            )
           );
         });
 

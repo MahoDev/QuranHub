@@ -6,6 +6,7 @@ import {
 } from "../assets/data/quran-info";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { convertAlifToAlifWasl } from "../utility/text-utilities";
 
 function SideBar({ surahData, currentPage, currentVerse }) {
   const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses
@@ -48,9 +49,11 @@ function SideBar({ surahData, currentPage, currentVerse }) {
   const applySearch = (filter) => {
     let searchResults = null;
     if (filter === "Surahs") {
-      searchResults = Object.keys(surahNames).filter((surahNum) =>
-        surahNames[surahNum].includes(searchText)
-      );
+      searchResults = Object.keys(surahNames).filter((surahNum) => {
+        return convertAlifToAlifWasl(surahNames[surahNum]).includes(
+          convertAlifToAlifWasl(searchText)
+        );
+      });
     } else if (filter === "Pages") {
       searchResults = quranPages.filter((page) => page == searchText);
     } else {

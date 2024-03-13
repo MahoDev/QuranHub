@@ -1,8 +1,5 @@
 import { useEffect, useRef } from "react";
-import {
-  convertToArabicNumbers,
-  fixDiacritics,
-} from "../utility/text-utilities";
+import { convertToArabicNumbers } from "../utility/text-utilities";
 function Ayah({
   ayahData,
   currentVerse,

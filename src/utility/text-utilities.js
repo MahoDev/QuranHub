@@ -6,13 +6,14 @@ export function convertToArabicNumbers(inputString) {
     ?.replace(englishNumerals, (match) => arabicNumerals[parseInt(match)]);
 }
 //
-export function fixDiacritics(arabicText) {
-  const wrongSukunRegex = /[\u06dfۡ]/g;
+export function convertAlifToAlifWasl(text) {
+  const alifRegex = /[\u0622\u0623\u0625]/g; // Match alif and alif maqsura
+  const alifWasl = "\u0627"; // Alif wasl code point
 
-  // Use the regular expression to replace faulty sukun characters with correct one
-  const processedText = arabicText?.replace(wrongSukunRegex, "\u0652");
-  //do nothing temporarliy
-  return arabicText.trim();
+  // Replace alif and alif maqsura with alif wasl
+  text = text.replace(alifRegex, alifWasl);
+
+  return text;
 }
 
 export function formatTime(seconds) {
