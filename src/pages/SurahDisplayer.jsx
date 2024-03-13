@@ -436,10 +436,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           onClick={(e) => {
             handlePageChange(e, "backward");
           }}
-          className={
-            "bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " +
-            (surahData?.number !== 1 ? " block" : " hidden")
-          }
+          className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " ${
+            +surahData[0]["sura_no"] !== 1 ? "" : "opacity-50"
+          }`}
         >
           <FaArrowRight />
         </div>
@@ -448,10 +447,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           onClick={(e) => {
             handlePageChange(e, "forward");
           }}
-          className={
-            "bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " +
-            (surahData?.number !== 114 ? " block" : " hidden")
-          }
+          className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 ${
+            +surahData[0]["sura_no"] !== 114 ? "" : "opacity-50"
+          }`}
         >
           <FaArrowLeft />
         </div>
