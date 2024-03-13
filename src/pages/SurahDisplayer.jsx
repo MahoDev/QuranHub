@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight, FaPlay } from "react-icons/fa";
 import { DiAptana } from "react-icons/di";
-import { convertToArabicNumbers } from "../utility/text-utilities";
+import {
+  convertToArabicNumbers,
+  removeHtmlFromText,
+} from "../utility/text-utilities";
 import { useNavigate } from "react-router-dom";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import BasmalaBlack from "/src/assets/basmala_black.svg";
@@ -265,13 +268,13 @@ function SurahDisplayer({ isDarkMode, quranText }) {
                 fontSize - 1
               }xl`}
             >
-              {
+              {removeHtmlFromText(
                 tafsirData.tafsirs?.find((ayahTafsir) => {
                   let ayahTafsirNum = ayahTafsir["verse_key"].split(":").pop();
 
                   return Number.parseInt(ayahTafsirNum) === ayah["aya_no"];
                 })?.text
-              }
+              )}
             </div>
             <div className="my-4 bg-emerald-700 h-[2px]"></div>
           </div>

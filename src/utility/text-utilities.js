@@ -16,6 +16,16 @@ export function convertAlifToAlifWasl(text) {
   return text;
 }
 
+export function removeHtmlFromText(text) {
+  if (text) {
+    const htmlRegex = /<[^>]*>/g;
+    // Remove HTML tags from the text
+    const cleanedText = text.replace(htmlRegex, "");
+    return cleanedText;
+  }
+  
+}
+
 export function formatTime(seconds) {
   const hours = Math.floor(seconds / 3600);
   const minutes = Math.floor((seconds % 3600) / 60);
