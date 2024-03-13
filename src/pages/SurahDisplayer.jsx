@@ -59,13 +59,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     );
   }, []);
 
-  //Used to retrieve previously chosen surah settings after reload
-  useEffect(() => {
-    onSurahSettingsChange({ ...surahSettings, currentSurah: surahNumber });
-    setCurrentPage(surahSettings.currentPage);
-    setCurrentVerse(surahSettings.currentVerse);
-  }, []);
-
   // Updates each state based on the key-value pairs in newState
   // Usage:
   // handleDisplayStateChange({ tafsirModeActive: true, displayMode: 'night' });
@@ -105,7 +98,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         case "currentPage":
           setCurrentPage(value);
           break;
-        case "CurrentVerse":
+        case "currentVerse":
           setCurrentVerse(value);
           break;
         default:
@@ -151,25 +144,32 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   //sets the current surah data.
   useEffect(() => {
     let subscribed = true;
+
     async function getSurah(num) {
-      // if (isFirstRun.current) {
-      //   isFirstRun.current = false;
-      //   return;
-      // }
       if (subscribed) {
         setLoadingSurah(true);
         try {
           const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
           setSurahData(surah);
           setIsLoading(false);
-          ///test
-          ///ssd
-          //sets to first page in surah
-          setCurrentPage(
+
+          handleSurahSettingsChange({
+            currentPage: quranText.find((ayah) => {
+              return +ayah["sura_no"] == num;
+            }).page,
+          });
+          console.log(
             quranText.find((ayah) => {
               return +ayah["sura_no"] == num;
             }).page
           );
+
+          //sets to first page in surah
+          // setCurrentPage(
+          //   quranText.find((ayah) => {
+          //     return +ayah["sura_no"] == num;
+          //   }).page
+          // );
         } catch (error) {
           console.error("Error fetching surah data:", error);
         } finally {
@@ -222,14 +222,14 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   //sets currentPage to desiredPage
   useEffect(() => {
     if (location.state && location.state.desiredPage) {
-      setCurrentPage(location.state.desiredPage);
+      console.log(location.state.desiredPage);
+      handleSurahSettingsChange({ currentPage: location.state.desiredPage });
+      //setCurrentPage(location.state.desiredPage);
     }
   }, [location?.state?.desiredPage]);
 
   //sets default current verse on navigation
   //or to any verse requested from external components
-
-  //issue here (I think) when navigating by ayah with sidebar
   useEffect(() => {
     if (ayahsInCurrentPage && ayahsInCurrentPage.length > 0) {
       if (
@@ -237,23 +237,40 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         location.state.externalVerseChangeRequest == true &&
         internalVerseChangeRequest.current.exist == false
       ) {
-        setCurrentVerse(location.state.verseToNavigateTo);
+        handleSurahSettingsChange({
+          currentVerse: location.state.verseToNavigateTo,
+        });
+
+        //setCurrentVerse(location.state.verseToNavigateTo);
         //To avoid repeated verse navigation
         //location.state.externalVerseChangeRequest = false;
         navigate(".", { state: { externalVerseChangeRequest: false } });
       } else if (internalVerseChangeRequest.current.exist == true) {
-        setCurrentVerse(internalVerseChangeRequest.current.verse);
+        handleSurahSettingsChange({
+          currentVerse: internalVerseChangeRequest.current.verse,
+        });
+        //setCurrentVerse(internalVerseChangeRequest.current.verse);
         internalVerseChangeRequest.current.exist = false;
       } else {
         //nothing
 
         if (internalPageChangeRequest.current.exist == true) {
-          setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
+          handleSurahSettingsChange({
+            currentVerse: ayahsInCurrentPage[0]["aya_no"],
+          });
+          //setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
           internalPageChangeRequest.current.exist = false;
         }
       }
     }
   }, [surahData, currentPage, location?.state?.verseToNavigateTo]);
+
+  //Used to retrieve previously chosen surah settings after reload
+  useEffect(() => {
+    handleSurahSettingsChange({ currentSurah: surahNumber });
+    setCurrentPage(surahSettings.currentPage);
+    setCurrentVerse(surahSettings.currentVerse);
+  }, [surahData]);
 
   if (isLoading == false) {
     // ayahs = surahData;
@@ -267,7 +284,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             key={ayah["aya_no"]}
             ayahData={ayah}
             currentVerse={currentVerse}
-            setCurrentVerse={setCurrentVerse}
+            handleSurahSettingsChange={handleSurahSettingsChange}
           />
         );
       });
@@ -279,7 +296,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               onCurrentWordChange={setCurrentWordInfo}
               ayahData={ayah}
               currentVerse={currentVerse}
-              setCurrentVerse={setCurrentVerse}
+              handleSurahSettingsChange={handleSurahSettingsChange}
             />
             <div
               className={`text-gray-700 dark:text-gray-300 font-siteText text-${
@@ -316,7 +333,8 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         return;
       }
       if (currentPage - 1 >= firstPage) {
-        setCurrentPage(currentPage - 1);
+        handleSurahSettingsChange({ currentPage: currentPage - 1 });
+        //setCurrentPage(currentPage - 1);
       } else {
         const currAndPrevSurahsAreSharingPage =
           surahNumToPagesMap[surahNumber][0] ===
@@ -345,7 +363,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       }
       const lastPage = surahData[surahData.length - 1].page;
       if (currentPage + 1 <= lastPage) {
-        setCurrentPage(currentPage + 1);
+        handleSurahSettingsChange({ currentPage: currentPage + 1 });
+
+        //setCurrentPage(currentPage + 1);
       } else {
         try {
           setLoadingSurah(true);
@@ -368,7 +388,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         ayahsInCurrentPage[ayahsInCurrentPage.length - 1]["aya_no"] ===
         currentVerse;
       if (nextVerseAvailable) {
-        setCurrentVerse(currentVerse + 1);
+        handleSurahSettingsChange({ currentVerse: currentVerse + 1 });
         if (nextPageAvailable && isLastVerseInPage) {
           handlePageChange(null, "forward");
         }
@@ -379,7 +399,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       const isFirstVerseInPage =
         ayahsInCurrentPage[0]["aya_no"] === currentVerse;
       if (previousVerseAvailable) {
-        setCurrentVerse(currentVerse - 1);
+        handleSurahSettingsChange({ currentVerse: currentVerse - 1 });
         if (previousPageAvailable && isFirstVerseInPage) {
           handlePageChange(null, "backward");
           internalVerseChangeRequest.current.exist = true;
@@ -503,7 +523,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             surahData={surahData}
             currentPage={currentPage}
             currentVerse={currentVerse}
-            setCurrentVerse={setCurrentVerse}
           />
         ) : (
           ""

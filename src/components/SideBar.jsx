@@ -25,7 +25,7 @@ function SideBar({ surahData, currentPage, currentVerse }) {
     }
   }, [filter]);
 
-  //shit solution that
+  //garbage solution that
   //simulates double click on page number to set the currentVerse to first verse on page
   useEffect(() => {
     if (filter == "Pages") {
