@@ -150,29 +150,37 @@ function AudioPlayer({
       </div>
     );
   });
-  const bitratesContent = Object.keys(
-    quranRecitations[recitationId].bitrate
-  ).map((bitr, index) => {
-    return (
-      <div
-        key={bitr}
-        className={`${
-          bitrate === null
-            ? index == 0
-              ? "bg-emerald-500"
-              : ""
-            : bitrate === bitr
-            ? "bg-emerald-500"
-            : ""
-        } hover:bg-emerald-500 p-1 cursor-pointer `}
-        onClick={() => {
-          onDisplayStateChange({ bitrate: bitr });
-        }}
-      >
-        {`${bitr}`}
-      </div>
+
+  let bitratesContent = [""];
+  console.log(quranRecitations[30]);
+  console.log(
+    quranRecitations !== null && quranRecitations[recitationId] !== null
+  );
+  if (quranRecitations !== null && quranRecitations[recitationId] !== null) {
+    bitratesContent = Object.keys(quranRecitations[recitationId].bitrate).map(
+      (bitr, index) => {
+        return (
+          <div
+            key={bitr}
+            className={`${
+              bitrate === null
+                ? index == 0
+                  ? "bg-emerald-500"
+                  : ""
+                : bitrate === bitr
+                ? "bg-emerald-500"
+                : ""
+            } hover:bg-emerald-500 p-1 cursor-pointer `}
+            onClick={() => {
+              onDisplayStateChange({ bitrate: bitr });
+            }}
+          >
+            {`${bitr}`}
+          </div>
+        );
+      }
     );
-  });
+  }
 
   return (
     <div

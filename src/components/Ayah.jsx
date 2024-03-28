@@ -3,7 +3,7 @@ import { convertToArabicNumbers } from "../utility/text-utilities";
 function Ayah({
   ayahData,
   currentVerse,
-  setCurrentVerse,
+  handleSurahSettingsChange,
   onCurrentWordChange,
 }) {
   const verseText = ayahData["aya_text"].startsWith(
@@ -57,7 +57,8 @@ function Ayah({
       <span
         className="hover:cursor-pointer"
         onClick={() => {
-          setCurrentVerse(ayahData["aya_no"]);
+          console.log("test");
+          handleSurahSettingsChange({ currentVerse: ayahData["aya_no"] });
         }}
         onMouseEnter={(e) => {
           e.target.parentElement.classList.add(

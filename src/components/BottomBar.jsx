@@ -37,7 +37,7 @@ function BottomBar({
         <div className="flex gap-4 items-center">
           <div
             onClick={(e) => {
-              onPageChange(e, "backward");
+              onPageChange("backward");
             }}
             className="hover:bg-amber-400/50 hover:cursor-pointer"
           >
@@ -46,7 +46,7 @@ function BottomBar({
           </div>
           <div
             onClick={(e) => {
-              onPageChange(e, "forward");
+              onPageChange("forward");
             }}
             className="hover:bg-amber-400/50 hover:cursor-pointer"
           >

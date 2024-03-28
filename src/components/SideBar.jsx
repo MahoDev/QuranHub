@@ -8,7 +8,12 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { convertAlifToAlifWasl } from "../utility/text-utilities";
 
-function SideBar({ surahData, currentPage, currentVerse }) {
+function SideBar({
+  surahData,
+  currentPage,
+  currentVerse,
+  handleSurahSettingsChange,
+}) {
   const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
@@ -26,25 +31,25 @@ function SideBar({ surahData, currentPage, currentVerse }) {
     }
   }, [filter]);
 
-  //shit solution that
+  //garbage solution that
   //simulates double click on page number to set the currentVerse to first verse on page
-  useEffect(() => {
-    if (filter == "Pages") {
-      const pageNumButton = document.querySelector("#sidebar .focus");
-      if (pageNumButton) {
-        (async () => {
-          let timeoutId = null;
-          await new Promise((resolve) => {
-            timeoutId = setTimeout(() => {
-              pageNumButton.click();
-              resolve();
-            }, 1);
-          });
-          clearTimeout(timeoutId);
-        })();
-      }
-    }
-  }, [surahData]);
+  // useEffect(() => {
+  //   if (filter == "Pages") {
+  //     const pageNumButton = document.querySelector("#sidebar .focus");
+  //     if (pageNumButton) {
+  //       (async () => {
+  //         let timeoutId = null;
+  //         await new Promise((resolve) => {
+  //           timeoutId = setTimeout(() => {
+  //             pageNumButton.click();
+  //             resolve();
+  //           }, 1);
+  //         });
+  //         clearTimeout(timeoutId);
+  //       })();
+  //     }
+  //   }
+  // }, [surahData]);
 
   const applySearch = (filter) => {
     let searchResults = null;
@@ -62,6 +67,7 @@ function SideBar({ surahData, currentPage, currentVerse }) {
     return searchResults;
   };
 
+  let firstVerseInPage = 1;
   if (filter === "Surahs") {
     let searchResults = applySearch(filter);
     content =
@@ -71,11 +77,11 @@ function SideBar({ surahData, currentPage, currentVerse }) {
             <div
               key={surahNum}
               onClick={() => {
-                navigate(`/surah/${surahNum}`, {
-                  state: {
-                    externalVerseChangeRequest: true,
-                    verseToNavigateTo: 1,
-                  },
+                navigate(`/surah/${+surahNum}`);
+                handleSurahSettingsChange({
+                  currentSurah: +surahNum,
+                  currentVerse: 1,
+                  currentPage: surahNumToPagesMap[+surahNum][0],
                 });
               }}
               ref={surahNumber === +surahNum ? scrollToRef : null}
@@ -106,18 +112,28 @@ function SideBar({ surahData, currentPage, currentVerse }) {
                 );
               }
             );
-            let firstVerseInPage = surahData?.find((ayahObj) => {
+            firstVerseInPage = surahData?.find((ayahObj) => {
               return ayahObj.page == page;
             })?.aya_no;
+            console.log(
+              "before setting to 1 firstVerseInPage= " + firstVerseInPage
+            );
             if (firstVerseInPage == undefined) {
+              //need to set to first verse in page after surah change in place of 1
               firstVerseInPage = 1;
             }
-            navigate(`/surah/${desiredSurahNum}`, {
-              state: {
-                desiredPage: page,
-                externalVerseChangeRequest: true,
-                verseToNavigateTo: firstVerseInPage,
-              },
+            // navigate(`/surah/${desiredSurahNum}`, {
+            //   state: {
+            //     desiredPage: page,
+            //     externalVerseChangeRequest: true,
+            //     verseToNavigateTo: firstVerseInPage,
+            //   },
+            // });
+            navigate(`/surah/${desiredSurahNum}`);
+            handleSurahSettingsChange({
+              currentPage: page,
+              currentVerse: firstVerseInPage,
+              currentSurah: +desiredSurahNum,
             });
           }}
           ref={page === currentPage ? scrollToRef : null}
@@ -145,12 +161,11 @@ function SideBar({ surahData, currentPage, currentVerse }) {
             const pageHoldingAyah = surahData.find(
               (ayahObj) => ayahObj.aya_no == ayah.aya_no
             ).page;
-            navigate(`/surah/${surahNumber}`, {
-              state: {
-                desiredPage: pageHoldingAyah,
-                externalVerseChangeRequest: true,
-                verseToNavigateTo: ayah.aya_no,
-              },
+
+            //navigate(`/surah/${surahNumber}`);
+            handleSurahSettingsChange({
+              currentPage: pageHoldingAyah,
+              currentVerse: ayah.aya_no,
             });
           }}
           ref={ayah.aya_no === currentVerse ? scrollToRef : null}
@@ -166,6 +181,16 @@ function SideBar({ surahData, currentPage, currentVerse }) {
       content = <p>لا يوجد آية بهذا الرقم</p>;
     }
   }
+
+  useEffect(() => {
+    if (filter == "Pages") {
+      let page = document.querySelector(".focus").innerText;
+      firstVerseInPage = surahData?.find((ayahObj) => {
+        return ayahObj.page == page;
+      })?.aya_no;
+      handleSurahSettingsChange({ currentVerse: firstVerseInPage });
+    }
+  }, [surahData]);
 
   return (
     <div

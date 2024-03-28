@@ -1,9 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import quranPic1 from "../assets/imgs/quran1.png";
 import quranPic2 from "../assets/imgs/quran2.png";
+import { useSurahSettings } from "../contexts/surah-settings-context";
+import { useDisplaySettings } from "../contexts/display-settings-context";
 
 function HeroSection() {
   const navigate = useNavigate();
+  const { surahSettings, onSurahSettingsChange } = useSurahSettings();
+  const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
+
+  let buttonTexts = [];
+  if (
+    (surahSettings.currentSurah == 1 &&
+      surahSettings.currentPage == 1 &&
+      surahSettings.currentVerse == 1) ||
+    surahSettings == {} ||
+    surahSettings == undefined
+  ) {
+    buttonTexts = ["ابدأ القراءة", "ابدأ الاستماع"];
+  } else {
+    buttonTexts = ["اكمل القراءة", "أكمل الاستماع"];
+  }
+
   return (
     <div className="container pt-10 ">
       <h1 className="pb-8 text-4xl dark:text-white text-emerald-950  font-quranMain text-justify leading-relaxed">
@@ -32,19 +50,31 @@ function HeroSection() {
           </p>
           <button
             onClick={() => {
-              navigate("/surah/1");
+              if (displaySettings.displayMode == "listening") {
+                onDisplaySettingsChange({
+                  ...displaySettings,
+                  displayMode: "reading",
+                });
+              }
+              navigate(`/surah/${+surahSettings.currentSurah}`);
             }}
             className="w-full py-4 bg-emerald-700 text-white rounded-full mb-4 hover:bg-emerald-600"
           >
-            أقرأ القرآن
+            {buttonTexts[0]}
           </button>
           <button
             onClick={() => {
-              navigate("/surah/1");
+              if (displaySettings.displayMode == "reading") {
+                onDisplaySettingsChange({
+                  ...displaySettings,
+                  displayMode: "listening",
+                });
+              }
+              navigate(`/surah/${+surahSettings.currentSurah}`);
             }}
             className="w-full py-4 bg-amber-500 text-black rounded-full hover:bg-amber-400"
           >
-            أستمع للقرآن
+            {buttonTexts[1]}
           </button>
         </div>
       </div>
