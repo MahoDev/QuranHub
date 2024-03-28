@@ -15,8 +15,11 @@ import {
 import { deleteUser, signOut } from "firebase/auth";
 import LoadingView from "../components/LoadingView";
 import Modal from "../components/Modal";
+import { useSurahSettings } from "../contexts/surah-settings-context";
 
 function Profile() {
+  const { surahSettings, onSurahSettingsChange } = useSurahSettings();
+
   const [bookmarks, setBookmarks] = useState([]);
   const [sortByDate, setSortByDate] = useState(true); // true for descending, false for ascending
   const [showOnlyRecent, setShowOnlyRecent] = useState(false);
@@ -52,12 +55,11 @@ function Profile() {
   }, []);
 
   const handleBookmarkNavigation = (bookmark) => {
-    navigate(`/surah/${bookmark.surahNumber}`, {
-      state: {
-        desiredPage: bookmark.pageNumber,
-        externalVerseChangeRequest: true,
-        verseToNavigateTo: +bookmark.ayahNumber,
-      },
+    navigate(`/surah/${bookmark.surahNumber}`);
+    onSurahSettingsChange({
+      currentSurah: bookmark.surahNumber,
+      currentPage: bookmark.pageNumber,
+      currentVerse: +bookmark.ayahNumber,
     });
   };
 

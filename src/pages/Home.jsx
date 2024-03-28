@@ -4,6 +4,7 @@ import SurahsSection from "../components/SurahsSection";
 
 function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
+  
   const navigate = useNavigate();
   const mode = searchParams.get("mode");
   if (mode) {

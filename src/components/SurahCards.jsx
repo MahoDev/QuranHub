@@ -1,8 +1,12 @@
 import { useState } from "react";
 import SurahCard from "./SurahCard";
 import { useNavigate } from "react-router-dom";
+import { useSurahSettings } from "../contexts/surah-settings-context";
+import { surahNumToPagesMap } from "../assets/data/quran-info";
 
 function SurahCards({ surahs, isSearching }) {
+  const { surahSettings, onSurahSettingsChange } = useSurahSettings();
+
   const [displayAll, setDisplayAll] = useState(false);
   const navigate = useNavigate();
   const surahsToDisplay = [];
@@ -16,6 +20,11 @@ function SurahCards({ surahs, isSearching }) {
         order={surahs[i]?.number}
         onClick={() => {
           navigate(`/surah/${surahs[i]?.number}`);
+          onSurahSettingsChange({
+            currentSurah: surahs[i]?.number,
+            currentPage: surahNumToPagesMap[surahs[i]?.number][0],
+            currentVerse: 1,
+          });
         }}
         name={surahs[i]?.name}
         versesCount={surahs[i]?.numberOfAyahs}
