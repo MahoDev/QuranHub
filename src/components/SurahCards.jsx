@@ -34,7 +34,7 @@ function SurahCards({ surahs, isSearching }) {
 
   return (
     <div className="min-h-[400px]">
-      <div className="flex justify-center flex-wrap gap-4 mb-10">
+      <div className="flex justify-center flex-wrap gap-4 mb-10 ">
         {surahsToDisplay.length != 0 ? (
           surahsToDisplay
         ) : (

@@ -20,7 +20,6 @@ function SideBar({
   const surahNumber = surahData[0].sura_no;
   const focusStyle = "bg-emerald-700 focus";
   const scrollToRef = useRef(null);
-  const location = useLocation();
   let content = "";
 
   useEffect(() => {
@@ -30,26 +29,6 @@ function SideBar({
       });
     }
   }, [filter]);
-
-  //garbage solution that
-  //simulates double click on page number to set the currentVerse to first verse on page
-  // useEffect(() => {
-  //   if (filter == "Pages") {
-  //     const pageNumButton = document.querySelector("#sidebar .focus");
-  //     if (pageNumButton) {
-  //       (async () => {
-  //         let timeoutId = null;
-  //         await new Promise((resolve) => {
-  //           timeoutId = setTimeout(() => {
-  //             pageNumButton.click();
-  //             resolve();
-  //           }, 1);
-  //         });
-  //         clearTimeout(timeoutId);
-  //       })();
-  //     }
-  //   }
-  // }, [surahData]);
 
   const applySearch = (filter) => {
     let searchResults = null;
@@ -120,13 +99,7 @@ function SideBar({
               //need to set to first verse in page after surah change in place of 1
               firstVerseInPage = 1;
             }
-            // navigate(`/surah/${desiredSurahNum}`, {
-            //   state: {
-            //     desiredPage: page,
-            //     externalVerseChangeRequest: true,
-            //     verseToNavigateTo: firstVerseInPage,
-            //   },
-            // });
+
             navigate(`/surah/${desiredSurahNum}`);
             handleSurahSettingsChange({
               currentPage: page,
@@ -160,7 +133,6 @@ function SideBar({
               (ayahObj) => ayahObj.aya_no == ayah.aya_no
             ).page;
 
-            //navigate(`/surah/${surahNumber}`);
             handleSurahSettingsChange({
               currentPage: pageHoldingAyah,
               currentVerse: ayah.aya_no,
@@ -193,7 +165,7 @@ function SideBar({
   return (
     <div
       id="sidebar"
-      className="fixed left-0 top-0 text-white  bg-emerald-800/70 w-[240px] h-[calc(100vh-80px)]  p-6 overflow-y-hidden z-[2]"
+      className="fixed left-0 top-0 text-white  bg-emerald-800 w-[240px] h-[calc(100vh-80px)]  p-6 overflow-y-hidden z-[2]"
     >
       <ul className="flex gap-4 justify-center mb-1">
         <li

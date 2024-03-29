@@ -170,7 +170,10 @@ function Profile() {
                     الصفحة: {bookmark.pageNumber}
                   </p>
                   <p className="text-gray-600 dark:text-gray-200 truncate hover:overflow-visible  hover:whitespace-normal">
-                    الآية {bookmark.ayahNumber}: {bookmark.ayahText}
+                    الآية {bookmark.ayahNumber}:{" "}
+                    <span className="font-quranMain text-justify">
+                      {bookmark.ayahText}
+                    </span>
                   </p>
                   <p className="text-gray-600 dark:text-gray-200">
                     وقت الاضافة:{" "}

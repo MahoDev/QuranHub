@@ -8,10 +8,10 @@ function SurahCard({ order, name, versesCount, type, onClick }) {
         {order}
       </div>
       <div>
-        <p className="font-bold text-base ">{name}</p>
+        <p className="font-bold text-base font-quranMain ">{name}</p>
         <p className="font-bold text-xs">{versesCount} آيات</p>
       </div>
-      <p>{type == "Meccan" ? "مكية" : "مدنية"}</p>
+      {/* <p>{type == "Meccan" ? "مكية" : "مدنية"}</p> */}
     </div>
   );
 }

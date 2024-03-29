@@ -36,7 +36,7 @@ function SurahsSection() {
 
   return (
     <div id="SurahsSection" className="container">
-      <h2 className="text-center text-3xl my-10 text-emerald-950 dark:text-white">
+      <h2 className="text-center text-3xl text-emerald-950 dark:text-white mb-2">
         اختر سورة
       </h2>
       <div className="filters flex justify-center h-[30px]">

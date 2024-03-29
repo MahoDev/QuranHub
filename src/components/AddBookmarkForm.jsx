@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { surahNames, quranPages } from "../assets/data/quran-info";
 import { auth, firestore } from "../config/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import LoadingView from "./LoadingView";
 
 function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
   const [pageNumber, setPageNumber] = useState(currentPage);
   const [ayahNumber, setAyahNumber] = useState("");
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleAddBookmark = async () => {
     try {
@@ -25,7 +27,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
         bookmarkDate: Timestamp.fromDate(new Date()),
       };
       const collectionRef = collection(firestore, "bookmarks");
-
+      setLoading(true);
       await addDoc(collectionRef, bookmarkObj);
       setSuccess(true);
       setError("");
@@ -41,6 +43,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
         setSuccess(false);
         setError("");
       }, 3000); // Clear success or error message after 3 seconds
+      setLoading(false);
     }
   };
 
@@ -52,7 +55,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 
   return (
     <div className="text-black dark:text-white text-center  ">
-      <h2 className="text-lg font-semibold">احفظ نقطة مرجعية</h2>
+      <h2 className="text-lg font-semibold mt-2">احفظ نقطة مرجعية</h2>
       <div className="flex flex-col  md:flex-row gap-1  justify-center items-center">
         <div>
           <p>السورة</p>
@@ -100,8 +103,14 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
         </button>
       </div>
       <div className=" absolute bottom--6 right-[50%] translate-x-[50%]  ">
-        {success && <p className="text-green-500">تم الحفظ بنجاح</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {loading ? (
+          <LoadingView text="جاري الحفظ" />
+        ) : (
+          <>
+            {success && <p className="text-green-500">تم الحفظ بنجاح</p>}
+            {error && <p className="text-red-500">{error}</p>}
+          </>
+        )}
       </div>
     </div>
   );

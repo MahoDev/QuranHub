@@ -24,7 +24,6 @@ export default {
       },
       fontFamily: {
         quranMain: ["UthmanicHafs_v22"],
-        siteText: ["Lateef", "serif"],
         surahName: ['"Surah Name - Ejazah style"'],
       },
     },

@@ -349,7 +349,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     >
       <div>
         <div className="relative gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
-          <div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[18px]">
+          <div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[25px]">
             <div className="flex gap-[4px] justify-center items-center ">
               <p className="text-black dark:text-white">وضع العرض:</p>
               <select
@@ -381,7 +381,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             {!isLoading
               ? surahData[0]?.page === currentPage && (
                   <>
-                    <p className="font-surahName text-center text-3xl">
+                    <p className={`font-surahName text-center text-${fontSize}xl`}>
                       {surahNames[+surahData[0]["sura_no"]]}
                     </p>
                     {surahNumber != 1 && (
