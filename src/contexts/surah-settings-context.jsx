@@ -19,7 +19,6 @@ export default function SurahSettingsProvider({ children }) {
 
   const onSurahSettingsChange = (newValue) => {
     sessionStorage.setItem("surahSettings", JSON.stringify(newValue));
-    console.log(newValue);
 
     setSurahSettings(newValue);
   };

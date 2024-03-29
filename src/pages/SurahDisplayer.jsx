@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
-import { FaArrowLeft, FaArrowRight, FaPlay } from "react-icons/fa";
+import { useParams } from "react-router-dom";
+import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import { DiAptana } from "react-icons/di";
 import {
   convertToArabicNumbers,
@@ -9,21 +9,16 @@ import {
 import { useNavigate } from "react-router-dom";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import BasmalaBlack from "/src/assets/basmala_black.svg";
-import {
-  quranRecitations,
-  surahNames,
-  surahNumToPagesMap,
-  surahVerses,
-} from "../assets/data/quran-info";
+import { surahNames, surahNumToPagesMap } from "../assets/data/quran-info";
 import Ayah from "../components/Ayah";
 import SideBar from "../components/SideBar";
 import BottomBar from "../components/BottomBar";
-import AudioPlayer from "../components/AudioPlayer";
 import LoadingView from "../components/LoadingView";
 import OutsideClickHandler from "../components/OutsideClickHandler";
 import AddBookmarkForm from "../components/AddBookmarkForm";
 import { useDisplaySettings } from "../contexts/display-settings-context";
 import { useSurahSettings } from "../contexts/surah-settings-context";
+import ListeningModeManager from "../components/ListeningModeManager";
 
 function SurahDisplayer({ isDarkMode, quranText }) {
   const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
@@ -36,13 +31,10 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   const [tafsirId, setTafsirId] = useState(16);
   const containerRef = useRef(null);
   const navigate = useNavigate();
-  const location = useLocation();
   const [bottomBarDisplayed, setBottomBarDisplayed] = useState(false);
   const [mode, setMode] = useState("reading");
   const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
   const [tafsirModeActive, setTafsirModeActive] = useState(false);
-  const [recitationId, setRecitationId] = useState(30);
-  const [bitrate, setBitrate] = useState(null);
   const [loadingSurah, setLoadingSurah] = useState(false);
   const [currentVerse, setCurrentVerse] = useState(1);
   const [currentWordInfo, setCurrentWordInfo] = useState(null);
@@ -56,10 +48,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     setMode(displaySettings.displayMode);
     setTafsirId(displaySettings.tafsirId);
     setFontSize(displaySettings.fontSize);
-    setRecitationId(displaySettings.recitationId);
-    setBitrate(
-      displaySettings.bitrate == null ? null : displaySettings.bitrate
-    );
   }, []);
 
   // Updates each state based on the key-value pairs in newState
@@ -79,12 +67,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           break;
         case "fontSize":
           setFontSize(value);
-          break;
-        case "recitationId":
-          setRecitationId(value);
-          break;
-        case "bitrate":
-          setBitrate(value);
           break;
         default:
           break;
@@ -113,46 +95,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     onSurahSettingsChange({ ...surahSettings, ...newState });
   };
 
-  let subfolder = "";
-  if (
-    quranRecitations != undefined &&
-    quranRecitations[recitationId] != undefined
-  ) {
-    subfolder =
-      bitrate == null
-        ? quranRecitations[recitationId].bitrate[
-            Object.keys(quranRecitations[recitationId].bitrate)[0]
-          ]
-        : quranRecitations?.recitationId?.bitrate[bitrate];
-  }
-
-  const generateVerseAudioSrc = (subfolder, surahNumber, verseNumber) => {
-    return `https://everyayah.com/data/${subfolder}/${surahNumber
-      .toString()
-      .padStart(3, "0")}${verseNumber.toString().padStart(3, "0")}.mp3`;
-  };
-
-  const generateWordAudioSrc = (currentWordInfo) => {
-    if (!currentWordInfo) return null;
-    const { surahNo, ayahNo, index, hash } = currentWordInfo;
-    return `https://words.audios.quranwbw.com/${surahNo}/${surahNo
-      .toString()
-      .padStart(3, "0")}_${ayahNo.toString().padStart(3, "0")}_${index
-      .toString()
-      .padStart(3, "0")}.mp3#${hash}`;
-  };
-
-  const currentVerseAudioSrc = generateVerseAudioSrc(
-    subfolder,
-    surahNumber,
-    currentVerse
-  );
-  const nextVerseAvailable = currentVerse !== surahVerses[surahNumber][1];
-  const nextVerseAudioSrc = nextVerseAvailable
-    ? generateVerseAudioSrc(subfolder, surahNumber, currentVerse + 1)
-    : null;
-  const currentWordAudioSrc = generateWordAudioSrc(currentWordInfo);
-
   let content = "";
   let ayahsInCurrentPage = null;
 
@@ -166,12 +108,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         try {
           const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
           setSurahData(surah);
-
-          // handleSurahSettingsChange({
-          //   currentPage: quranText.find((ayah) => {
-          //     return +ayah["sura_no"] == num;
-          //   }).page,
-          // });
         } catch (error) {
           console.error("Error fetching surah data:", error);
         } finally {
@@ -222,52 +158,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       window.scrollTo("0", "0");
     }
   }, [currentPage, surahNumber]);
-
-  // //sets currentPage to desiredPage
-  // useEffect(() => {
-  //   if (location.state && location.state.desiredPage) {
-  //     console.log(location.state.desiredPage);
-  //     handleSurahSettingsChange({ currentPage: location.state.desiredPage });
-  //     //setCurrentPage(location.state.desiredPage);
-  //   }
-  // }, [location?.state?.desiredPage]);
-
-  // //sets default current verse on navigation
-  // //or to any verse requested from external components
-  // useEffect(() => {
-  //   if (ayahsInCurrentPage && ayahsInCurrentPage.length > 0) {
-  //     if (
-  //       location.state &&
-  //       location.state.externalVerseChangeRequest == true &&
-  //       internalVerseChangeRequest.current.exist == false
-  //     ) {
-  //       handleSurahSettingsChange({
-  //         currentVerse: location.state.verseToNavigateTo,
-  //       });
-
-  //       //setCurrentVerse(location.state.verseToNavigateTo);
-  //       //To avoid repeated verse navigation
-  //       //location.state.externalVerseChangeRequest = false;
-  //       navigate(".", { state: { externalVerseChangeRequest: false } });
-  //     } else if (internalVerseChangeRequest.current.exist == true) {
-  //       handleSurahSettingsChange({
-  //         currentVerse: internalVerseChangeRequest.current.verse,
-  //       });
-  //       //setCurrentVerse(internalVerseChangeRequest.current.verse);
-  //       internalVerseChangeRequest.current.exist = false;
-  //     } else {
-  //       //nothing
-
-  //       if (internalPageChangeRequest.current.exist == true) {
-  //         handleSurahSettingsChange({
-  //           currentVerse: ayahsInCurrentPage[0]["aya_no"],
-  //         });
-  //         //setCurrentVerse(ayahsInCurrentPage[0]["aya_no"]);
-  //         internalPageChangeRequest.current.exist = false;
-  //       }
-  //     }
-  //   }
-  // }, [surahData, currentPage, location?.state?.verseToNavigateTo]);
 
   //Used to retrieve previously chosen surah settings after reload
   useEffect(() => {
@@ -325,7 +215,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   }
 
   const handlePageChange = (changeType) => {
-    console.log("in handlepage");
     if (loadingSurah) {
       return; // Do nothing if a surah is currently being loaded
     }
@@ -372,12 +261,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
                 verse.page == desiredPage && verse.sura_no == surahNumber - 1
             )?.aya_no;
 
-            console.log("Object about to give to handleSurahSettingsChange ");
-            console.log({
-              currentPage: desiredPage,
-              currentVerse: firstVerseInDesiredPageObj,
-              currentSurah: +surahNumber - 1,
-            });
             handleSurahSettingsChange({
               currentPage: desiredPage,
               currentVerse: firstVerseInDesiredPageObj,
@@ -394,7 +277,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       if (+surahData[0]["sura_no"] === 114) {
         return;
       }
-      console.log(surahData.find((verse) => verse.page == currentPage + 1));
       const firstVerseInNextPageObj = surahData?.find(
         (verse) => verse.page == currentPage + 1
       )?.aya_no;
@@ -578,17 +460,12 @@ function SurahDisplayer({ isDarkMode, quranText }) {
           ""
         )}
       </OutsideClickHandler>
-      {surahData.length > 0 && (
-        <AudioPlayer
-          mode={mode}
-          recitationId={recitationId}
-          bitrate={bitrate}
-          //used to set recitationId and bitrate
-          onDisplayStateChange={handleDisplayStateChange}
-          verseAudioSrc={currentVerseAudioSrc}
-          nextVerseAudioSrc={nextVerseAudioSrc}
-          currentWordAudioSrc={currentWordAudioSrc}
+      {surahData.length > 0 && mode == "listening" && (
+        <ListeningModeManager
+          surahNumber={+surahNumber}
+          currentVerse={currentVerse}
           onVerseNavigation={handleVerseNavigation}
+          currentWordInfo={currentWordInfo}
         />
       )}
     </div>

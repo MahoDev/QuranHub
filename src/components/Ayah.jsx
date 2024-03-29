@@ -11,6 +11,7 @@ function Ayah({
   )
     ? ayahData["aya_text"].slice(38)
     : ayahData["aya_text"].slice(0, ayahData["aya_text"].length - 2);
+  //example of "ayaText" = ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَيُّ ٱلۡقَيُّومُ ﰁ
 
   const verseWords = verseText.split(" ");
   const highlightedAyah = useRef();
@@ -20,8 +21,6 @@ function Ayah({
       highlightedAyah.current.scrollIntoView({ block: "center" });
     }
   }, [currentVerse]);
-
-  //example of "ayaText" = ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَيُّ ٱلۡقَيُّومُ ﰁ
 
   return (
     <div
@@ -57,7 +56,6 @@ function Ayah({
       <span
         className="hover:cursor-pointer"
         onClick={() => {
-          console.log("test");
           handleSurahSettingsChange({ currentVerse: ayahData["aya_no"] });
         }}
         onMouseEnter={(e) => {

@@ -10,7 +10,6 @@ function SurahCards({ surahs, isSearching }) {
   const [displayAll, setDisplayAll] = useState(false);
   const navigate = useNavigate();
   const surahsToDisplay = [];
-  console.log(surahs.length);
   let limit = isSearching ? surahs.length - 1 : displayAll == false ? 15 : 113;
 
   for (let i = 0; i <= limit; i++) {

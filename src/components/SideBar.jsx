@@ -115,9 +115,7 @@ function SideBar({
             firstVerseInPage = surahData?.find((ayahObj) => {
               return ayahObj.page == page;
             })?.aya_no;
-            console.log(
-              "before setting to 1 firstVerseInPage= " + firstVerseInPage
-            );
+
             if (firstVerseInPage == undefined) {
               //need to set to first verse in page after surah change in place of 1
               firstVerseInPage = 1;

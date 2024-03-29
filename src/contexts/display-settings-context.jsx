@@ -27,7 +27,6 @@ export default function DisplaySettingsProvider({ children }) {
 
   const onDisplaySettingsChange = (newValue) => {
     localStorage.setItem("displaySettings", JSON.stringify(newValue));
-    console.log(newValue);
 
     setDisplaySettings(newValue);
   };

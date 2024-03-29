@@ -12,7 +12,6 @@ import { FaGear } from "react-icons/fa6";
 import { useDisplaySettings } from "../contexts/display-settings-context";
 
 function AudioPlayer({
-  mode,
   recitationId,
   bitrate,
   verseAudioSrc,
@@ -134,28 +133,35 @@ function AudioPlayer({
     });
   };
 
-  const recitationsContent = Object.keys(quranRecitations).map((recId) => {
-    return (
-      <div
-        key={quranRecitations[recId].name}
-        className={`${
-          recId == recitationId ? "bg-emerald-500" : ""
-        } hover:bg-emerald-500 p-1 mb-1 cursor-pointer `}
-        onClick={() => {
-          onDisplayStateChange({ recitationId: recId, bitrate: null });
-        }}
-        ref={recId == recitationId ? scrollToRef : null}
-      >
-        {`${quranRecitations[recId].name}`}
-      </div>
-    );
-  });
+  const recitationsContent = Object.keys(quranRecitations)
+    // Sort the recitations based on the name property of each recitation
+    .sort((a, b) => {
+      const nameA = quranRecitations[a].name.toLowerCase();
+      const nameB = quranRecitations[b].name.toLowerCase();
+      if (nameA < nameB) return -1;
+      if (nameA > nameB) return 1;
+      return 0;
+    })
+    // Map over the sorted keys to render the content
+    .map((recId) => {
+      return (
+        <div
+          key={quranRecitations[recId].name}
+          className={`${
+            recId == recitationId ? "bg-emerald-500" : ""
+          } hover:bg-emerald-500 p-1 mb-1 cursor-pointer `}
+          onClick={() => {
+            onDisplayStateChange({ recitationId: recId, bitrate: null });
+          }}
+          ref={recId == recitationId ? scrollToRef : null}
+        >
+          {`${quranRecitations[recId].name}`}
+        </div>
+      );
+    });
 
   let bitratesContent = [""];
-  console.log(quranRecitations[30]);
-  console.log(
-    quranRecitations !== null && quranRecitations[recitationId] !== null
-  );
+
   if (quranRecitations !== null && quranRecitations[recitationId] !== null) {
     bitratesContent = Object.keys(quranRecitations[recitationId].bitrate).map(
       (bitr, index) => {
@@ -185,9 +191,7 @@ function AudioPlayer({
   return (
     <div
       id="audioPlayer"
-      className={`${
-        mode === "listening" ? "fixed" : "hidden"
-      } left-0 bottom-0 translate-x-[0.5%] z-[5] h-[76px] p-2 w-[99%] bg-white/80 dark:bg-stone-950/[80] shadow-2xl shadow-black border-[2px] border-gray-100/50 border-t-transparent dark:border-none select-none`}
+      className={`fixed left-0 bottom-0 translate-x-[0.5%] z-[5] h-[76px] p-2 w-[99%] bg-white/80 dark:bg-stone-950/[80] shadow-2xl shadow-black border-[2px] border-gray-100/50 border-t-transparent dark:border-none select-none`}
     >
       {audio}
       <div
