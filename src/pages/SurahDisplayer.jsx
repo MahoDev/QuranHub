@@ -161,9 +161,19 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 
   //Used to retrieve previously chosen surah settings after reload
   useEffect(() => {
-    handleSurahSettingsChange({ currentSurah: +surahNumber });
-    setCurrentPage(surahSettings.currentPage);
-    setCurrentVerse(surahSettings.currentVerse);
+    if (surahNumber == surahSettings.currentSurah) {
+      handleSurahSettingsChange({ currentSurah: +surahNumber });
+      setCurrentPage(surahSettings.currentPage);
+      setCurrentVerse(surahSettings.currentVerse);
+    } else {
+      //used mainly when navigating to surah by typing url link
+      //set to first page and verse in surah
+      handleSurahSettingsChange({
+        currentSurah: +surahNumber,
+        currentPage: surahNumToPagesMap[+surahNumber][0],
+        currentVerse: 1,
+      });
+    }
   }, []);
 
   if (isLoading == false) {
@@ -193,7 +203,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               handleSurahSettingsChange={handleSurahSettingsChange}
             />
             <div
-              className={`text-gray-700 dark:text-gray-300 font-siteText text-${
+              className={`tafseerText text-gray-700 dark:text-gray-300  text-${
                 fontSize - 1
               }xl`}
             >
@@ -381,7 +391,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             {!isLoading
               ? surahData[0]?.page === currentPage && (
                   <>
-                    <p className={`font-surahName text-center text-${fontSize}xl`}>
+                    <p
+                      className={`font-surahName text-center text-${fontSize}xl`}
+                    >
                       {surahNames[+surahData[0]["sura_no"]]}
                     </p>
                     {surahNumber != 1 && (

@@ -129,12 +129,15 @@ function Signup() {
             >
               إنشاء الحساب
             </button>
-            <Link
-              to="/user/login"
-              className=" text-emerald-500 dark:text-emerald-500 hover:underline"
-            >
-              لديك حساب؟ تسجيل الدخول
-            </Link>
+            <div className="text-center mt-4 text-xs md:text-base">
+              <span className="text-emerald-500">لديك حساب؟</span>{" "}
+              <Link
+                to="/user/login"
+                className=" text-emerald-500 dark:text-emerald-500 hover:underline"
+              >
+                تسجيل الدخول
+              </Link>
+            </div>
           </div>
         </form>
       </div>

@@ -1,6 +1,6 @@
-*:not(.font-quranMain):not(.font-quranMain *):not(.font-surahName):not(
+*:not(.font-quranMain):not(.font-quranMain *:not(.tafseerText)):not(.font-surahName):not(
     .font-surahName *
-  ) {
+  ){
   font-family: "Tajawal", sans-serif;
 }
 

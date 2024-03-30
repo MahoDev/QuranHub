@@ -165,7 +165,7 @@ function SideBar({
   return (
     <div
       id="sidebar"
-      className="fixed left-0 top-0 text-white  bg-emerald-800 w-[240px] h-[calc(100vh-80px)]  p-6 overflow-y-hidden z-[2]"
+      className="fixed left-0 top-0 text-white  bg-emerald-800 w-[240px] h-[calc(100vh-80px)]  p-6 overflow-y-hidden z-[2] "
     >
       <ul className="flex gap-4 justify-center mb-1">
         <li
@@ -211,7 +211,7 @@ function SideBar({
           الآيات
         </li>
       </ul>
-      <div className="flex items-center w-fit h-12 p-2 mb-2 rounded-lg border-solid border-2 border-stone-400 border-opacity-70">
+      <div className="flex items-center w-fit h-12 p-2 mb-2 rounded-lg border-solid border-2 border-stone-400 border-opacity-70 ">
         <input
           placeholder={
             filter === "Surahs"
@@ -229,7 +229,9 @@ function SideBar({
         />
         <FaSearch className="text-white text-3xl bg-emerald-700 p-2 rounded-full cursor-pointer" />
       </div>
-      <div className="overflow-y-scroll h-[87%] space-y-1">{content}</div>
+      <div className="overflow-y-scroll h-[87%] space-y-1 scrollbar scrollbar-thumb-[rgb(231,231,231)] scrollbar-track-transparent ">
+        {content}
+      </div>
     </div>
   );
 }

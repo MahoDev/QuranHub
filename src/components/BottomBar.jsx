@@ -70,7 +70,7 @@ function BottomBar({
               id="fontBox"
               className={`${
                 !fontBoxVisible ? "hidden" : ""
-              } absolute right-16 translate-y-[-192px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
+              } absolute right-16 translate-y-[-192px] rounded-t-lg p-2 w-[180px] h-[150px]  text-black dark:text-white  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none  z-[-1]`}
             >
               <div className="flex gap-2">
                 <div>حجم الخط</div>

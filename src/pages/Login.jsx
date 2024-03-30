@@ -1,6 +1,6 @@
 // Login.js
 import React, { useEffect, useState } from "react";
-import { FaApple, FaFacebook, FaGoogle } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
 import {
   Link,
   useLocation,
@@ -92,15 +92,15 @@ function Login() {
 
         <h2 className="text-2xl font-semibold mb-4">تسجيل الدخول</h2>
 
-        <div className="flex flex-col space-y-4 mb-4 text-xs md:text-base">
+        <div className="flex flex-col relative space-y-4 mb-4 text-xs md:text-base">
           <button
-            className="bg-red-500 hover:bg-red-500/90 text-white px-3 py-2 rounded-full flex items-center justify-center"
+            className="bg-blue-800 hover:bg-blue-600 text-white px-3 py-2 rounded-md flex items-center justify-center"
             onClick={(e) => {
               handleGoogleLogin(e);
             }}
           >
             تسجيل الدخول بواسطة جوجل
-            <FaGoogle className="h-5 w-5 mr-2" />
+            <FcGoogle className="h-5 w-5 mr-2   " />
           </button>
         </div>
 
