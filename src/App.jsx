@@ -32,8 +32,8 @@ function App() {
   useEffect(() => {
     async function getQuranText() {
       try {
-        const quranData = await import(`./assets/data/quranKFGQPC-data.json`);
-        setQuranText(quranData.default);
+        const quranModule = await import(`./assets/data/quranKFGQPC-data.js`);
+        setQuranText(quranModule.quranText);
       } catch (error) {
         console.error("Error importing Quran text:", error);
       }

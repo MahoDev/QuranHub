@@ -106,7 +106,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       if (subscribed) {
         setLoadingSurah(true);
         try {
-          const surah = quranText.filter((ayah) => ayah["sura_no"] === +num);
+          const surah = quranText.get(+num);
           setSurahData(surah);
         } catch (error) {
           console.error("Error fetching surah data:", error);
@@ -266,10 +266,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
             navigate(`/surah/${+surahNumber - 1}`);
 
             //probably unwise to parse all of quranText
-            const firstVerseInDesiredPageObj = quranText?.find(
-              (verse) =>
-                verse.page == desiredPage && verse.sura_no == surahNumber - 1
-            )?.aya_no;
+            const firstVerseInDesiredPageObj = quranText
+              .get(surahNumber - 1)
+              ?.find((verse) => verse.page === desiredPage)?.aya_no;
 
             handleSurahSettingsChange({
               currentPage: desiredPage,
