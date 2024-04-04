@@ -1,4 +1,4 @@
-import { Outlet, Route, Routes, useLocation } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes, useLocation } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SurahDisplayer from "./pages/SurahDisplayer";
@@ -19,6 +19,15 @@ function App() {
   const [quranText, setQuranText] = useState(null);
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
+
+  const isValidSurahNumber = (surahNumber) => {
+    const parsedSurahNumber = parseInt(surahNumber);
+    return (
+      !isNaN(parsedSurahNumber) &&
+      parsedSurahNumber >= 1 &&
+      parsedSurahNumber <= 114
+    );
+  };
 
   const handleDarkModeChange = (value) => {
     onDisplaySettingsChange({ ...displaySettings, isDarkMode: value });
@@ -93,11 +102,15 @@ function App() {
 
         <Route
           path="/surah/:surahNumber"
-          element={
-            quranText && (
+          element={({ match }) => {
+            const { surahNumber } = match.params;
+            if (!isValidSurahNumber(surahNumber)) {
+              return <Navigate to="/surah/1" />;
+            }
+            return quranText ? (
               <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
-            )
-          }
+            ) : null;
+          }}
         />
         <Route path="*" element={<Home />} />
       </Routes>

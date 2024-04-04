@@ -19,6 +19,7 @@ import AddBookmarkForm from "../components/AddBookmarkForm";
 import { useDisplaySettings } from "../contexts/display-settings-context";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import ListeningModeManager from "../components/ListeningModeManager";
+import { Helmet } from "react-helmet-async";
 
 function SurahDisplayer({ isDarkMode, quranText }) {
   const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
@@ -353,134 +354,144 @@ function SurahDisplayer({ isDarkMode, quranText }) {
   };
 
   return (
-    <div
-      ref={containerRef}
-      className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
-    >
-      <div>
-        <div className="relative gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
-          <div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[25px]">
-            <div className="flex gap-[4px] justify-center items-center ">
-              <p className="text-black dark:text-white">وضع العرض:</p>
-              <select
-                className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
-                value={mode}
-                onChange={(e) =>
-                  handleDisplayStateChange({ displayMode: e.target.value })
-                }
-              >
-                {["reading", "listening"].map((displayMode) => {
-                  return (
-                    <option key={displayMode} value={displayMode}>
-                      {displayMode == "reading" ? "القراءة" : "الأستماع"}
-                    </option>
-                  );
-                })}
-              </select>
+    <>
+      <Helmet>
+        <title>{surahNames[surahNumber]}</title>
+        <meta
+          name="description"
+          content={` ${surahNumToPagesMap[1]} حتى صفحة  ${surahNumToPagesMap[0]} تبدأ من صفحة  ${surahVerses[surahNumber][1]} عدد آياتها  ${surahNames[surahNumber]} `}
+        />
+        {/* Add other meta tags as needed */}
+      </Helmet>
+      <div
+        ref={containerRef}
+        className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
+      >
+        <div>
+          <div className="relative gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
+            <div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[25px]">
+              <div className="flex gap-[4px] justify-center items-center ">
+                <p className="text-black dark:text-white">وضع العرض:</p>
+                <select
+                  className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
+                  value={mode}
+                  onChange={(e) =>
+                    handleDisplayStateChange({ displayMode: e.target.value })
+                  }
+                >
+                  {["reading", "listening"].map((displayMode) => {
+                    return (
+                      <option key={displayMode} value={displayMode}>
+                        {displayMode == "reading" ? "القراءة" : "الأستماع"}
+                      </option>
+                    );
+                  })}
+                </select>
+              </div>
+            </div>
+            <AddBookmarkForm
+              ayahsInCurrentPage={ayahsInCurrentPage}
+              currentPage={currentPage}
+              currentSurahNum={surahNumber}
+            />
+          </div>
+          <div className="h-[1px] w-full bg-gray-900 my-[30px]"></div>
+          <div>
+            <div>
+              {!isLoading
+                ? surahData[0]?.page === currentPage && (
+                    <>
+                      <p
+                        className={`font-surahName text-center text-${fontSize}xl`}
+                      >
+                        {surahNames[+surahData[0]["sura_no"]]}
+                      </p>
+                      {surahNumber != 1 && (
+                        <img
+                          className="max-w-[180px] m-auto"
+                          src={isDarkMode ? BasmalaWhite : BasmalaBlack}
+                        />
+                      )}
+                    </>
+                  )
+                : ""}
+            </div>
+            <div
+              className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto `}
+            >
+              {content}
             </div>
           </div>
-          <AddBookmarkForm
-            ayahsInCurrentPage={ayahsInCurrentPage}
-            currentPage={currentPage}
-            currentSurahNum={surahNumber}
-          />
         </div>
-        <div className="h-[1px] w-full bg-gray-900 my-[30px]"></div>
-        <div>
-          <div>
-            {!isLoading
-              ? surahData[0]?.page === currentPage && (
-                  <>
-                    <p
-                      className={`font-surahName text-center text-${fontSize}xl`}
-                    >
-                      {surahNames[+surahData[0]["sura_no"]]}
-                    </p>
-                    {surahNumber != 1 && (
-                      <img
-                        className="max-w-[180px] m-auto"
-                        src={isDarkMode ? BasmalaWhite : BasmalaBlack}
-                      />
-                    )}
-                  </>
-                )
-              : ""}
-          </div>
-          <div
-            className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto `}
-          >
-            {content}
-          </div>
-        </div>
-      </div>
 
-      <div className="flex justify-center items-center gap-5 select-none ">
-        <div
-          onClick={(e) => {
-            handlePageChange("backward");
-          }}
-          className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " ${
-            +surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50"
-          }`}
-        >
-          <FaArrowRight />
+        <div className="flex justify-center items-center gap-5 select-none ">
+          <div
+            onClick={(e) => {
+              handlePageChange("backward");
+            }}
+            className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " ${
+              +surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50"
+            }`}
+          >
+            <FaArrowRight />
+          </div>
+          {convertToArabicNumbers(currentPage)}
+          <div
+            onClick={(e) => {
+              handlePageChange("forward");
+            }}
+            className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 ${
+              +surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50"
+            }`}
+          >
+            <FaArrowLeft />
+          </div>
         </div>
-        {convertToArabicNumbers(currentPage)}
-        <div
-          onClick={(e) => {
-            handlePageChange("forward");
+        <DiAptana
+          className="fixed right-0 bottom-20 text-3xl z-10  rounded hover:text-amber-500 hover:cursor-pointer"
+          onClick={() => {
+            setBottomBarDisplayed(!bottomBarDisplayed);
           }}
-          className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 ${
-            +surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50"
-          }`}
-        >
-          <FaArrowLeft />
-        </div>
-      </div>
-      <DiAptana
-        className="fixed right-0 bottom-20 text-3xl z-10  rounded hover:text-amber-500 hover:cursor-pointer"
-        onClick={() => {
-          setBottomBarDisplayed(!bottomBarDisplayed);
-        }}
-      />
-      <BottomBar
-        surahData={surahData}
-        isDisplayed={bottomBarDisplayed}
-        isSideBarDisplayed={sideBarDisplayed}
-        onSideBarDisplayedChange={setSideBarDisplayed}
-        onPageChange={handlePageChange}
-        tafsirModeActive={tafsirModeActive}
-        currentTafsirId={tafsirId}
-        fontSize={fontSize}
-        //used to set TafsirMode and TafsirId and fontSize
-        onDisplayStateChange={handleDisplayStateChange}
-      />
-      <OutsideClickHandler
-        onOutsideClick={() => {
-          setSideBarDisplayed(false);
-        }}
-        excludedSelectors={["#sidebar", "#sidebarToggler"]}
-      >
-        {sideBarDisplayed && bottomBarDisplayed ? (
-          <SideBar
-            surahData={surahData}
-            currentPage={currentPage}
-            currentVerse={currentVerse}
-            handleSurahSettingsChange={handleSurahSettingsChange}
-          />
-        ) : (
-          ""
-        )}
-      </OutsideClickHandler>
-      {surahData.length > 0 && mode == "listening" && (
-        <ListeningModeManager
-          surahNumber={+surahNumber}
-          currentVerse={currentVerse}
-          onVerseNavigation={handleVerseNavigation}
-          currentWordInfo={currentWordInfo}
         />
-      )}
-    </div>
+        <BottomBar
+          surahData={surahData}
+          isDisplayed={bottomBarDisplayed}
+          isSideBarDisplayed={sideBarDisplayed}
+          onSideBarDisplayedChange={setSideBarDisplayed}
+          onPageChange={handlePageChange}
+          tafsirModeActive={tafsirModeActive}
+          currentTafsirId={tafsirId}
+          fontSize={fontSize}
+          //used to set TafsirMode and TafsirId and fontSize
+          onDisplayStateChange={handleDisplayStateChange}
+        />
+        <OutsideClickHandler
+          onOutsideClick={() => {
+            setSideBarDisplayed(false);
+          }}
+          excludedSelectors={["#sidebar", "#sidebarToggler"]}
+        >
+          {sideBarDisplayed && bottomBarDisplayed ? (
+            <SideBar
+              surahData={surahData}
+              currentPage={currentPage}
+              currentVerse={currentVerse}
+              handleSurahSettingsChange={handleSurahSettingsChange}
+            />
+          ) : (
+            ""
+          )}
+        </OutsideClickHandler>
+        {surahData.length > 0 && mode == "listening" && (
+          <ListeningModeManager
+            surahNumber={+surahNumber}
+            currentVerse={currentVerse}
+            onVerseNavigation={handleVerseNavigation}
+            currentWordInfo={currentWordInfo}
+          />
+        )}
+      </div>
+    </>
   );
 }
 export default SurahDisplayer;

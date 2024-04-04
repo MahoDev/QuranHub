@@ -16,6 +16,7 @@ import { deleteUser, signOut } from "firebase/auth";
 import LoadingView from "../components/LoadingView";
 import Modal from "../components/Modal";
 import { useSurahSettings } from "../contexts/surah-settings-context";
+import { Helmet } from "react-helmet-async";
 
 function Profile() {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
@@ -135,109 +136,122 @@ function Profile() {
   }
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-3xl font-bold mb-6 dark:text-white">الحساب الشخصي</h1>
-      <h2 className="text-xl text-center font-semibold mb-4 dark:text-white">
-        النقاط المرجعية
-      </h2>
-      <div className="flex justify-end mb-4">
-        <button
-          onClick={toggleSortOrder}
-          className="mr-4 bg-emerald-500 dark:bg-emerald-800 hover:bg-emerald-600 text-white py-2 px-4 rounded-full"
-        >
-          {sortByDate ? "ترتيب حسب الأقدم" : "ترتيب حسب الأحدث"}
-        </button>
-        <button
-          onClick={toggleRecentFilter}
-          className="bg-emerald-500  hover:bg-emerald-600 dark:bg-emerald-800 text-white py-2 px-4 rounded-full"
-        >
-          {showOnlyRecent ? "إظهار الكل" : "عرض الأحدث فقط"}
-        </button>
-      </div>
-      <div className="mb-8">
-        {!loading ? (
-          <div className="overflow-auto">
-            <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {sortedBookmarks.map((bookmark) => (
-                <li
-                  key={bookmark.id}
-                  className="bg-white relative dark:bg-emerald-800 border-2 border-gray-300 dark:border-none  shadow-md dark:shadow-lg rounded-lg p-4 hover:shadow-lg transition duration-300"
-                >
-                  <p className="text-lg font-semibold mb-2 dark:text-white">
-                    {bookmark.surahName}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-200">
-                    الصفحة: {bookmark.pageNumber}
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-200 truncate hover:overflow-visible  hover:whitespace-normal">
-                    الآية {bookmark.ayahNumber}:{" "}
-                    <span className="font-quranMain text-justify">
-                      {bookmark.ayahText}
-                    </span>
-                  </p>
-                  <p className="text-gray-600 dark:text-gray-200">
-                    وقت الاضافة:{" "}
-                    <span>
-                      {bookmark.bookmarkDate.toDate().toLocaleString("ar", {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "numeric",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "numeric",
-                        second: "numeric",
-                        hour12: true,
-                      })}
-                    </span>
-                  </p>
+    <>
+      <Helmet>
+        <title>منصة القرآن | الحساب الشخصي</title>
+        <meta
+          name="description"
+          content="صفحة الحساب الشخصي في موقع منصة القرآن"
+        ></meta>
+        <meta name="robots" content="noindex"/>
+      </Helmet>
+      
+      <div className="container mx-auto py-10">
+        <h1 className="text-3xl font-bold mb-6 dark:text-white">
+          الحساب الشخصي
+        </h1>
+        <h2 className="text-xl text-center font-semibold mb-4 dark:text-white">
+          النقاط المرجعية
+        </h2>
+        <div className="flex justify-end mb-4">
+          <button
+            onClick={toggleSortOrder}
+            className="mr-4 bg-emerald-500 dark:bg-emerald-800 hover:bg-emerald-600 text-white py-2 px-4 rounded-full"
+          >
+            {sortByDate ? "ترتيب حسب الأقدم" : "ترتيب حسب الأحدث"}
+          </button>
+          <button
+            onClick={toggleRecentFilter}
+            className="bg-emerald-500  hover:bg-emerald-600 dark:bg-emerald-800 text-white py-2 px-4 rounded-full"
+          >
+            {showOnlyRecent ? "إظهار الكل" : "عرض الأحدث فقط"}
+          </button>
+        </div>
+        <div className="mb-8">
+          {!loading ? (
+            <div className="overflow-auto">
+              <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {sortedBookmarks.map((bookmark) => (
+                  <li
+                    key={bookmark.id}
+                    className="bg-white relative dark:bg-emerald-800 border-2 border-gray-300 dark:border-none  shadow-md dark:shadow-lg rounded-lg p-4 hover:shadow-lg transition duration-300"
+                  >
+                    <p className="text-lg font-semibold mb-2 dark:text-white">
+                      {bookmark.surahName}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-200">
+                      الصفحة: {bookmark.pageNumber}
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-200 truncate hover:overflow-visible  hover:whitespace-normal">
+                      الآية {bookmark.ayahNumber}:{" "}
+                      <span className="font-quranMain text-justify">
+                        {bookmark.ayahText}
+                      </span>
+                    </p>
+                    <p className="text-gray-600 dark:text-gray-200">
+                      وقت الاضافة:{" "}
+                      <span>
+                        {bookmark.bookmarkDate.toDate().toLocaleString("ar", {
+                          weekday: "long",
+                          day: "numeric",
+                          month: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "numeric",
+                          second: "numeric",
+                          hour12: true,
+                        })}
+                      </span>
+                    </p>
 
-                  <span
-                    className="text-emerald-500 cursor-pointer"
-                    onClick={() => {
-                      handleBookmarkNavigation(bookmark);
-                    }}
-                    title="الانتقال إلى النقطة المرجعية"
-                  >
-                    الانتقال
-                  </span>
-                  <span
-                    className="text-red-500 hover:text-red-600 cursor-pointer absolute top-2 left-4"
-                    onClick={() => {
-                      handleDeleteBookmark(bookmark.id);
-                    }}
-                    title="حذف"
-                  >
-                    X
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <LoadingView />
+                    <span
+                      className="text-emerald-500 cursor-pointer"
+                      onClick={() => {
+                        handleBookmarkNavigation(bookmark);
+                      }}
+                      title="الانتقال إلى النقطة المرجعية"
+                    >
+                      الانتقال
+                    </span>
+                    <span
+                      className="text-red-500 hover:text-red-600 cursor-pointer absolute top-2 left-4"
+                      onClick={() => {
+                        handleDeleteBookmark(bookmark.id);
+                      }}
+                      title="حذف"
+                    >
+                      X
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            <LoadingView />
+          )}
+        </div>
+        <div className="bg-gray-400 h-[1px] w-full mb-4"></div>
+        <p className="text-black dark:text-white mb-4">
+          الضغط على هذا الزر سيمكنك من حذف حسابك وكل البيانات المرتبطة به
+        </p>
+        <button
+          onClick={handleDeleteAccount}
+          className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-full"
+        >
+          حذف الحساب
+        </button>
+        {/* Confirmation Modal */}
+        {showConfirmation && (
+          <Modal
+            bodyText="هل أنت متأكد من رغبتك في حذف الحساب؟"
+            onConfirm={confirmDeleteAccount}
+            onCancel={() => {
+              setShowConfirmation(false);
+            }}
+          />
         )}
       </div>
-      <div className="bg-gray-400 h-[1px] w-full mb-4"></div>
-      <p className="text-black dark:text-white mb-4">
-        الضغط على هذا الزر سيمكنك من حذف حسابك وكل البيانات المرتبطة به
-      </p>
-      <button
-        onClick={handleDeleteAccount}
-        className="bg-red-500 hover:bg-red-600 text-white py-2 px-6 rounded-full"
-      >
-        حذف الحساب
-      </button>
-      {/* Confirmation Modal */}
-      {showConfirmation && (
-        <Modal
-          bodyText="هل أنت متأكد من رغبتك في حذف الحساب؟"
-          onConfirm={confirmDeleteAccount}
-          onCancel={() => {
-            setShowConfirmation(false);
-          }}
-        />
-      )}
-    </div>
+    </>
   );
 }
 

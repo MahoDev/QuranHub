@@ -14,7 +14,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
       <ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
         <li className="font-extrabold ">
           <Link to="/">
-            <span className="text-xl mx-1">مركز القرآن</span>
+            <span className="text-xl mx-1">منصة القرآن</span>
             <FaBookOpen className="inline-block pr-2 mb-1" size="30" />
           </Link>
         </li>
