@@ -33,13 +33,15 @@ function HeroSection() {
         <div className="flex flex-wrap justify-center gap-[15px] w-full lg:w-[calc(100%*2/3)] h-auto lg:order-1">
           <img
             src={quranPic1}
-            alt="قرآن 1"
+            alt="صورة قران 1"
             className="w-full lg:w-[calc(100%/2-30px)] h-[350px] object-cover rounded-xl"
+            title="شخص يقلب صفحات القرآن"
           />
           <img
             src={quranPic2}
-            alt="قرآن 1"
+            alt="صورة قرآن 1"
             className="hidden  w-full  h-[350px] object-cover rounded-xl lg:w-[calc(100%/2-30px)] lg:block"
+            title="شخص يجلب القرآن من بين الكتب"
           />
         </div>
         <div className="w-[350px] h-[350px] lg:w-[calc(100%/3)] mt-4">

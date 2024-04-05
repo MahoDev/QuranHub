@@ -9,7 +9,11 @@ import {
 import { useNavigate } from "react-router-dom";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import BasmalaBlack from "/src/assets/basmala_black.svg";
-import { surahNames, surahNumToPagesMap } from "../assets/data/quran-info";
+import {
+  surahNames,
+  surahNumToPagesMap,
+  surahVerses,
+} from "../assets/data/quran-info";
 import Ayah from "../components/Ayah";
 import SideBar from "../components/SideBar";
 import BottomBar from "../components/BottomBar";
@@ -352,15 +356,41 @@ function SurahDisplayer({ isDarkMode, quranText }) {
     }
   };
 
+  const surahMetaDescription = `${surahNames[surahNumber]}
+${surahVerses[+surahNumber][1]} عدد آياتها 
+${surahNumToPagesMap[+surahNumber][0]} وتبدأ من صفحة 
+${surahNumToPagesMap[+surahNumber][1]} حتى صفحة 
+  "${
+    quranText
+      ?.get(+surahNumber)
+      .filter((ayahObj) => {
+        return ayahObj.aya_no <= 4;
+      })
+      .map((ayahObj) => {
+        return ayahObj.aya_text.slice(0, -2); // Remove last 2 letters
+      })
+      .reduce(
+        (prev, curr) => {
+          return { aya_text: prev.aya_text + " " + curr };
+        },
+        { aya_text: "" }
+      ).aya_text
+  }"`;
+
   return (
     <>
       <Helmet>
-        <title>{surahNames[surahNumber]}</title>
+        <title>{`منصة القرآن | ${surahNames[+surahNumber]}`}</title>
+        <meta name="description" content={surahMetaDescription} />
         <meta
-          name="description"
-          content={` ${surahNumToPagesMap[1]} حتى صفحة  ${surahNumToPagesMap[0]} تبدأ من صفحة  ${surahVerses[surahNumber][1]} عدد آياتها  ${surahNames[surahNumber]} `}
+          property="og:title"
+          content={`منصة القرآن | ${surahNames[+surahNumber]}`}
         />
-        {/* Add other meta tags as needed */}
+        <meta property="og:description" content={surahMetaDescription} />
+        <meta
+          property="og:url"
+          content={`https://quran-hub.vercel.app/surah/${surahNumber}`}
+        />
       </Helmet>
       <div
         ref={containerRef}
@@ -407,8 +437,11 @@ function SurahDisplayer({ isDarkMode, quranText }) {
                       </p>
                       {surahNumber != 1 && (
                         <img
-                          className="max-w-[180px] m-auto"
+                          className="w-40 max-w-[180px] m-auto"
                           src={isDarkMode ? BasmalaWhite : BasmalaBlack}
+                          alt="بسم الله الرحمن الرحيم"
+                          title="بسم الله الرحمن الرحيم"
+                          loading="eager"
                         />
                       )}
                     </>
