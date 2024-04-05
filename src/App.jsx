@@ -1,4 +1,4 @@
-import { Navigate, Outlet, Route, Routes, useLocation, useParams } from "react-router-dom";
+import { Outlet, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import SurahDisplayer from "./pages/SurahDisplayer";
@@ -11,6 +11,8 @@ import { auth } from "./config/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import Profile from "./pages/Profile";
 import { useDisplaySettings } from "./contexts/display-settings-context";
+import { useParams, Navigate } from "react-router-dom";
+import SurahDisplayerWrapper from "./components/SurahDisplayerWrapper.jsx";
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(
@@ -19,13 +21,7 @@ function App() {
   const [quranText, setQuranText] = useState(null);
   const [currentUser, setCurrentUser] = useState(auth.currentUser);
   const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
-
-  const SurahWrapper = ({ children }) => {
-    const { surahNumber } = useParams();
-    const isValidSurah = surahNumber >= 1 && surahNumber <= 114;
-
-    return isValidSurah ? children : <Navigate to="surah/1" replace />;
-  };
+  const { surahNumber } = useParams();
 
   const handleDarkModeChange = (value) => {
     onDisplaySettingsChange({ ...displaySettings, isDarkMode: value });
@@ -101,9 +97,12 @@ function App() {
         <Route
           path="/surah/:surahNumber"
           element={
-            <SurahWrapper>
-              <SurahDisplayer isDarkMode={isDarkMode} quranText={quranText} />
-            </SurahWrapper>
+            quranText && (
+              <SurahDisplayerWrapper
+                quranText={quranText}
+                isDarkMode={isDarkMode}
+              />
+            )
           }
         />
 

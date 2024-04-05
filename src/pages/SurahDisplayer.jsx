@@ -113,12 +113,13 @@ function SurahDisplayer({ isDarkMode, quranText }) {
         try {
           const surah = quranText.get(+num);
           setSurahData(surah);
+          console.log("set surah");
         } catch (error) {
           console.error("Error fetching surah data:", error);
         } finally {
           setIsLoading(false);
-
           setLoadingSurah(false);
+          console.log("Finished loading");
         }
       }
     }
