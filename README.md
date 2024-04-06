@@ -15,7 +15,13 @@
 
 
 
-https://github.com/MahoDev/QuranHub/assets/91033213/e1da1bd2-f355-4a00-9e86-ae46e924544d
+
+https://github.com/MahoDev/QuranHub/assets/91033213/fa036a2a-b7f9-45c8-8946-206466b15d8e
+
+
+
+
+
 
 
 ## تم الاستعانة بـ:
