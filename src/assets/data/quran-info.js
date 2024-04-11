@@ -352,7 +352,6 @@ export const quranPages = Array.from(Array(604).keys()).map((num) => num + 1);
 
 export const tafseerTypes = {
   16: "التفسير الميسر",
-  92: "تفسير تنوير المقباس",
   91: "تفسير السعدي",
   14: "تفسير ابن كثير",
   93: "تفسير الوسيط للطنطاوي",

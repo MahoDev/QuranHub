@@ -141,11 +141,15 @@ function SurahDisplayer({ isDarkMode, quranText }) {
       async function getTafsir(surah) {
         try {
           const response = await fetch(
-            `https://api.quran.com/api/v4/tafsirs/${tafsirId}/by_page/${currentPage}?locale=ar&mushaf=2`
+            `https://api.quran.com/api/v4/tafsirs/${tafsirId}/by_page/${currentPage}?locale=ar&mushaf=2&per_page=50`
           );
           const data = await response.json();
           if (subscribed) {
-            setTafsirData(data);
+            //fixes bug with surahs sharing pages.
+            const filteredTafsir = data.tafsirs.filter((ayahTafsir) =>
+              ayahTafsir.verse_key.includes(`${surahNumber}:`)
+            );
+            setTafsirData(filteredTafsir);
           }
         } catch (error) {
           console.error("Error fetching tafseer data:", error);
@@ -209,16 +213,16 @@ function SurahDisplayer({ isDarkMode, quranText }) {
               handleSurahSettingsChange={handleSurahSettingsChange}
             />
             <div
-              className={`tafseerText text-gray-700 dark:text-gray-300  text-${
+              className={`tafseerText  text-gray-700 dark:text-gray-300  text-${
                 fontSize - 1
               }xl`}
             >
               {removeHtmlFromText(
-                tafsirData.tafsirs?.find((ayahTafsir) => {
+                tafsirData?.find((ayahTafsir) => {
                   let ayahTafsirNum = ayahTafsir["verse_key"].split(":").pop();
 
                   return Number.parseInt(ayahTafsirNum) === ayah["aya_no"];
-                })?.text
+                })?.text || "لا يتوفر تفسير لهذه الآية."
               )}
             </div>
             <div className="my-4 bg-emerald-700 h-[2px]"></div>
