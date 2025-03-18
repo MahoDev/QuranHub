@@ -1,36 +1,36 @@
-*:not(.font-quranMain):not(.font-quranMain *:not(.tafseerText)):not(.font-surahName):not(
-    .font-surahName *
-  ){
-  font-family: "Tajawal", sans-serif;
+*:not(.font-quranMain):not(.font-quranMain *:not(.tafseerText)):not(
+		.font-surahName
+	):not(.font-surahName *) {
+	font-family: "Tajawal", sans-serif;
 }
 
 @font-face {
-  font-family: "Tajawal";
-  src: url("./assets/fonts/Tajawal-Regular.woff2") format("woff2"),
-    url("./assets/fonts/Tajawal-Regular.woff") format("woff"),
-    url("./assets/fonts/Tajawal-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+	font-family: "Tajawal";
+	src: url("./assets/fonts/Tajawal-Regular.woff2") format("woff2"),
+		url("./assets/fonts/Tajawal-Regular.woff") format("woff"),
+		url("./assets/fonts/Tajawal-Regular.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: "UthmanicHafs_v22";
-  src: url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff2") format("woff2"),
-    url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff") format("woff");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+	font-family: "UthmanicHafs_v22";
+	src: url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff2") format("woff2"),
+		url("./assets/fonts/kfgqpchafsuthmanicscript-Reg.woff") format("woff");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
 }
 
 @font-face {
-  font-family: "Surah Name - Ejazah style";
-  src: url("./assets/fonts/SurahNameEjazahstyle-Regular.woff2") format("woff2"),
-    url("./assets/fonts/SurahNameEjazahstyle-Regular.woff") format("woff"),
-    url("./assets/fonts/SurahNameEjazahstyle-Regular.ttf") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+	font-family: "Surah Name - Ejazah style";
+	src: url("./assets/fonts/SurahNameEjazahstyle-Regular.woff2") format("woff2"),
+		url("./assets/fonts/SurahNameEjazahstyle-Regular.woff") format("woff"),
+		url("./assets/fonts/SurahNameEjazahstyle-Regular.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
 }
 
 @tailwind base;
@@ -38,6 +38,25 @@
 @tailwind utilities;
 
 .activeFilter {
-  background-color: rgb(245 158 11);
-  border-radius: 50px;
+	background-color: rgb(245 158 11);
+	border-radius: 50px;
+}
+
+.pulse {
+	animation: subtle-pulse 1.5s ease-in-out infinite; /* Changed animation name and timing */
+}
+
+@keyframes subtle-pulse {
+	0% {
+		transform: scale(1);
+		opacity: 0.8; /* Add slight transparency */
+	}
+	50% {
+		transform: scale(1.1);
+		opacity: 1; /* Fully opaque at peak */
+	}
+	100% {
+		transform: scale(1);
+		opacity: 0.8; /* Return to slight transparency */
+	}
 }

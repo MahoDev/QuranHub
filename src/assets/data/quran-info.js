@@ -581,7 +581,7 @@ export const quranRecitations = {
     },
   },
   34: {
-    name: "احمد العجمي",
+    name: "2 احمد العجمي",
     bitrate: {
       "128kbps": "ahmed_ibn_ali_al_ajamy_128kbps",
     },

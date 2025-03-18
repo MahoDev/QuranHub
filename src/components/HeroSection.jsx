@@ -39,7 +39,7 @@ function HeroSection() {
           />
           <img
             src={quranPic2}
-            alt="صورة قرآن 1"
+            alt="صورة قرآن 2"
             className="hidden  w-full  h-[350px] object-cover rounded-xl lg:w-[calc(100%/2-30px)] lg:block"
             title="شخص يجلب القرآن من بين الكتب"
           />
