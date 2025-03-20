@@ -30,7 +30,7 @@ function BottomBar({
 			id="bottombar"
 			className={
 				bottomBarStyles +
-				"z-[10] left-0 bottom-0 h-20 p-4 pt-5 bg-emerald-800 text-white rounded shadow-inner transition "
+				"z-[10] left-0 bottom-0 h-[81px] p-4 pt-5 bg-emerald-800 text-white rounded shadow-inner transition "
 			}
 		>
 			<div className="flex justify-between w-full ">

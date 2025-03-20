@@ -362,26 +362,10 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		}
 	};
 
-	const surahMetaDescription = `${surahNames[surahNumber]}
-${surahVerses[+surahNumber][1]} عدد آياتها 
-${surahNumToPagesMap[+surahNumber][0]} وتبدأ من صفحة 
-${surahNumToPagesMap[+surahNumber][1]} حتى صفحة 
-  "${
-		quranText
-			?.get(+surahNumber)
-			.filter((ayahObj) => {
-				return ayahObj.aya_no <= 4;
-			})
-			.map((ayahObj) => {
-				return ayahObj.aya_text.slice(0, -2); // Remove last 2 letters
-			})
-			.reduce(
-				(prev, curr) => {
-					return { aya_text: prev.aya_text + " " + curr };
-				},
-				{ aya_text: "" }
-			).aya_text
-	}"`;
+	const surahMetaDescription = ` اقرأ ${surahNames[surahNumber]}
+${surahVerses[+surahNumber][1]} التي عدد آياتها ${surahNumToPagesMap[+surahNumber][0]} وتبدأ من صفحة ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة 
+بخط واضح مع التفسير والاستماع لتلاوة بصوت قراء مشهورين على منصة القرآن
+  `;
 
 	return (
 		<>
@@ -453,16 +437,16 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 							{!isLoading
 								? surahData[0]?.page === currentPage && (
 										<>
-											<p
+											<h1
 												className={`font-surahName text-center text-${fontSize}xl`}
 											>
 												{surahNames[+surahData[0]["sura_no"]]}
-											</p>
+											</h1>
 											{surahNumber != 1 && (
 												<img
 													className="w-40 max-w-[180px] m-auto"
 													src={isDarkMode ? BasmalaWhite : BasmalaBlack}
-													alt="بسم الله الرحمن الرحيم"
+													alt="بسم الله الرحمن الرحيم بخط عربي"
 													title="بسم الله الرحمن الرحيم"
 													loading="eager"
 												/>
@@ -510,7 +494,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					}}
 				>
 					<DiAptana className="text-4xl pulse rounded" />
-					<span className="mr-2  pulse">
+					<span className="mr-2  pulse select-none">
 						<span>التفسير</span>
 						<div></div>
 						<span>و التنقل </span>
@@ -551,6 +535,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						currentVerse={currentVerse}
 						onVerseNavigation={handleVerseNavigation}
 						currentWordInfo={currentWordInfo}
+						bottomBarDisplayed={bottomBarDisplayed}
 					/>
 				)}
 			</div>

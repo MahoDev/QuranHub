@@ -19,6 +19,7 @@ function AudioPlayer({
 	currentWordAudioSrc,
 	onVerseNavigation,
 	onDisplayStateChange,
+	bottomBarDisplayed
 }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 
@@ -191,7 +192,9 @@ function AudioPlayer({
 	return (
 		<div
 			id="audioPlayer"
-			className={`fixed left-0 bottom-0 translate-x-[0.5%] z-[5] h-[76px] p-2 w-[99%] bg-white/80 dark:bg-stone-950/[80] shadow-2xl shadow-black border-[2px] border-gray-100/50 border-t-transparent dark:border-none select-none`}
+			className={`fixed left-0 bottom-0 translate-x-[0.5%] z-[5] h-[76px] p-2 w-[99%] bg-white/80 dark:bg-stone-950/[80] shadow-2xl shadow-black border-[2px] border-gray-100/50 border-t-transparent dark:border-none select-none
+			${bottomBarDisplayed ? ' bottom-[80px] z-[0] ' : ""}
+			`}
 		>
 			{audio}
 			<div
