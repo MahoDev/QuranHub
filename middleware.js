@@ -4,10 +4,6 @@ export default async function middleware(req) {
 		/googlebot|bingbot|yahoo|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|applebot|mj12bot|ahrefsbot|semrushbot|prerender/i.test(
 			userAgent
 		);
-	const isStaticAsset =
-		/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|txt|xml|pdf)$/i.test(
-			req.nextUrl.pathname
-		);
 
 	// Extract the pathname from the request URL
 	const path = new URL(req.url, `https://${req.headers.get("host")}`).pathname;
@@ -17,7 +13,7 @@ export default async function middleware(req) {
 		return null; // Let Vercel serve the static file directly from public/
 	}
 
-	if (isCrawler && !isStaticAsset) {
+	if (isCrawler) {
 		try {
 			const url = `https://${req.headers.get("host")}${path}`;
 			const prerenderUrl = `https://service.prerender.io/${url}`;
@@ -71,6 +67,5 @@ export default async function middleware(req) {
 }
 
 export const config = {
-	matcher:
-		"/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"
+	matcher: "/(.*)",
 };
