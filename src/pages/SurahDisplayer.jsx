@@ -47,6 +47,13 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
 	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
 
+  useEffect(() => {
+		if (quranText) {
+			window.prerenderReady = true; // Signal when data is loaded
+		}
+	}, [quranText]);
+
+
 	//Used to retrieve the previously chosen display settings after reload
 	useEffect(() => {
 		setTafsirModeActive(displaySettings.tafsirModeActive);

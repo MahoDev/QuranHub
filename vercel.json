@@ -1,3 +1,20 @@
 {
-  "routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }]
+	"routes": [{ "src": "/[^.]+", "dest": "/", "status": 200 }],
+	"rewrites": [
+		{
+			"source": "/(.*)",
+			"destination": "/api/prerender"
+		}
+	],
+	"headers": [
+		{
+			"source": "/(.*)",
+			"headers": [
+				{
+					"key": "X-Prerender-Token",
+					"value": "WqwUCX5fXuPHUznwpwTE"
+				}
+			]
+		}
+	]
 }
