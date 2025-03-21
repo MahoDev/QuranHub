@@ -47,12 +47,11 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
 	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
 
-  useEffect(() => {
+	useEffect(() => {
 		if (quranText) {
 			window.prerenderReady = true; // Signal when data is loaded
 		}
 	}, [quranText]);
-
 
 	//Used to retrieve the previously chosen display settings after reload
 	useEffect(() => {
@@ -369,11 +368,12 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		}
 	};
 
-	const surahMetaDescription = ` اقرأ ${surahNames[surahNumber]}
-${surahVerses[+surahNumber][1]} التي عدد آياتها ${surahNumToPagesMap[+surahNumber][0]} وتبدأ من صفحة ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة 
-بخط واضح مع التفسير والاستماع لتلاوة بصوت قراء مشهورين على منصة القرآن
-  `;
-
+   const surahMetaDescription = `أقرأ ${surahNames[surahNumber]}
+${surahVerses[+surahNumber][1]} هي سورة عدد آياتها 
+${surahNumToPagesMap[+surahNumber][0]} وفي المصحف تبدأ من صفحة 
+${surahNumToPagesMap[+surahNumber][1]} حتى صفحة 
+بخط واضح مع التفسير والاستماع لتلاوة بصوت قراء مشهورين على منصة القرآن الكريم
+`;
 	return (
 		<>
 			<Helmet>
@@ -388,6 +388,20 @@ ${surahVerses[+surahNumber][1]} التي عدد آياتها ${surahNumToPagesMa
 					property="og:url"
 					content={`https://quran-hub.vercel.app/surah/${surahNumber}`}
 				/>
+				<meta property="og:image" content="/public/social-media-pic.png" />
+
+				{/* Twitter Card Tags */}
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta
+					name="twitter:title"
+					content={`منصة القرآن |  ${surahNames[+surahNumber]}`}
+				/>
+				<meta name="twitter:description" content={surahMetaDescription} />
+				<meta
+					name="twitter:image"
+					content="https://quran-hub.vercel.app/social-media-pic.png"
+				/>
+
 				<script type="application/ld+json">
 					{`
           {
