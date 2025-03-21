@@ -4,8 +4,12 @@ export default async function middleware(req) {
 		/googlebot|bingbot|yahoo|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|applebot|mj12bot|ahrefsbot|semrushbot|prerender/i.test(
 			userAgent
 		);
+	const isStaticAsset =
+		/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|txt|xml|pdf)$/i.test(
+			req.nextUrl.pathname
+		);
 
-	if (isCrawler) {
+	if (isCrawler && !isStaticAsset) {
 		try {
 			// Use req.nextUrl.pathname for just the path (e.g., "/surah/1")
 			const path = new URL(req.url, `https://${req.headers.get("host")}`)
@@ -62,5 +66,16 @@ export default async function middleware(req) {
 }
 
 export const config = {
-	matcher: "/(.*)",
+	matcher: [
+		/*
+		 * Match all request paths except for the ones starting with:
+		 * - api (API routes)
+		 * - _next/static (static files)
+		 * - _next/image (image optimization files)
+		 * - favicon.ico (favicon file)
+		 * - robots.txt
+		 * - sitemap.xml
+		 */
+		"/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)",
+	],
 };
