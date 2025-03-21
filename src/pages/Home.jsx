@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import SurahsSection from "../components/SurahsSection";
 import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
 
 function Home() {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -27,6 +28,10 @@ function Home() {
 
 		navigate(navigatePath);
 	}
+
+	useEffect(() => {
+		window.prerenderReady = true;
+	}, []);
 
 	return (
 		<>
