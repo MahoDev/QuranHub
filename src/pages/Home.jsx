@@ -68,7 +68,8 @@ function Home() {
 
 			{/* Static reciters list for crawlers */}
 			<div style={{ display: "none" }} aria-hidden="true">
-				<h2>القراء المتوفرون لـ {surahNames[surahNumber]}</h2>
+				<h2>القراء المتوفرون للسور
+				</h2>
 				<ul>
 					{reciterNames.map((reciter, index) => (
 						<li key={index}>{reciter}</li>
