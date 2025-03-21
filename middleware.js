@@ -5,11 +5,16 @@ export default async function middleware(req) {
 			userAgent
 		);
 
+	// Extract the pathname from the request URL
+	const path = new URL(req.url, `https://${req.headers.get("host")}`).pathname;
+
+	// Explicitly bypass static files (robots.txt and sitemap.xml)
+	if (path === "/robots.txt" || path === "/sitemap.xml") {
+		return null; // Let Vercel serve the static file directly from public/
+	}
+
 	if (isCrawler) {
 		try {
-			// Use req.nextUrl.pathname for just the path (e.g., "/surah/1")
-			const path = new URL(req.url, `https://${req.headers.get("host")}`)
-				.pathname;
 			const url = `https://${req.headers.get("host")}${path}`;
 			const prerenderUrl = `https://service.prerender.io/${url}`;
 
