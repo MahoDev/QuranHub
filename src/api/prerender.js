@@ -1,3 +1,4 @@
+//redircts crawlers to cached pages on prerender.io or sends normal page to users
 export default async function handler(req) {
 	const userAgent = req.headers.get("user-agent") || "";
 	const isCrawler = /googlebot|bingbot|prerender/i.test(userAgent);
