@@ -4,12 +4,8 @@ export default async function middleware(req) {
 		/googlebot|bingbot|yahoo|baiduspider|duckduckbot|slurp|facebookexternalhit|twitterbot|linkedinbot|applebot|mj12bot|ahrefsbot|semrushbot|prerender/i.test(
 			userAgent
 		);
-	const isStaticAsset =
-		/\.(png|jpg|jpeg|gif|webp|svg|ico|css|js|txt|xml|pdf)$/i.test(
-			req.nextUrl.pathname
-		);
 
-	if (isCrawler && !isStaticAsset) {
+	if (isCrawler) {
 		try {
 			// Use req.nextUrl.pathname for just the path (e.g., "/surah/1")
 			const path = new URL(req.url, `https://${req.headers.get("host")}`)
