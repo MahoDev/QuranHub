@@ -3,6 +3,7 @@ import HeroSection from "../components/HeroSection";
 import SurahsSection from "../components/SurahsSection";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
+import { reciterNames } from "../assets/data/quran-info";
 
 function Home() {
 	const [searchParams, setSearchParams] = useSearchParams();
@@ -48,10 +49,7 @@ function Home() {
 					name="twitter:description"
 					content="موقع يقدم القرآن الكريم مكتوب بخط واضح وبالتشكيل مع تفسير الآيات وتلاوات متنوعة."
 				/>
-				<meta
-					name="twitter:image"
-					content="/public/social-media-pic.png"
-				/>
+				<meta name="twitter:image" content="/public/social-media-pic.png" />
 
 				<script type="application/ld+json">
 					{`
@@ -67,6 +65,16 @@ function Home() {
 			</Helmet>
 			<HeroSection />
 			<SurahsSection />
+
+			{/* Static reciters list for crawlers */}
+			<div style={{ display: "none" }} aria-hidden="true">
+				<h2>القراء المتوفرون لـ {surahNames[surahNumber]}</h2>
+				<ul>
+					{reciterNames.map((reciter, index) => (
+						<li key={index}>{reciter}</li>
+					))}
+				</ul>
+			</div>
 		</>
 	);
 }

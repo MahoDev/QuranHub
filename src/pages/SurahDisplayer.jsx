@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import BasmalaBlack from "/src/assets/basmala_black.svg";
 import {
+	reciterNames,
 	surahNames,
 	surahNumToPagesMap,
 	surahVerses,
@@ -559,6 +560,15 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						bottomBarDisplayed={bottomBarDisplayed}
 					/>
 				)}
+				{/* Static reciters list for crawlers */}
+				<div style={{ display: "none" }} aria-hidden="true">
+					<h2>القراء المتوفرون لـ {surahNames[surahNumber]}</h2>
+					<ul>
+						{reciterNames.map((reciter, index) => (
+							<li key={index}>{reciter}</li>
+						))}
+					</ul>
+				</div>
 			</div>
 		</>
 	);
