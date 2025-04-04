@@ -361,285 +361,285 @@ export const tafseerTypes = {
 };
 
 export const quranRecitations = {
-  1: {
-    name: "عبدالباسط عبد الصمد (مرتل)",
-    bitrate: {
-      "64kbps": "Abdul_Basit_Murattal_64kbps",
-      "192kbps": "Abdul_Basit_Murattal_192kbps",
-    },
-  },
-  2: {
-    name: "عبدالباسط عبد الصمد (مجود)",
-    bitrate: {
-      "64kbps": "AbdulSamad_64kbps_QuranExplorer.Com",
-      "128kbps": "Abdul_Basit_Mujawwad_128kbps",
-    },
-  },
-  3: {
-    name: "عبدالله بصفر",
-    bitrate: {
-      "32kbps": "Abdullah_Basfar_32kbps",
-      "64kbps": "Abdullah_Basfar_64kbps",
-      "192kbps": "Abdullah_Basfar_192kbps",
-    },
-  },
-  4: {
-    name: "عبدالرحمن السديس",
-    bitrate: {
-      "64kbps": "Abdurrahmaan_As-Sudais_64kbps",
-      "192kbps": "Abdurrahmaan_As-Sudais_192kbps",
-    },
-  },
-  5: {
-    name: "ابو بكر الشاطري",
-    bitrate: {
-      "64kbps": "Abu_Bakr_Ash-Shaatree_64kbps",
-      "128kbps": "Abu_Bakr_Ash-Shaatree_128kbps",
-    },
-  },
-  6: {
-    name: "أحمد العجمي",
-    bitrate: {
-      "64kbps": "Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com",
-      "128kbps": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
-    },
-  },
-  7: {
-    name: "مشاري العفاسي",
-    bitrate: {
-      "64kbps": "Alafasy_64kbps",
-      "128kbps": "Alafasy_128kbps",
-    },
-  },
-  8: {
-    name: "سعد الغامدي",
-    bitrate: {
-      "40kbps": "Ghamadi_40kbps",
-    },
-  },
-  9: {
-    name: "هاني الرفاعي",
-    bitrate: {
-      "64kbps": "Hani_Rifai_64kbps",
-      "192kbps": "Hani_Rifai_192kbps",
-    },
-  },
-  10: {
-    name: "محمود خليل الحصري (مرتل)",
-    bitrate: {
-      "64kbps": "Husary_64kbps",
-      "128kbps": "Husary_128kbps",
-    },
-  },
-  11: {
-    name: "محمود خليل الحصري (مجود)",
-    bitrate: {
-      "64kbps": "Husary_Mujawwad_64kbps",
-      "128kbps": "Husary_128kbps_Mujawwad",
-    },
-  },
-  12: {
-    name: "علي الحذيفي",
-    bitrate: {
-      "32kbps": "Hudhaify_32kbps",
-      "64kbps": "Hudhaify_64kbps",
-      "128kbps": "Hudhaify_128kbps",
-    },
-  },
-  13: {
-    name: "ابراهيم الاخضر",
-    bitrate: {
-      "32kbps": "Ibrahim_Akhdar_32kbps",
-    },
-  },
-  14: {
-    name: "ماهر المعيقلي",
-    bitrate: {
-      "64kbps": "Maher_AlMuaiqly_64kbps",
-      "128kbps": "MaherAlMuaiqly128kbps",
-    },
-  },
-  15: {
-    name: "محمد صديق المنشاوي (مرتل)",
-    bitrate: {
-      "16kbps": "Menshawi_16kbps",
-      "128kbps": "Minshawy_Murattal_128kbps",
-    },
-  },
-  16: {
-    name: "محمد صديق المنشاوي (مجود)",
-    bitrate: {
-      "64kbps": "Minshawy_Mujawwad_64kbps",
-      "192kbps": "Minshawy_Mujawwad_192kbps",
-    },
-  },
-  17: {
-    name: "محمد الطبلاوي (مرتل)",
-    bitrate: {
-      "64kbps": "Mohammad_al_Tablaway_64kbps",
-      "128kbps": "Mohammad_al_Tablaway_128kbps",
-    },
-  },
-  18: {
-    name: "محمد أيوب",
-    bitrate: {
-      "32kbps": "Muhammad_Ayyoub_32kbps",
-      "64kbps": "Muhammad_Ayyoub_64kbps",
-      "128kbps": "Muhammad_Ayyoub_128kbps",
-    },
-  },
-  19: {
-    name: "محمد جبريل",
-    bitrate: {
-      "64kbps": "Muhammad_Jibreel_64kbps",
-      "128kbps": "Muhammad_Jibreel_128kbps",
-    },
-  },
-  20: {
-    name: "سعود الشريم",
-    bitrate: {
-      "64kbps": "Saood_ash-Shuraym_64kbps",
-      "128kbps": "Saood_ash-Shuraym_128kbps",
-    },
-  },
-  21: {
-    name: "صلاح بوخاطر",
-    bitrate: {
-      "128kbps": "Salaah_AbdulRahman_Bukhatir_128kbps",
-    },
-  },
-  22: {
-    name: "عبدالمحسن القاسم",
-    bitrate: {
-      "192kbps": "Muhsin_Al_Qasim_192kbps",
-    },
-  },
-  23: {
-    name: "عبدالله عواد الجهني",
-    bitrate: {
-      "128kbps": "Abdullaah_3awwaad_Al-Juhaynee_128kbps",
-    },
-  },
-  24: {
-    name: "صلاح البدير",
-    bitrate: {
-      "128kbps": "Salah_Al_Budair_128kbps",
-    },
-  },
-  25: {
-    name: "عبد الله المطرود",
-    bitrate: {
-      "128kbps": "Abdullah_Matroud_128kbps",
-    },
-  },
-  26: {
-    name: "أحمد نعينع (مرتل)",
-    bitrate: {
-      "128kbps": "Ahmed_Neana_128kbps",
-    },
-  },
-  27: {
-    name: "محمد عبد الكريم",
-    bitrate: {
-      "128kbps": "Muhammad_AbdulKareem_128kbps",
-    },
-  },
-  28: {
-    name: "خليفة الطنيجي",
-    bitrate: {
-      "64kbps": "khalefa_al_tunaiji_64kbps",
-    },
-  },
-  29: {
-    name: "محمود علي البنا (مجود)",
-    bitrate: {
-      "32kbps": "mahmoud_ali_al_banna_32kbps",
-    },
-  },
-  30: {
-    name: "ياسر الدوسري",
-    bitrate: {
-      "128kbps": "Yasser_Ad-Dussary_128kbps",
-    },
-  },
-  31: {
-    name: "ناصر القطامي",
-    bitrate: {
-      "128kbps": "Nasser_Alqatami_128kbps",
-    },
-  },
-  32: {
-    name: "علي حجاج السويسي",
-    bitrate: {
-      "128kbps": "Ali_Hajjaj_AlSuesy_128kbps",
-    },
-  },
-  33: {
-    name: "سهل زين يس",
-    bitrate: {
-      "128kbps": "Sahl_Yassin_128kbps",
-    },
-  },
-  34: {
-    name: "2 احمد العجمي",
-    bitrate: {
-      "128kbps": "ahmed_ibn_ali_al_ajamy_128kbps",
-    },
-  },
-  35: {
-    name: "كريم منصوري",
-    bitrate: {
-      "40kbps": "Karim_Mansoori_40kbps",
-    },
-  },
-  36: {
-    name: "عزيز العليلي",
-    bitrate: {
-      "128kbps": "aziz_alili_128kbps",
-    },
-  },
-  37: {
-    name: "ياسر سلامة",
-    bitrate: {
-      "128kbps": "Yaser_Salamah_128kbps",
-    },
-  },
-  38: {
-    name: "أكرم العلاقمي",
-    bitrate: {
-      "128kbps": "Akram_AlAlaqimy_128kbps",
-    },
-  },
-  39: {
-    name: "علي جابر",
-    bitrate: {
-      "64kbps": "Ali_Jaber_64kbps",
-    },
-  },
-  40: {
-    name: "فارس عباد",
-    bitrate: {
-      "64kbps": "Fares_Abbad_64kbps",
-    },
-  },
-  41: {
-    name: "أيمن سويد",
-    bitrate: {
-      "64kbps": "Ayman_Sowaid_64kbps",
-    },
-  },
-  42: {
-    name: "محمود خليل الحصري (مُعلِم)",
-    bitrate: {
-      "128kbps": "Husary_Muallim_128kbps",
-    },
-  },
-  43: {
-    name: "خالد عبدالله القحطاني",
-    bitrate: {
-      "192kbps": "Khaalid_Abdullaah_al-Qahtaanee_192kbps",
-    },
-  },
+	1: {
+		name: "عبدالباسط عبد الصمد (مرتل)",
+		bitrate: {
+			"64kbps": "Abdul_Basit_Murattal_64kbps",
+			"192kbps": "Abdul_Basit_Murattal_192kbps",
+		},
+	},
+	2: {
+		name: "عبدالباسط عبد الصمد (مجود)",
+		bitrate: {
+			"64kbps": "AbdulSamad_64kbps_QuranExplorer.Com",
+			"128kbps": "Abdul_Basit_Mujawwad_128kbps",
+		},
+	},
+	3: {
+		name: "عبدالله بصفر",
+		bitrate: {
+			"32kbps": "Abdullah_Basfar_32kbps",
+			"64kbps": "Abdullah_Basfar_64kbps",
+			"192kbps": "Abdullah_Basfar_192kbps",
+		},
+	},
+	4: {
+		name: "عبدالرحمن السديس",
+		bitrate: {
+			"64kbps": "Abdurrahmaan_As-Sudais_64kbps",
+			"192kbps": "Abdurrahmaan_As-Sudais_192kbps",
+		},
+	},
+	5: {
+		name: "ابو بكر الشاطري",
+		bitrate: {
+			"64kbps": "Abu_Bakr_Ash-Shaatree_64kbps",
+			"128kbps": "Abu_Bakr_Ash-Shaatree_128kbps",
+		},
+	},
+	6: {
+		name: "أحمد العجمي 1",
+		bitrate: {
+			"64kbps": "Ahmed_ibn_Ali_al-Ajamy_64kbps_QuranExplorer.Com",
+			"128kbps": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
+		},
+	},
+	7: {
+		name: "مشاري العفاسي",
+		bitrate: {
+			"64kbps": "Alafasy_64kbps",
+			"128kbps": "Alafasy_128kbps",
+		},
+	},
+	8: {
+		name: "سعد الغامدي",
+		bitrate: {
+			"40kbps": "Ghamadi_40kbps",
+		},
+	},
+	9: {
+		name: "هاني الرفاعي",
+		bitrate: {
+			"64kbps": "Hani_Rifai_64kbps",
+			"192kbps": "Hani_Rifai_192kbps",
+		},
+	},
+	10: {
+		name: "محمود خليل الحصري (مرتل)",
+		bitrate: {
+			"64kbps": "Husary_64kbps",
+			"128kbps": "Husary_128kbps",
+		},
+	},
+	11: {
+		name: "محمود خليل الحصري (مجود)",
+		bitrate: {
+			"64kbps": "Husary_Mujawwad_64kbps",
+			"128kbps": "Husary_128kbps_Mujawwad",
+		},
+	},
+	12: {
+		name: "علي الحذيفي",
+		bitrate: {
+			"32kbps": "Hudhaify_32kbps",
+			"64kbps": "Hudhaify_64kbps",
+			"128kbps": "Hudhaify_128kbps",
+		},
+	},
+	13: {
+		name: "ابراهيم الاخضر",
+		bitrate: {
+			"32kbps": "Ibrahim_Akhdar_32kbps",
+		},
+	},
+	14: {
+		name: "ماهر المعيقلي",
+		bitrate: {
+			"64kbps": "Maher_AlMuaiqly_64kbps",
+			"128kbps": "MaherAlMuaiqly128kbps",
+		},
+	},
+	15: {
+		name: "محمد صديق المنشاوي (مرتل)",
+		bitrate: {
+			"16kbps": "Menshawi_16kbps",
+			"128kbps": "Minshawy_Murattal_128kbps",
+		},
+	},
+	16: {
+		name: "محمد صديق المنشاوي (مجود)",
+		bitrate: {
+			"64kbps": "Minshawy_Mujawwad_64kbps",
+			"192kbps": "Minshawy_Mujawwad_192kbps",
+		},
+	},
+	17: {
+		name: "محمد الطبلاوي (مرتل)",
+		bitrate: {
+			"64kbps": "Mohammad_al_Tablaway_64kbps",
+			"128kbps": "Mohammad_al_Tablaway_128kbps",
+		},
+	},
+	18: {
+		name: "محمد أيوب",
+		bitrate: {
+			"32kbps": "Muhammad_Ayyoub_32kbps",
+			"64kbps": "Muhammad_Ayyoub_64kbps",
+			"128kbps": "Muhammad_Ayyoub_128kbps",
+		},
+	},
+	19: {
+		name: "محمد جبريل",
+		bitrate: {
+			"64kbps": "Muhammad_Jibreel_64kbps",
+			"128kbps": "Muhammad_Jibreel_128kbps",
+		},
+	},
+	20: {
+		name: "سعود الشريم",
+		bitrate: {
+			"64kbps": "Saood_ash-Shuraym_64kbps",
+			"128kbps": "Saood_ash-Shuraym_128kbps",
+		},
+	},
+	21: {
+		name: "صلاح بوخاطر",
+		bitrate: {
+			"128kbps": "Salaah_AbdulRahman_Bukhatir_128kbps",
+		},
+	},
+	22: {
+		name: "عبدالمحسن القاسم",
+		bitrate: {
+			"192kbps": "Muhsin_Al_Qasim_192kbps",
+		},
+	},
+	23: {
+		name: "عبدالله عواد الجهني",
+		bitrate: {
+			"128kbps": "Abdullaah_3awwaad_Al-Juhaynee_128kbps",
+		},
+	},
+	24: {
+		name: "صلاح البدير",
+		bitrate: {
+			"128kbps": "Salah_Al_Budair_128kbps",
+		},
+	},
+	25: {
+		name: "عبد الله المطرود",
+		bitrate: {
+			"128kbps": "Abdullah_Matroud_128kbps",
+		},
+	},
+	26: {
+		name: "أحمد نعينع (مرتل)",
+		bitrate: {
+			"128kbps": "Ahmed_Neana_128kbps",
+		},
+	},
+	27: {
+		name: "محمد عبد الكريم",
+		bitrate: {
+			"128kbps": "Muhammad_AbdulKareem_128kbps",
+		},
+	},
+	28: {
+		name: "خليفة الطنيجي",
+		bitrate: {
+			"64kbps": "khalefa_al_tunaiji_64kbps",
+		},
+	},
+	29: {
+		name: "محمود علي البنا (مجود)",
+		bitrate: {
+			"32kbps": "mahmoud_ali_al_banna_32kbps",
+		},
+	},
+	30: {
+		name: "ياسر الدوسري",
+		bitrate: {
+			"128kbps": "Yasser_Ad-Dussary_128kbps",
+		},
+	},
+	31: {
+		name: "ناصر القطامي",
+		bitrate: {
+			"128kbps": "Nasser_Alqatami_128kbps",
+		},
+	},
+	32: {
+		name: "علي حجاج السويسي",
+		bitrate: {
+			"128kbps": "Ali_Hajjaj_AlSuesy_128kbps",
+		},
+	},
+	33: {
+		name: "سهل زين يس",
+		bitrate: {
+			"128kbps": "Sahl_Yassin_128kbps",
+		},
+	},
+	34: {
+		name: "أحمد العجمي 2",
+		bitrate: {
+			"128kbps": "ahmed_ibn_ali_al_ajamy_128kbps",
+		},
+	},
+	35: {
+		name: "كريم منصوري",
+		bitrate: {
+			"40kbps": "Karim_Mansoori_40kbps",
+		},
+	},
+	36: {
+		name: "عزيز العليلي",
+		bitrate: {
+			"128kbps": "aziz_alili_128kbps",
+		},
+	},
+	37: {
+		name: "ياسر سلامة",
+		bitrate: {
+			"128kbps": "Yaser_Salamah_128kbps",
+		},
+	},
+	38: {
+		name: "أكرم العلاقمي",
+		bitrate: {
+			"128kbps": "Akram_AlAlaqimy_128kbps",
+		},
+	},
+	39: {
+		name: "علي جابر",
+		bitrate: {
+			"64kbps": "Ali_Jaber_64kbps",
+		},
+	},
+	40: {
+		name: "فارس عباد",
+		bitrate: {
+			"64kbps": "Fares_Abbad_64kbps",
+		},
+	},
+	41: {
+		name: "أيمن سويد",
+		bitrate: {
+			"64kbps": "Ayman_Sowaid_64kbps",
+		},
+	},
+	42: {
+		name: "محمود خليل الحصري (مُعلِم)",
+		bitrate: {
+			"128kbps": "Husary_Muallim_128kbps",
+		},
+	},
+	43: {
+		name: "خالد عبدالله القحطاني",
+		bitrate: {
+			"192kbps": "Khaalid_Abdullaah_al-Qahtaanee_192kbps",
+		},
+	},
 };
 
 

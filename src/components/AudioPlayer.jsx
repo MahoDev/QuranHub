@@ -113,7 +113,7 @@ function AudioPlayer({
 		//معادلة التناسب
 		const timeToJumpTo =
 			((relativeXPosition / elementWidth) * 100 * state.duration) / 100;
-		controls.seek(timeToJumpTo);
+		controls.seek(state.duration - timeToJumpTo);
 	};
 
 	const findHoverTime = (event) => {
@@ -124,12 +124,12 @@ function AudioPlayer({
 		const currentHoverTime =
 			((relativeXPosition / elementWidth) * 100 * state.duration) / 100;
 		const proccessedTime = Math.max(0, currentHoverTime);
-		const formattedTime = formatTime(proccessedTime);
+		const formattedTime = formatTime(state.duration - proccessedTime);
 		setHoverData({
 			time: formattedTime,
 			xPosition:
-				(relativeXPosition / elementWidth) * 100 <= 80
-					? (relativeXPosition / elementWidth) * 100
+				(1 - relativeXPosition / elementWidth) * 100 <= 80
+					? (1 - relativeXPosition / elementWidth) * 100
 					: 80,
 		});
 	};
@@ -217,7 +217,7 @@ function AudioPlayer({
 			</div>
 
 			<div
-				style={{ left: `${hoverData.xPosition}%` }}
+				style={{ right: `${hoverData.xPosition}%` }}
 				className="hover-time peer-hover:block hidden w-16 h-6 absolute  top-[-35px] bg-gray-500/90 rounded text-sm mx-auto"
 			>
 				<span className=" block w-fit m-auto text-white">
@@ -308,10 +308,10 @@ function AudioPlayer({
 					}}
 				/>
 			</div>
-			<span className="current-time text-gray-500 text-md absolute left-1 top-1">
+			<span className="current-time text-gray-500 text-md absolute right-1 top-1">
 				{formatTime(state.time)}
 			</span>
-			<span className="full-duration text-gray-500 text-md absolute right-1 top-1">
+			<span className="full-duration text-gray-500 text-md absolute left-1 top-1">
 				{formatTime(state.duration)}
 			</span>
 			<div className="relative h-fit ">
