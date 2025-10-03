@@ -1,11 +1,10 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { surahNames, tafseerTypes } from "../assets/data/quran-info";
-import { FaArrowLeft, FaArrowRight, FaBars, FaFont } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaBars, FaFont, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import OutsideClickHandler from "./OutsideClickHandler";
 
 function BottomBar({
 	surahData,
-	isDisplayed,
 	isSideBarDisplayed,
 	onSideBarDisplayedChange,
 	onPageChange,
@@ -13,69 +12,104 @@ function BottomBar({
 	currentTafsirId,
 	fontSize,
 	onDisplayStateChange,
+	isListeningMode, // Add this prop to know if audio player is present
+	onVisibilityChange, // Callback to notify parent of visibility changes
 }) {
-	const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(true);
+	const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(false);
 	const [fontBoxVisible, setFontBoxVisible] = useState(false);
+	const [isVisible, setIsVisible] = useState(true);
 	const scrollToRef = useRef();
 
-	let bottomBarStyles = "";
-	if (isDisplayed) {
-		bottomBarStyles = "fixed w-full ";
-	} else {
-		bottomBarStyles = "hidden w-0 ";
-	}
+	// Notify parent when visibility changes
+	useEffect(() => {
+		if (onVisibilityChange) {
+			onVisibilityChange(isVisible);
+		}
+	}, [isVisible, onVisibilityChange]);
 
 	return (
-		<div
-			id="bottombar"
-			className={
-				bottomBarStyles +
-				"z-[10] left-0 bottom-0 h-[81px] p-4 pt-5 bg-emerald-800 text-white rounded shadow-inner transition "
-			}
-		>
-			<div className="flex justify-between w-full ">
-				<div className="flex gap-4 items-center">
+		<>
+			{/* Floating Toggle Button - Shows when bar is hidden */}
+			{!isVisible && (
+				<button
+					onClick={() => setIsVisible(true)}
+					className={`fixed left-1/2 transform -translate-x-1/2 z-[11] bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-full shadow-lg transition-all flex items-center gap-2 ${
+						isListeningMode ? "bottom-[90px]" : "bottom-4"
+					}`}
+					title="إظهار شريط التحكم"
+				>
+					<FaChevronUp className="text-lg" />
+					<span className="font-semibold">التحكم</span>
+				</button>
+			)}
+
+			{/* Bottom Bar */}
+			<div
+				id="bottombar"
+				className={`fixed w-full z-[10] left-0 bg-emerald-800 text-white shadow-lg transition-all duration-300 h-[81px] p-4 pt-5 ${
+					isVisible ? "bottom-0" : "bottom-[-100px]"
+				}`}
+			>
+				{/* Hide Toggle Button */}
+				<button
+					onClick={() => {
+						setIsVisible(false);
+						setTafirBoxVisible(false);
+						setFontBoxVisible(false);
+					}}
+					className="absolute top-1 left-1/2 transform -translate-x-1/2 bg-emerald-700 hover:bg-emerald-600 rounded-full p-1 transition-all"
+					title="إخفاء شريط التحكم"
+				>
+					<FaChevronDown className="text-sm" />
+				</button>
+
+				<div className="flex justify-between w-full">
+				<div className="flex gap-3 items-center">
 					<div
 						onClick={(e) => {
 							onPageChange("backward");
 						}}
-						className="p-1 cursor-pointer border-dashed border-2 border-emerald-800 hover:border-white rounded-lg"
+						className="flex items-center gap-1 p-2 cursor-pointer border-2 border-emerald-800 hover:border-white hover:bg-emerald-700 rounded-lg transition-all"
 					>
-						<FaArrowRight className="inline text-xl" />
-						<span className="hidden sm:inline">السابق</span>
+						<FaArrowRight className="text-xl" />
+						<span className="hidden sm:inline font-semibold">السابق</span>
 					</div>
 					<div
 						onClick={(e) => {
 							onPageChange("forward");
 						}}
-						className="p-1 cursor-pointer border-dashed border-2 border-emerald-800 hover:border-white rounded-lg"
+						className="flex items-center gap-1 p-2 cursor-pointer border-2 border-emerald-800 hover:border-white hover:bg-emerald-700 rounded-lg transition-all"
 					>
-						<span className="hidden sm:inline">التالي</span>
-						<FaArrowLeft className="inline text-xl" />
+						<span className="hidden sm:inline font-semibold">التالي</span>
+						<FaArrowLeft className="text-xl" />
 					</div>
-					<div
-						className="flex gap-1  select-none p-1 cursor-pointer border-dashed border-2 border-emerald-800 hover:border-white rounded-lg"
-						id="fontBoxToggler"
-						onClick={() => {
-							setFontBoxVisible(!fontBoxVisible);
-						}}
-					>
-						<span>الخط</span>
-						<FaFont className="text-xl" />
-					</div>
+							<div
+								className={`flex gap-2 items-center select-none p-2 cursor-pointer border-2 rounded-lg transition-all ${
+									fontBoxVisible
+										? "bg-white text-emerald-800 border-white"
+										: "border-emerald-800 hover:border-white hover:bg-emerald-700"
+								}`}
+								id="fontBoxToggler"
+								onClick={() => {
+									setFontBoxVisible(!fontBoxVisible);
+								}}
+							>
+								<span className="font-semibold">الخط</span>
+								<FaFont className="text-lg" />
+							</div>
 
-					<OutsideClickHandler
-						onOutsideClick={() => {
-							setFontBoxVisible(false);
-						}}
-						excludedSelectors={["#fontBox", "#fontBoxToggler"]}
-					>
-						<div
-							id="fontBox"
-							className={`${
-								!fontBoxVisible ? "hidden" : ""
-							} absolute right-16 translate-y-[-192px] rounded-t-lg p-2 w-[180px] h-[150px]  text-black dark:text-white  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none  z-[-1]`}
-						>
+							<OutsideClickHandler
+								onOutsideClick={() => {
+									setFontBoxVisible(false);
+								}}
+								excludedSelectors={["#fontBox", "#fontBoxToggler"]}
+							>
+								<div
+									id="fontBox"
+									className={`${
+										!fontBoxVisible ? "hidden" : ""
+									} absolute right-16 translate-y-[-192px] rounded-t-lg p-2 w-[180px] h-[150px]  text-black dark:text-white  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[20]`}
+								>
 							<div className="flex gap-2">
 								<div>حجم الخط</div>
 								<div
@@ -101,26 +135,26 @@ function BottomBar({
 								</div>
 							</div>
 						</div>
-					</OutsideClickHandler>
+							</OutsideClickHandler>
 				</div>
-				<div className="flex gap-1 items-center">
-					<div className="flex items-center space-x-2 sm:space-x-4 p-1 relative">
-						<div
-							style={{
-								position: "relative",
-							}}
-						>
-							<OutsideClickHandler
-								onOutsideClick={() => {
-									setIsTafirBoxVisible(false);
+				<div className="flex gap-2 items-center">
+						<div className="flex items-center space-x-2 sm:space-x-4 p-1 relative">
+							<div
+								style={{
+									position: "relative",
 								}}
-								excludedSelectors={["#tafseerBox", "#tafseerBoxToggler"]}
 							>
+								<OutsideClickHandler
+									onOutsideClick={() => {
+										setIsTafirBoxVisible(false);
+									}}
+									excludedSelectors={["#tafseerBox", "#tafseerBoxToggler"]}
+								>
 								<div
 									id="tafseerBox"
 									className={`${
 										!tafsirBoxVisible ? "hidden" : ""
-									}  absolute translate-y-[-182px] translate-x-[135px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[-1] scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)]`}
+									}  absolute translate-y-[-182px] translate-x-[135px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll text-black dark:text-white bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none z-[20] scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)]`}
 								>
 									<div className="flex items-center justify-between mb-2">
 										{" "}
@@ -175,7 +209,11 @@ function BottomBar({
 
 							<span
 								id="tafseerBoxToggler"
-								className="relative left-4 p-1 cursor-pointer border-dashed border-2 border-emerald-800 hover:border-white rounded-lg select-none"
+								className={`relative left-4 p-2 cursor-pointer border-2 rounded-lg select-none transition-all font-semibold ${
+									tafsirBoxVisible
+										? "bg-white text-emerald-800 border-white"
+										: "border-emerald-800 hover:border-white hover:bg-emerald-700"
+								}`}
 								onClick={() => {
 									setIsTafirBoxVisible(!tafsirBoxVisible);
 								}}
@@ -187,19 +225,23 @@ function BottomBar({
 
 					{/* <div className="max-w-[53px] ">{surahNames[surahData?.number]}</div> */}
 					<div
-						className="flex gap-2 hover:cursor-pointer select-none
-            p-1 cursor-pointer border-dashed border-2 border-emerald-800 hover:border-white rounded-lg"
+						className={`flex gap-2 items-center hover:cursor-pointer select-none p-2 cursor-pointer border-2 rounded-lg transition-all ${
+							isSideBarDisplayed
+								? "bg-white text-emerald-800 border-white"
+								: "border-emerald-800 hover:border-white hover:bg-emerald-700"
+						}`}
 						id="sidebarToggler"
 						onClick={() => {
 							onSideBarDisplayedChange(!isSideBarDisplayed);
 						}}
 					>
-						<span>الانتقال</span>
-						<FaBars className="text-2xl min-w-[15px] " />
+						<span className="font-semibold">الانتقال</span>
+						<FaBars className="text-xl min-w-[15px]" />
 					</div>
 				</div>
 			</div>
 		</div>
+		</>
 	);
 }
 

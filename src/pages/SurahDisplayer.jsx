@@ -37,9 +37,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const [tafsirId, setTafsirId] = useState(16);
 	const containerRef = useRef(null);
 	const navigate = useNavigate();
-	const [bottomBarDisplayed, setBottomBarDisplayed] = useState(false);
 	const [mode, setMode] = useState("reading");
 	const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
+	const [bottomBarVisible, setBottomBarVisible] = useState(true);
 	const [tafsirModeActive, setTafsirModeActive] = useState(false);
 	const [loadingSurah, setLoadingSurah] = useState(false);
 	const [currentVerse, setCurrentVerse] = useState(1);
@@ -518,28 +518,16 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					</div>
 				</div>
 
-				<div
-					className="fixed right-1 opacity-10 hover:opacity-100 hover:stroke-1 md:opacity-100 bottom-24 flex flex-col items-center z-10 hover:text-amber-500 hover:cursor-pointer"
-					onClick={() => {
-						setBottomBarDisplayed(!bottomBarDisplayed);
-					}}
-				>
-					<DiAptana className="text-4xl pulse rounded" />
-					<span className="mr-2  pulse select-none">
-						<span>التفسير</span>
-						<div></div>
-						<span>و التنقل </span>
-					</span>{" "}
-				</div>
 				<BottomBar
 					surahData={surahData}
-					isDisplayed={bottomBarDisplayed}
 					isSideBarDisplayed={sideBarDisplayed}
 					onSideBarDisplayedChange={setSideBarDisplayed}
 					onPageChange={handlePageChange}
 					tafsirModeActive={tafsirModeActive}
 					currentTafsirId={tafsirId}
 					fontSize={fontSize}
+					isListeningMode={mode === "listening"}
+					onVisibilityChange={setBottomBarVisible}
 					//used to set TafsirMode and TafsirId and fontSize
 					onDisplayStateChange={handleDisplayStateChange}
 				/>
@@ -549,7 +537,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					}}
 					excludedSelectors={["#sidebar", "#sidebarToggler"]}
 				>
-					{sideBarDisplayed && bottomBarDisplayed ? (
+					{sideBarDisplayed ? (
 						<SideBar
 							surahData={surahData}
 							currentPage={currentPage}
@@ -566,7 +554,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						currentVerse={currentVerse}
 						onVerseNavigation={handleVerseNavigation}
 						currentWordInfo={currentWordInfo}
-						bottomBarDisplayed={bottomBarDisplayed}
+						bottomBarDisplayed={bottomBarVisible}
 					/>
 				)}
 				{/* Static reciters list for crawlers */}
