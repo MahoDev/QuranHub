@@ -204,8 +204,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 						onCurrentWordChange={setCurrentWordInfo}
 						key={ayah["aya_no"]}
 						ayahData={ayah}
-						currentVerse={currentVerse}
+						currentVerse={mode === "listening" ? currentVerse : null}
 						handleSurahSettingsChange={handleSurahSettingsChange}
+						mode={mode}
 					/>
 				);
 			});
@@ -217,8 +218,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 							onCurrentWordChange={setCurrentWordInfo}
 							ayahData={ayah}
 							key={ayah["aya_no"]}
-							currentVerse={currentVerse}
+							currentVerse={mode === "listening" ? currentVerse : null}
 							handleSurahSettingsChange={handleSurahSettingsChange}
+							mode={mode}
 						/>
 						<div
 							className={`tafseerText  text-gray-700 dark:text-gray-300  text-${

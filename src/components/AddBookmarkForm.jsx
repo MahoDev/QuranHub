@@ -12,10 +12,28 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 	const [loading, setLoading] = useState(false);
 
 	const handleAddBookmark = async () => {
+		// Check if ayahsInCurrentPage is available and not empty
+		if (!ayahsInCurrentPage || ayahsInCurrentPage.length === 0) {
+			setError("جاري تحميل بيانات السورة، يرجى المحاولة مرة أخرى");
+			return;
+		}
+
+		// Check if ayahNumber is valid
+		if (!ayahNumber) {
+			setError("يرجى اختيار آية صالحة");
+			return;
+		}
+
 		try {
 			const ayahText = ayahsInCurrentPage?.find(
 				(ayah) => ayahNumber == ayah.aya_no
 			)?.aya_text;
+
+			// Check if ayahText is available
+			if (!ayahText) {
+				setError("لم يتم العثور على نص الآية، يرجى المحاولة مرة أخرى");
+				return;
+			}
 
 			const bookmarkObj = {
 				userId: auth.currentUser.uid,
@@ -26,6 +44,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 				ayahText: ayahText?.slice(0, ayahText?.length - 2),
 				bookmarkDate: Timestamp.fromDate(new Date()),
 			};
+			console.log(bookmarkObj);
 			const collectionRef = collection(firestore, "bookmarks");
 			setLoading(true);
 			await addDoc(collectionRef, bookmarkObj);
@@ -49,9 +68,11 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 
 	useEffect(() => {
 		const firstAyahInPage = ayahsInCurrentPage?.at(0)?.aya_no;
-		setAyahNumber(firstAyahInPage);
+		if (firstAyahInPage) {
+			setAyahNumber(firstAyahInPage);
+		}
 		setPageNumber(currentPage);
-	}, [currentPage]);
+	}, [currentPage, ayahsInCurrentPage]);
 
 	return (
 		<div className="text-black dark:text-white text-center  ">
@@ -85,7 +106,13 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 						value={ayahNumber}
 						onChange={(e) => setAyahNumber(e.target.value)}
 						required
+						disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0}
 					>
+						<option value="" disabled>
+							{!ayahsInCurrentPage || ayahsInCurrentPage.length === 0
+								? "جاري التحميل..."
+								: "اختر الآية"}
+						</option>
 						{/* Iterate over your list of ayahs and render options */}
 						{ayahsInCurrentPage?.map((ayah) => (
 							<option key={ayah?.id} value={ayah?.aya_no}>
@@ -96,8 +123,9 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 				</div>
 				<button
 					type="submit"
-					className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-md  md:self-end translate-y-[-2px] "
+					className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-md  md:self-end translate-y-[-2px] disabled:bg-gray-400 disabled:cursor-not-allowed"
 					onClick={handleAddBookmark}
+					disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0 || !ayahNumber}
 				>
 					حفظ
 				</button>

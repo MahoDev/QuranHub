@@ -25,6 +25,7 @@ function Profile() {
   const [sortByDate, setSortByDate] = useState(true); // true for descending, false for ascending
   const [showOnlyRecent, setShowOnlyRecent] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [bookmarkToDelete, setBookmarkToDelete] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -64,11 +65,21 @@ function Profile() {
     });
   };
 
-  const handleDeleteBookmark = async (bookmarkId) => {
+  const handleDeleteBookmark = (bookmarkId) => {
+    setBookmarkToDelete(bookmarkId);
+    setShowConfirmation(true);
+  };
+
+  const confirmDeleteBookmark = async () => {
+    if (!bookmarkToDelete) return;
+    
     try {
-      await deleteDoc(doc(firestore, "bookmarks", bookmarkId));
+      await deleteDoc(doc(firestore, "bookmarks", bookmarkToDelete));
     } catch (err) {
       console.error(err.message);
+    } finally {
+      setBookmarkToDelete(null);
+      setShowConfirmation(false);
     }
   };
 
@@ -156,20 +167,20 @@ function Profile() {
         <div className="flex justify-end mb-4">
           <button
             onClick={toggleSortOrder}
-            className="mr-4 bg-emerald-500 dark:bg-emerald-800 hover:bg-emerald-600 text-white py-2 px-4 rounded-full"
+            className="mr-4 bg-emerald-500 dark:bg-emerald-800 hover:bg-emerald-600 dark:hover:bg-emerald-700 text-white py-2 px-4 rounded-full transition-colors duration-200"
           >
             {sortByDate ? "ترتيب حسب الأقدم" : "ترتيب حسب الأحدث"}
           </button>
           <button
             onClick={toggleRecentFilter}
-            className="bg-emerald-500  hover:bg-emerald-600 dark:bg-emerald-800 text-white py-2 px-4 rounded-full"
+            className="bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-800 dark:hover:bg-emerald-700 text-white py-2 px-4 rounded-full transition-colors duration-200"
           >
             {showOnlyRecent ? "إظهار الكل" : "عرض الأحدث فقط"}
           </button>
         </div>
-        <div className="mb-8">
+        <div className="mb-8 max-h-[600px] overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-thumb-emerald-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-700">
           {!loading ? (
-            <div className="overflow-auto">
+            <div>
               <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {sortedBookmarks.map((bookmark) => (
                   <li
@@ -205,7 +216,7 @@ function Profile() {
                     </p>
 
                     <span
-                      className="text-emerald-500 cursor-pointer"
+                      className="text-emerald-500 hover:text-emerald-600 cursor-pointer transition-colors duration-200"
                       onClick={() => {
                         handleBookmarkNavigation(bookmark);
                       }}
@@ -215,7 +226,8 @@ function Profile() {
                     </span>
                     <span
                       className="text-red-500 hover:text-red-600 cursor-pointer absolute top-2 left-4"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleDeleteBookmark(bookmark.id);
                       }}
                       title="حذف"
@@ -243,10 +255,11 @@ function Profile() {
         {/* Confirmation Modal */}
         {showConfirmation && (
           <Modal
-            bodyText="هل أنت متأكد من رغبتك في حذف الحساب؟"
-            onConfirm={confirmDeleteAccount}
+            bodyText={bookmarkToDelete ? "هل أنت متأكد من رغبتك في حذف هذه العلامة المرجعية؟" : "هل أنت متأكد من رغبتك في حذف الحساب؟"}
+            onConfirm={bookmarkToDelete ? confirmDeleteBookmark : confirmDeleteAccount}
             onCancel={() => {
               setShowConfirmation(false);
+              setBookmarkToDelete(null);
             }}
           />
         )}
