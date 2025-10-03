@@ -45,6 +45,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const [currentVerse, setCurrentVerse] = useState(1);
 	const [currentWordInfo, setCurrentWordInfo] = useState(null);
 	const [fontSize, setFontSize] = useState(3);
+	const [highlightVerse, setHighlightVerse] = useState(false); // For bookmark navigation
 	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
 	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
 
@@ -182,6 +183,12 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 			handleSurahSettingsChange({ currentSurah: +surahNumber });
 			setCurrentPage(surahSettings.currentPage);
 			setCurrentVerse(surahSettings.currentVerse);
+			// Enable highlight if coming from bookmark navigation
+			if (surahSettings.currentVerse > 1) {
+				setHighlightVerse(true);
+				// Auto-hide highlight after 5 seconds
+				setTimeout(() => setHighlightVerse(false), 5000);
+			}
 		} else {
 			//used mainly when navigating to surah by typing url link
 			//set to first page and verse in surah
@@ -204,7 +211,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 						onCurrentWordChange={setCurrentWordInfo}
 						key={ayah["aya_no"]}
 						ayahData={ayah}
-						currentVerse={mode === "listening" ? currentVerse : null}
+						currentVerse={mode === "listening" || highlightVerse ? currentVerse : null}
 						handleSurahSettingsChange={handleSurahSettingsChange}
 						mode={mode}
 					/>
@@ -218,7 +225,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 							onCurrentWordChange={setCurrentWordInfo}
 							ayahData={ayah}
 							key={ayah["aya_no"]}
-							currentVerse={mode === "listening" ? currentVerse : null}
+							currentVerse={mode === "listening" || highlightVerse ? currentVerse : null}
 							handleSurahSettingsChange={handleSurahSettingsChange}
 							mode={mode}
 						/>
