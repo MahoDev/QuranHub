@@ -14,10 +14,10 @@ function SideBar({
   currentVerse,
   handleSurahSettingsChange,
 }) {
-  const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses
+  const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses || Text
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
-  const surahNumber = surahData[0].sura_no;
+  const surahNumber = surahData[0]?.sura_no;
   const focusStyle = "bg-emerald-700 focus";
   const scrollToRef = useRef(null);
   let content = "";
@@ -40,15 +40,25 @@ function SideBar({
       });
     } else if (filter === "Pages") {
       searchResults = quranPages.filter((page) => page == searchText);
-    } else {
-      searchResults = surahData.filter((ayah) => ayah.aya_no == searchText);
+    } else if (filter === "Verses") {
+      // Search by both text content and verse number
+      searchResults = surahData.filter((ayah) => {
+        // Check if search text matches verse number
+        const matchesNumber = ayah.aya_no == searchText;
+        
+        // Check if search text matches verse content
+        const matchesText = convertAlifToAlifWasl(ayah.aya_text_emlaey).includes(
+          convertAlifToAlifWasl(searchText)
+        );
+        
+        return matchesNumber || matchesText;
+      });
     }
     return searchResults;
   };
 
-  let firstVerseInPage = 1;
   if (filter === "Surahs") {
-    let searchResults = applySearch(filter);
+    const searchResults = applySearch(filter);
     content =
       searchResults.length != 0 ? (
         searchResults.map((surahNum) => {
@@ -76,7 +86,7 @@ function SideBar({
         <p>لم يتم العثور على سورة</p>
       );
   } else if (filter == "Pages") {
-    let searchResults = applySearch(filter);
+    const searchResults = applySearch(filter);
     const toBeMapped = searchResults.length == 1 ? searchResults : quranPages;
     content = toBeMapped.map((page) => {
       return (
@@ -91,19 +101,14 @@ function SideBar({
                 );
               }
             );
-            firstVerseInPage = surahData?.find((ayahObj) => {
+            const firstVerseInPage = surahData?.find((ayahObj) => {
               return ayahObj.page == page;
             })?.aya_no;
-
-            if (firstVerseInPage == undefined) {
-              //need to set to first verse in page after surah change in place of 1
-              firstVerseInPage = 1;
-            }
 
             navigate(`/surah/${desiredSurahNum}`);
             handleSurahSettingsChange({
               currentPage: page,
-              currentVerse: firstVerseInPage,
+              currentVerse: firstVerseInPage || 1,
               currentSurah: +desiredSurahNum,
             });
           }}
@@ -120,11 +125,16 @@ function SideBar({
     if (searchText != "" && searchResults.length == 0) {
       content = <p>لا يوجد صفحة بهذا الرقم</p>;
     }
-  } else {
-    let searchResults = applySearch(filter);
-    const toBeMapped = searchResults.length == 1 ? searchResults : surahData;
+  } else if (filter === "Verses") {
+    const searchResults = applySearch(filter);
+    const toBeMapped = searchResults.length > 0 ? searchResults : surahData;
 
     content = toBeMapped.map((ayah) => {
+      const isMatch = searchResults.includes(ayah);
+      const displayText = ayah.aya_text_emlaey.length > 60
+        ? ayah.aya_text_emlaey.substring(0, 60) + "..."
+        : ayah.aya_text_emlaey;
+
       return (
         <div
           key={ayah.aya_no}
@@ -141,39 +151,39 @@ function SideBar({
           ref={ayah.aya_no === currentVerse ? scrollToRef : null}
           className={`${
             ayah.aya_no === currentVerse ? focusStyle : ""
-          } hover:bg-emerald-700 p-1 cursor-pointer`}
+          } hover:bg-emerald-700 p-1 cursor-pointer ${isMatch ? "bg-emerald-700/50" : ""}`}
         >
-          {ayah.aya_no}
+          <div className="flex justify-between items-start">
+            <div className="flex-1 mr-2">
+              <div className={`text-sm ${isMatch ? "font-bold" : ""}`}>
+                {displayText}
+              </div>
+            </div>
+            <div className="text-xs opacity-70">
+              {ayah.aya_no}
+            </div>
+          </div>
         </div>
       );
     });
+
     if (searchText != "" && searchResults.length == 0) {
-      content = <p>لا يوجد آية بهذا الرقم</p>;
+      content = <p>لا توجد نتائج للبحث</p>;
     }
   }
-
-  useEffect(() => {
-    if (filter == "Pages") {
-      let page = document.querySelector(".focus").innerText;
-      firstVerseInPage = surahData?.find((ayahObj) => {
-        return ayahObj.page == page;
-      })?.aya_no;
-      handleSurahSettingsChange({ currentVerse: firstVerseInPage });
-    }
-  }, [surahData]);
 
   return (
     <div
       id="sidebar"
-      className="fixed left-0 top-0 text-white  bg-emerald-800 w-[240px] h-[calc(100vh-80px)]  p-6 overflow-y-hidden z-[2] "
+      className="fixed left-0 top-0 text-white bg-emerald-800 w-[240px] h-[calc(100vh-80px)] p-5 overflow-y-hidden z-[2]"
     >
-      <ul className="flex gap-4 justify-center mb-1">
+      <ul className="flex gap-2 justify-center mb-1 flex-wrap">
         <li
           className={
             (filter === "Surahs"
               ? "border-b-2 hover:border-amber-400/100"
               : "") +
-            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer"
+            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer text-sm"
           }
           onClick={() => {
             setFilter("Surahs");
@@ -187,7 +197,7 @@ function SideBar({
             (filter === "Pages"
               ? "border-b-2 hover:border-amber-400/100"
               : "") +
-            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer"
+            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer text-sm"
           }
           onClick={() => {
             setFilter("Pages");
@@ -201,7 +211,7 @@ function SideBar({
             (filter === "Verses"
               ? "border-b-2 hover:border-amber-400/100"
               : "") +
-            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer"
+            " pb-2 hover:border-b-2 hover:border-amber-400/70 border-amber-400 hover:cursor-pointer text-sm"
           }
           onClick={() => {
             setFilter("Verses");
@@ -215,13 +225,13 @@ function SideBar({
         <input
           placeholder={
             filter === "Surahs"
-              ? "أدخل السورة"
+              ? "أدخل اسم السورة"
               : filter === "Pages"
               ? "أدخل رقم الصفحة"
-              : "أدخل رقم الآية"
+              : "أدخل رقم الآية أو نص البحث"
           }
-          className="h-full w-[99%] outline-none bg-transparent dark:text-white dark:caret-slate-200"
-          maxLength={20}
+          className="h-full w-[99%] outline-none bg-transparent dark:text-white dark:caret-slate-200 placeholder:text-sm"
+          maxLength={50}
           value={searchText}
           onChange={(e) => {
             setSearchText(e.target.value);
