@@ -243,6 +243,29 @@ function Profile() {
           )}
         </div>
         <div className="bg-gray-400 h-[1px] w-full mb-4"></div>
+
+        {/* Help & Feedback Section */}
+        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+          <h3 className="text-lg font-semibold mb-3 text-blue-800 dark:text-blue-200">
+            المساعدة والدعم
+          </h3>
+          <p className="text-gray-700 dark:text-gray-300 mb-3">
+            هل واجهت مشكلة أو لديك اقتراح لتحسين الموقع؟
+          </p>
+          <a
+            href="https://forms.gle/qePN5yyg5nGqfcqe8"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+          >
+            <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            الإبلاغ عن مشكلة أو طلب اضافة خاصية 
+          </a>
+        </div>
+
+        <div className="bg-gray-400 h-[1px] w-full mb-4"></div>
         <p className="text-black dark:text-white mb-4">
           الضغط على هذا الزر سيمكنك من حذف حسابك وكل البيانات المرتبطة به
         </p>
