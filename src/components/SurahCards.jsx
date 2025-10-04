@@ -6,13 +6,14 @@ import { surahNumToPagesMap } from "../assets/data/quran-info";
 
 function SurahCards({ surahs, isSearching }) {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
-
   const [displayAll, setDisplayAll] = useState(false);
   const navigate = useNavigate();
-  const surahsToDisplay = [];
-  let limit = isSearching ? surahs.length - 1 : displayAll == false ? 15 : 113;
 
-  for (let i = 0; i <= limit; i++) {
+  // Show more surahs when searching or when "show all" is clicked
+  const surahsToDisplay = [];
+  let limit = isSearching ? surahs.length : displayAll ? surahs.length : 15;
+
+  for (let i = 0; i < Math.min(limit, surahs.length); i++) {
     surahsToDisplay.push(
       <SurahCard
         key={surahs[i]?.name}
@@ -34,24 +35,28 @@ function SurahCards({ surahs, isSearching }) {
 
   return (
     <div className="min-h-[400px]">
-      <div className="flex justify-center flex-wrap gap-4 mb-10 ">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
         {surahsToDisplay.length != 0 ? (
           surahsToDisplay
         ) : (
-          <p>لم يتم العثور على سورة</p>
+          <div className="col-span-full text-center py-12">
+            <div className="text-gray-400 dark:text-gray-600 text-6xl mb-4">🔍</div>
+            <p className="text-xl text-gray-600 dark:text-gray-400">لم يتم العثور على سورة</p>
+            <p className="text-gray-500 dark:text-gray-500 mt-2">جرب كلمات بحث مختلفة</p>
+          </div>
         )}
       </div>
-      <button
-        onClick={() => setDisplayAll(true)}
-        className={
-          displayAll || isSearching
-            ? "hidden"
-            : "" +
-              " w-[200px] block m-auto py-3 bg-amber-500 hover:bg-amber-400 text-black rounded-full"
-        }
-      >
-        اظهر جميع السور
-      </button>
+
+      {!isSearching && !displayAll && surahs.length > 15 && (
+        <div className="text-center">
+          <button
+            onClick={() => setDisplayAll(true)}
+            className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl"
+          >
+            عرض جميع السور ({surahs.length})
+          </button>
+        </div>
+      )}
     </div>
   );
 }

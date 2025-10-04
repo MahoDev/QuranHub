@@ -1,6 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import HeroSection from "../components/HeroSection";
 import SurahsSection from "../components/SurahsSection";
+import FeaturesSection from "../components/FeaturesSection";
+import RecitersSection from "../components/RecitersSection";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
 import { reciterNames } from "../assets/data/quran-info";
@@ -64,12 +66,13 @@ function Home() {
 				</script>
 			</Helmet>
 			<HeroSection />
+			<FeaturesSection />
+			<RecitersSection />
 			<SurahsSection />
 
 			{/* Static reciters list for crawlers */}
 			<div style={{ display: "none" }} aria-hidden="true">
-				<h2>القراء المتوفرون للسور
-				</h2>
+				<h2>القراء المتوفرون للسور</h2>
 				<ul>
 					{reciterNames.map((reciter, index) => (
 						<li key={index}>{reciter}</li>
