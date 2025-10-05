@@ -170,12 +170,6 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		}
 	}, [tafsirModeActive, surahNumber, tafsirId, currentPage]);
 
-	//scrolls to the top of the page everytime the page changes
-	useEffect(() => {
-		if (containerRef.current !== null) {
-			window.scrollTo("0", "0");
-		}
-	}, [currentPage, surahNumber]);
 
 	//Used to retrieve previously chosen surah settings after reload
 	useEffect(() => {
@@ -435,12 +429,12 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 				className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
 			>
 				<div>
-					<div className="relative gap-3 rounded-lg pt-2 flex flex-col md:flex-row justify-center items-center ">
-						<div className="view-mode md:border-l-2 md:pl-2 pt-2 border-gray-300 text-black dark:text-white translate-y-[25px]">
-							<div className="flex gap-[4px] justify-center items-center ">
-								<p className="text-black dark:text-white">وضع العرض:</p>
+					<div className="relative gap-4 lg:gap-6 rounded-2xl pt-6 pb-4 flex flex-col lg:flex-row justify-center items-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
+						<div className="view-mode lg:border-l-2 lg:pl-6 pt-2 border-gray-300 text-black dark:text-white w-full lg:w-auto">
+							<div className="flex gap-4 justify-center items-center bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 w-full">
+								<p className="text-black dark:text-white font-semibold whitespace-nowrap">وضع العرض:</p>
 								<select
-									className="bg-white  dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 focus:outline-none focus:border-emerald-500"
+									className="bg-white dark:bg-gray-700 border-2 border-emerald-200 dark:border-emerald-600 rounded-lg py-2 px-4 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-medium flex-1 min-w-[120px]"
 									value={mode}
 									onChange={(e) =>
 										handleDisplayStateChange({ displayMode: e.target.value })
@@ -456,31 +450,44 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								</select>
 							</div>
 						</div>
-						<AddBookmarkForm
-							ayahsInCurrentPage={ayahsInCurrentPage}
-							currentPage={currentPage}
-							currentSurahNum={surahNumber}
-						/>
+						<div className="w-full lg:w-auto">
+							<AddBookmarkForm
+								ayahsInCurrentPage={ayahsInCurrentPage}
+								currentPage={currentPage}
+								currentSurahNum={surahNumber}
+							/>
+						</div>
 					</div>
-					<div className="h-[1px] w-full bg-gray-900 my-[30px]"></div>
+					<div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-300 dark:via-emerald-600 to-transparent my-6"></div>
 					<div>
-						<div>
+						<div className="mb-8">
 							{!isLoading
 								? surahData[0]?.page === currentPage && (
 										<>
-											<h1
-												className={`font-surahName text-center text-${fontSize}xl`}
-											>
-												{surahNames[+surahData[0]["sura_no"]]}
-											</h1>
+											<div className="text-center mb-6">
+												<h1
+													className={`font-surahName text-center text-${fontSize}xl text-emerald-800 dark:text-emerald-200 mb-4`}
+												>
+													{surahNames[+surahData[0]["sura_no"]]}
+												</h1>
+												<div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+													<span>سورة {surahNames[+surahData[0]["sura_no"]]}</span>
+													<span>•</span>
+													<span>{surahVerses[+surahNumber]?.[1] || 0} آية</span>
+													<span>•</span>
+													<span>صفحة {currentPage}</span>
+												</div>
+											</div>
 											{surahNumber != 1 && (
-												<img
-													className="w-40 max-w-[180px] m-auto"
-													src={isDarkMode ? BasmalaWhite : BasmalaBlack}
-													alt="بسم الله الرحمن الرحيم بخط عربي"
-													title="بسم الله الرحمن الرحيم"
-													loading="eager"
-												/>
+												<div className="flex justify-center mb-6">
+													<img
+														className="w-48 max-w-[200px] opacity-80 hover:opacity-100 transition-opacity duration-300"
+														src={isDarkMode ? BasmalaWhite : BasmalaBlack}
+														alt="بسم الله الرحمن الرحيم بخط عربي"
+														title="بسم الله الرحمن الرحيم"
+														loading="eager"
+													/>
+												</div>
 											)}
 										</>
 								  )
@@ -494,27 +501,32 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center gap-5 select-none ">
+				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
 					<div
 						onClick={(e) => {
 							handlePageChange("backward");
 						}}
-						className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 " ${
-							+surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50"
+						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+							+surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50 cursor-not-allowed"
 						}`}
 					>
-						<FaArrowRight />
+						<FaArrowRight className="text-xl" />
 					</div>
-					{convertToArabicNumbers(currentPage)}
+					<div className="text-center">
+						<div className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+							{convertToArabicNumbers(currentPage)}
+						</div>
+						<div className="text-sm text-gray-600 dark:text-gray-400">الصفحة الحالية</div>
+					</div>
 					<div
 						onClick={(e) => {
 							handlePageChange("forward");
 						}}
-						className={`bg-transparent cursor-pointer p-4 rounded hover:bg-gray-400 ${
-							+surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50"
+						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+							+surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50 cursor-not-allowed"
 						}`}
 					>
-						<FaArrowLeft />
+						<FaArrowLeft className="text-xl" />
 					</div>
 				</div>
 
@@ -543,6 +555,12 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 							currentPage={currentPage}
 							currentVerse={currentVerse}
 							handleSurahSettingsChange={handleSurahSettingsChange}
+							onVerseNavigation={(verseNumber) => {
+								// Enable highlight for verse navigation from sidebar
+								setHighlightVerse(true);
+								// Auto-hide highlight after 5 seconds
+								setTimeout(() => setHighlightVerse(false), 5000);
+							}}
 						/>
 					) : (
 						""

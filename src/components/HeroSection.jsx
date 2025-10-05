@@ -147,7 +147,7 @@ function HeroSection() {
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
               <div className="text-2xl font-bold text-emerald-600">43</div>
-              <div className="text-sm text-gray-600 dark:text-gray-400">تسجيل</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">تلاوة</div>
             </div>
           </div>
         </div>

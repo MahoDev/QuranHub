@@ -75,68 +75,69 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 	}, [currentPage, ayahsInCurrentPage]);
 
 	return (
-		<div className="text-black dark:text-white text-center  ">
-			<h2 className="text-lg font-semibold mt-4 md:mt-2 ">احفظ نقطة مرجعية</h2>
-			<div className="flex flex-col  md:flex-row gap-1  justify-center items-center">
-				<div>
-					<p>السورة</p>
-					<input
-						type="text"
-						className="w-[150px] text-center py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
-						value={surahNames[currentSurahNum]}
-						title={surahNames[currentSurahNum]}
-						readOnly
-						disabled
-					/>
-				</div>
-				<div>
-					<p>الصفحة</p>
-					<input
-						type="text"
-						className="w-[150px]  text-center md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md  focus:outline-none focus:border-emerald-500"
-						value={pageNumber}
-						readOnly
-						disabled
-					/>
-				</div>
-				<div>
-					<p>اختر الآية</p>
-					<select
-						className="w-[150px] md:px-[50px] py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500"
-						value={ayahNumber}
-						onChange={(e) => setAyahNumber(e.target.value)}
-						required
-						disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0}
-					>
-						<option value="" disabled>
-							{!ayahsInCurrentPage || ayahsInCurrentPage.length === 0
-								? "جاري التحميل..."
-								: "اختر الآية"}
-						</option>
-						{/* Iterate over your list of ayahs and render options */}
-						{ayahsInCurrentPage?.map((ayah) => (
-							<option key={ayah?.id} value={ayah?.aya_no}>
-								{ayah?.aya_no}
+		<div className="text-black dark:text-white text-center w-full">
+			<h2 className="text-lg font-semibold mt-4 md:mt-2 mb-4">احفظ نقطة مرجعية</h2>
+			<div className="flex flex-col gap-3 justify-center items-center max-w-full">
+				<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-lg">
+					<div>
+						<p className="text-sm mb-1">السورة</p>
+						<input
+							type="text"
+							className="w-full text-center py-2 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
+							value={surahNames[currentSurahNum]}
+							title={surahNames[currentSurahNum]}
+							readOnly
+							disabled
+						/>
+					</div>
+					<div>
+						<p className="text-sm mb-1">الصفحة</p>
+						<input
+							type="text"
+							className="w-full text-center py-2 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
+							value={pageNumber}
+							readOnly
+							disabled
+						/>
+					</div>
+					<div>
+						<p className="text-sm mb-1">اختر الآية</p>
+						<select
+							className="w-full py-2 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
+							value={ayahNumber}
+							onChange={(e) => setAyahNumber(e.target.value)}
+							required
+							disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0}
+						>
+							<option value="" disabled>
+								{!ayahsInCurrentPage || ayahsInCurrentPage.length === 0
+									? "جاري التحميل..."
+									: "اختر الآية"}
 							</option>
-						))}
-					</select>
+							{ayahsInCurrentPage?.map((ayah) => (
+								<option key={ayah?.id} value={ayah?.aya_no}>
+									{ayah?.aya_no}
+								</option>
+							))}
+						</select>
+					</div>
 				</div>
 				<button
 					type="submit"
-					className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-4 rounded-md  md:self-end translate-y-[-2px] disabled:bg-gray-400 disabled:cursor-not-allowed"
+					className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-6 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
 					onClick={handleAddBookmark}
 					disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0 || !ayahNumber}
 				>
 					حفظ
 				</button>
 			</div>
-			<div className=" absolute bottom--6 right-[50%] translate-x-[50%]  ">
+			<div className="mt-3 min-h-[24px]">
 				{loading ? (
-					<LoadingView text="جاري الحفظ" />
+					<div className="text-emerald-600 dark:text-emerald-400">جاري الحفظ...</div>
 				) : (
 					<>
-						{success && <p className="text-green-500">تم الحفظ بنجاح</p>}
-						{error && <p className="text-red-500">{error}</p>}
+						{success && <p className="text-green-500 text-sm">تم الحفظ بنجاح</p>}
+						{error && <p className="text-red-500 text-sm">{error}</p>}
 					</>
 				)}
 			</div>

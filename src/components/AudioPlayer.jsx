@@ -134,6 +134,16 @@ function AudioPlayer({
 		});
 	};
 
+	const getQualityLabel = (bitrateValue) => {
+		const bitrate = parseInt(bitrateValue)	;
+		if (bitrate <= 16) return "منخفضة جداً";
+		if (bitrate <= 32) return "منخفضة";
+		if (bitrate <= 40) return "منخفضة متوسطة";
+		if (bitrate <= 64) return "متوسطة";
+		if (bitrate <= 128) return "عالية";
+		return "عالية جداً";
+	};
+
 	const recitationsContent = Object.keys(quranRecitations)
 		// Sort the recitations based on the name property of each recitation
 		.sort((a, b) => {
@@ -182,7 +192,7 @@ function AudioPlayer({
 							onDisplayStateChange({ bitrate: bitr });
 						}}
 					>
-						{`${bitr}`}
+						{getQualityLabel(bitr)}
 					</div>
 				);
 			}
@@ -192,13 +202,13 @@ function AudioPlayer({
 	return (
 		<div
 			id="audioPlayer"
-			className={`fixed left-0 bottom-0 translate-x-[0.5%] h-[76px] p-2 w-[99%] bg-white/80 dark:bg-stone-950/[80] shadow-2xl shadow-black border-[2px] border-gray-100/50 border-t-transparent dark:border-none select-none
+			className={`fixed left-0 bottom-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
 			${bottomBarDisplayed ? " bottom-[80px] z-[0] " : " z-[5] "}
 			`}
 		>
 			{audio}
 			<div
-				className="buffer peer group absolute left-0 top-[-1px] w-full h-[4px] hover:h-[6px] bg-gray-200 cursor-pointer"
+				className="buffer peer group absolute left-0 top-0 w-full h-[5px] hover:h-[7px] bg-gray-200/80 dark:bg-gray-600/80 cursor-pointer rounded-full transition-all duration-200"
 				onClick={(event) => {
 					jumpToClickPosition(event);
 				}}
@@ -208,24 +218,24 @@ function AudioPlayer({
 			>
 				<div
 					style={{ width: `${progressPercentage}%` }}
-					className={`current-progress absolute right-0 top-0 h-[4px] group-hover:h-[6px] bg-emerald-700 cursor-pointer`}
+					className={`current-progress absolute right-0 top-0 h-[5px] group-hover:h-[7px] bg-gradient-to-r from-emerald-500 to-emerald-600 cursor-pointer rounded-full transition-all duration-200`}
 				></div>
 				<div
 					style={{ right: `${progressPercentage}%`, translate: "1px" }}
-					className={`dot absolute translate-y-[-40%] top-[1px] w-3 h-3 group-hover:h-4 group-hover:w-4 rounded-[50%] bg-emerald-700 cursor-pointer`}
+					className={`dot absolute translate-y-[-40%] top-[1px] w-4 h-4 group-hover:h-5 group-hover:w-5 rounded-[50%] bg-emerald-500 hover:bg-emerald-600 cursor-pointer transition-all duration-200 shadow-lg`}
 				></div>
 			</div>
 
 			<div
 				style={{ right: `${hoverData.xPosition}%` }}
-				className="hover-time peer-hover:block hidden w-16 h-6 absolute  top-[-35px] bg-gray-500/90 rounded text-sm mx-auto"
+				className="hover-time peer-hover:flex hidden w-20 h-7 absolute top-[-40px] bg-gray-800/95 dark:bg-gray-700/95 backdrop-blur-sm rounded-lg text-sm mx-auto items-center justify-center shadow-lg border border-gray-600/50 "
 			>
-				<span className=" block w-fit m-auto text-white">
+				<span className="text-white font-medium px-2">
 					{hoverData?.time}
 				</span>
 			</div>
 
-			<div className="flex flex-col items-center relative mr-6">
+			<div className="flex flex-col items-center relative mr-6 ">
 				<div
 					onMouseEnter={() => {
 						setVolumeDisplayed(true);
@@ -233,15 +243,16 @@ function AudioPlayer({
 					onClick={() => {
 						handleVolumeChange(0);
 					}}
-					className=" absolute right-10 top-[20px] z-[2] cursor-pointer"
+					className="absolute right-6 top-[10px] p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md group z-[2]"
 					id="volumeBoxToggler"
+					title="كتم الصوت"
 				>
 					{volume === 0 ? (
-						<HiVolumeOff size={25} />
+						<HiVolumeOff className="text-2xl text-red-500 group-hover:text-red-600 transition-colors duration-200" />
 					) : volume > 0 && volume <= 0.5 ? (
-						<IoVolumeMedium size={25} />
+						<IoVolumeMedium className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
 					) : (
-						<IoVolumeHigh size={25} />
+						<IoVolumeHigh className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
 					)}
 				</div>
 				<OutsideClickHandler
@@ -254,7 +265,7 @@ function AudioPlayer({
 						id="volumeBox"
 						className={`${
 							!volumeDisplayed ? "hidden" : ""
-						} transform rotate-[-270deg] absolute right-[-30px] top-[-45px]  pr-8 pl-[2px] pt-[3px]  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60  z-[1]`}
+						} transform rotate-[-270deg] absolute right-[-20px] top-[-70px] w-32 h-12 bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-lg rounded-lg border border-gray-200/60 dark:border-gray-700/60 z-[1] flex items-center justify-center`}
 					>
 						<input
 							type="range"
@@ -263,37 +274,36 @@ function AudioPlayer({
 							step="0.05"
 							value={volume}
 							onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-							className="appearance-none w-full h-4 rounded-full bg-gray-300"
+							className="volume-slider w-full h-2 mx-2"
 							style={{
-								background: `linear-gradient(to left, #68d391 0%, #68d391 ${
-									volume * 100
-								}%, #cbd5e0 ${volume * 100}%, #cbd5e0 100%)`,
+								background: '#10b981',
 							}}
 						/>
 					</div>
 				</OutsideClickHandler>
 			</div>
-			<div className="w-fit m-auto mt-3 flex justify-center items-center gap-3 md:gap-7 text-black">
+			<div className="w-fit m-auto mt-3 flex justify-center items-center gap-4 md:gap-8 text-black">
 				<MdSkipNext
-					size={30}
-					className="cursor-pointer hover:text-emerald-500 dark:text-white"
+					size={32}
+					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 hover:scale-110 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
 					onClick={() => {
 						onVerseNavigation("backward");
 					}}
+					title="السابق"
 				/>
-				<div className="cursor-pointer rounded-full p-2 bg-emerald-500 relative w-[40px] h-[40px] flex justify-center items-center ">
+				<div className="cursor-pointer rounded-full p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 relative w-[50px] h-[50px] flex justify-center items-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
 					{state.playing ? (
 						<IoMdPause
-							size={20}
-							className="absolute left-[10px]"
+							size={24}
+							className="absolute left-[13px] text-white"
 							onClick={() => {
 								state.playing ? controls.pause() : controls.play();
 							}}
 						/>
 					) : (
 						<IoMdPlay
-							size={25}
-							className="absolute left-[10px]"
+							size={28}
+							className="absolute left-[13px] text-white"
 							onClick={() => {
 								state.playing ? controls.pause() : controls.play();
 							}}
@@ -301,11 +311,12 @@ function AudioPlayer({
 					)}
 				</div>
 				<MdSkipPrevious
-					size={30}
-					className="cursor-pointer hover:text-emerald-500 dark:text-white"
+					size={32}
+					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 hover:scale-110 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
 					onClick={() => {
 						onVerseNavigation("forward");
 					}}
+					title="التالي"
 				/>
 			</div>
 			<span className="current-time text-gray-500 text-md absolute right-1 top-1">
@@ -314,14 +325,17 @@ function AudioPlayer({
 			<span className="full-duration text-gray-500 text-md absolute left-1 top-1">
 				{formatTime(state.duration)}
 			</span>
-			<div className="relative h-fit ">
-				<MdSpatialAudioOff
+			<div className="relative h-fit">
+				<div
 					id="recitersBoxToggler"
-					className="absolute left-4 bottom-[8px] text-2xl cursor-pointer"
+					className="absolute left-4 bottom-[12px] p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md group"
 					onClick={() => {
 						setRecitersDisplayed(!recitersDisplayed);
 					}}
-				/>
+					title="اختيار القارئ"
+				>
+					<MdSpatialAudioOff className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
+				</div>
 				<OutsideClickHandler
 					onOutsideClick={() => {
 						setRecitersDisplayed(false);
@@ -332,20 +346,24 @@ function AudioPlayer({
 						id="recitersBox"
 						className={`${
 							!recitersDisplayed ? "hidden" : ""
-						} absolute left-4 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px] overflow-y-scroll  bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none scrollbar scrollbar-thumb-[rgb(64,64,64)] scrollbar-track-white dark:scrollbar dark:scrollbar-thumb-[rgb(64,64,64)] dark:scrollbar-track-[rgb(33,33,33)] z-[-1]`}
+						} absolute left-4 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-10`}
 					>
+						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">اختيار القارئ</div>
 						<div>{recitationsContent}</div>
 					</div>
 				</OutsideClickHandler>
 			</div>
-			<div className="relative h-fit ">
-				<FaGear
+			<div className="relative h-fit">
+				<div
 					id="bitratesBoxToggler"
-					className="absolute left-12 bottom-[8px] text-2xl cursor-pointer"
+					className="absolute left-16 bottom-[12px] p-2 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 transition-colors duration-200 cursor-pointer shadow-sm hover:shadow-md group"
 					onClick={() => {
 						setBitratesDisplayed(!bitratesDisplayed);
 					}}
-				/>
+					title="جودة الصوت"
+				>
+					<FaGear className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
+				</div>
 				<OutsideClickHandler
 					onOutsideClick={() => {
 						setBitratesDisplayed(false);
@@ -356,8 +374,9 @@ function AudioPlayer({
 						id="bitratesBox"
 						className={`${
 							!bitratesDisplayed ? "hidden" : ""
-						} absolute left-12 translate-y-[-218px] rounded-t-lg p-2 w-[180px] h-[150px]   bg-white/90 dark:bg-stone-950/[80] shadow-sm  shadow-black/60 border-[2px] border-gray-100/50 border-b-transparent dark:border-none select-none  z-[-1]`}
+						} absolute left-16 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-10`}
 					>
+						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">جودة الصوت</div>
 						<div>{bitratesContent}</div>
 					</div>
 				</OutsideClickHandler>
