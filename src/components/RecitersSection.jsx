@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaPlay, FaPause } from "react-icons/fa";
 import { reciterNames, quranRecitations } from "../assets/data/quran-info";
 import { reciterImages } from "../assets/data/reciter-images";
@@ -96,6 +96,7 @@ function RecitersSection() {
   const [currentRandomVerse, setCurrentRandomVerse] = useState(null);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [showAllReciters, setShowAllReciters] = useState(false);
+  const recitersSectionRef = useRef(null);
 
   // List of verses numbers to choose from randomly
   const versesNums = [
@@ -164,8 +165,26 @@ function RecitersSection() {
   // Get reciters to display based on showAllReciters state
   const recitersToDisplay = showAllReciters ? reciterNames : reciterNames.slice(0, 8);
 
+  // Function to scroll to the reciters section
+  const scrollToRecitersSection = () => {
+    if (recitersSectionRef.current) {
+      recitersSectionRef.current.scrollIntoView({
+        behavior:'instant',
+        block: 'start'
+      });
+    }
+  };
+
+  // Effect to scroll when showAllReciters changes from true to false
+  useEffect(() => {
+    if (!showAllReciters) {
+		scrollToRecitersSection();
+
+    }
+  }, [showAllReciters]);
+
   return (
-    <div className="py-16 bg-white dark:bg-gray-800">
+    <div className="py-16 bg-white dark:bg-gray-800" ref={recitersSectionRef}>
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-emerald-950 dark:text-white mb-4">
@@ -233,7 +252,7 @@ function RecitersSection() {
         <div className="text-center">
           <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-lg inline-block">
             <p className="text-emerald-800 dark:text-emerald-200 mb-2">
-              🎵 جودات متعددة متاحة لكل قارئ
+               جودات متعددة متاحة لكل قارئ
             </p>
             <p className="text-sm text-emerald-600 dark:text-emerald-300">
               اختر من بين جودات مختلفة حسب سرعة اتصالك بالإنترنت
