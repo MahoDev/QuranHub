@@ -271,8 +271,40 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	useEffect(() => {
 		if (surahNumber == surahSettings.currentSurah) {
 			handleSurahSettingsChange({ currentSurah: +surahNumber });
-			setCurrentPage(surahSettings.currentPage);
-			setCurrentVerse(surahSettings.currentVerse);
+
+			// Ensure page and verse are synchronized
+			const storedPage = surahSettings.currentPage;
+			const storedVerse = surahSettings.currentVerse;
+
+			// Check if the stored verse actually exists on the stored page
+			const pageAyahs = surahData?.filter((ayah) => ayah.page === storedPage) || [];
+			const verseExistsOnPage = pageAyahs.some((ayah) => ayah.aya_no === storedVerse);
+
+			if (verseExistsOnPage) {
+				// Page and verse are synchronized, use stored values
+				setCurrentPage(storedPage);
+				setCurrentVerse(storedVerse);
+			} else {
+				// Page and verse are out of sync, find the correct page for the verse
+				const correctPageAyah = surahData?.find((ayah) => ayah.aya_no === storedVerse);
+				if (correctPageAyah) {
+					// Found the correct page for this verse
+					const correctPage = correctPageAyah.page;
+					setCurrentPage(correctPage);
+					setCurrentVerse(storedVerse);
+
+					// Update stored settings to reflect the correction
+					handleSurahSettingsChange({
+						currentPage: correctPage,
+						currentVerse: storedVerse
+					});
+				} else {
+					// Fallback to stored page if verse not found (shouldn't happen)
+					setCurrentPage(storedPage);
+					setCurrentVerse(storedVerse);
+				}
+			}
+
 			// Enable highlight if coming from bookmark navigation
 			if (surahSettings.currentVerse > 1) {
 				setHighlightVerse(true);
@@ -288,7 +320,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 				currentVerse: 1,
 			});
 		}
-	}, []);
+	}, [surahData]); // Add surahData dependency to ensure data is loaded
 
 	if (isLoading == false) {
 		// ayahs = surahData;
@@ -465,12 +497,26 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 			const previousPageAvailable = currentPage !== 1;
 			const isFirstVerseInPage =
 				ayahsInCurrentPage[0]["aya_no"] === currentVerse;
+
 			if (previousVerseAvailable) {
-				handleSurahSettingsChange({ currentVerse: currentVerse - 1 });
+				// If we're at the first verse of the current page and there's a previous page available
 				if (previousPageAvailable && isFirstVerseInPage) {
+					// Navigate to the previous page first
 					handlePageChange("backward");
-					internalVerseChangeRequest.current.exist = true;
-					internalVerseChangeRequest.current.verse = currentVerse - 1;
+
+					// Then set the verse to the LAST verse of the previous page
+					// We need to find the last verse of the previous page
+					const previousPageAyahs = surahData.filter((ayah) => ayah.page === currentPage - 1);
+					const lastVerseInPreviousPage = previousPageAyahs[previousPageAyahs.length - 1]?.aya_no;
+
+					if (lastVerseInPreviousPage) {
+						internalVerseChangeRequest.current.exist = true;
+						internalVerseChangeRequest.current.verse = lastVerseInPreviousPage;
+						handleSurahSettingsChange({ currentVerse: lastVerseInPreviousPage });
+					}
+				} else {
+					// Normal backward navigation within the same page
+					handleSurahSettingsChange({ currentVerse: currentVerse - 1 });
 				}
 			}
 		}
