@@ -34,6 +34,8 @@ function Home() {
 
 	useEffect(() => {
 		window.prerenderReady = true;
+		// Scroll to top of page on homepage load
+		window.scrollTo({ top: 0, behavior: 'instant' });
 	}, []);
 
 	return (

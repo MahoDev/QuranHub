@@ -41,7 +41,7 @@ function HeroSection() {
           </h1>
 
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
-            منصة متطورة تقدم القرآن الكريم بخط واضح وبالتشكيل الكامل مع إمكانية الاستماع لتلاوات أكثر من 100 قارئ مشهور
+            منصة متطورة تقدم القرآن الكريم بالرسم العثماني برواية حفص عن عاصم مع إمكانية الاستماع للتلاوات والاطلاع على مختلف التفاسير والمزيد
           </p>
         </div>
 
@@ -57,14 +57,14 @@ function HeroSection() {
                   <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
                     <span className="text-emerald-600 dark:text-emerald-400 text-sm">✓</span>
                   </div>
-                  <span className="text-gray-700 dark:text-gray-300">قراءة بالتشكيل الكامل</span>
+                  <span className="text-gray-700 dark:text-gray-300">متاح على مختلف الأجهزة</span>
                 </div>
 
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center">
                     <span className="text-emerald-600 dark:text-emerald-400 text-sm">✓</span>
                   </div>
-                  <span className="text-gray-700 dark:text-gray-300">تلاوات عالية الجودة</span>
+                  <span className="text-gray-700 dark:text-gray-300">الاستماع لتلاوات متعددة</span>
                 </div>
 
                 <div className="flex items-center gap-3">

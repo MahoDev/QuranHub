@@ -96,6 +96,7 @@ function RecitersSection() {
   const [currentRandomVerse, setCurrentRandomVerse] = useState(null);
   const [currentAudio, setCurrentAudio] = useState(null);
   const [showAllReciters, setShowAllReciters] = useState(false);
+  const [prevShowAllReciters, setPrevShowAllReciters] = useState(false);
   const recitersSectionRef = useRef(null);
 
   // List of verses numbers to choose from randomly
@@ -178,17 +179,14 @@ function RecitersSection() {
   // Effect to scroll when showAllReciters changes from true to false
   useEffect(() => {
     // Only scroll if we're transitioning from showing all to showing less
-    // Don't scroll on initial mount (when showAllReciters starts as false)
-    if (showAllReciters === false && recitersSectionRef.current) {
-      // Check if this is not the initial render by checking if we've ever shown all reciters
-      const hasShownAllBefore = sessionStorage.getItem('hasShownAllReciters');
-      if (hasShownAllBefore === 'true') {
-        scrollToRecitersSection();
-      }
+    // This ensures we don't scroll on initial page load
+    if (prevShowAllReciters === true && showAllReciters === false && recitersSectionRef.current) {
+      scrollToRecitersSection();
     }
-  }, [showAllReciters]);
+    setPrevShowAllReciters(showAllReciters);
+  }, [showAllReciters, prevShowAllReciters]);
 
-  // Track when user has shown all reciters at least once
+  // Track when user has shown all reciters at least once (for potential future use)
   useEffect(() => {
     if (showAllReciters) {
       sessionStorage.setItem('hasShownAllReciters', 'true');

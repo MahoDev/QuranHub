@@ -233,9 +233,7 @@ function ListeningModeManager({
 								</div>
 							</div>
 							<div className="ml-4 w-0 flex-1 mt-6">
-								<p className="text-sm font-semibold text-amber-900 dark:text-amber-100">
-									🚨 جودة منخفضة
-								</p>
+
 								<p className="mt-2 text-sm text-amber-800 dark:text-amber-200">
 									جودة الصوت: <span className="font-semibold text-red-500 dark:text-red-400">{qualityNotification.message}</span>
 								</p>
