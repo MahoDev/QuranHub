@@ -247,13 +247,20 @@ function AudioPlayer({
 					id="volumeBoxToggler"
 					title="كتم الصوت"
 				>
-					{volume === 0 ? (
-						<HiVolumeOff className="text-2xl text-red-500 group-hover:text-red-600 transition-colors duration-200" />
-					) : volume > 0 && volume <= 0.5 ? (
-						<IoVolumeMedium className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
-					) : (
-						<IoVolumeHigh className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />
-					)}
+					{(() => {
+						// Check if audio element is muted
+						const audioElement = ref.current;
+						const isMuted = audioElement ? audioElement.muted : false;
+						const currentVolume = audioElement ? audioElement.volume : volume;
+
+						if (isMuted || currentVolume === 0) {
+							return <HiVolumeOff className="text-2xl text-red-500 group-hover:text-red-600 transition-colors duration-200" />;
+						} else if (currentVolume > 0 && currentVolume <= 0.5) {
+							return <IoVolumeMedium className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />;
+						} else {
+							return <IoVolumeHigh className="text-2xl text-gray-600 dark:text-gray-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors duration-200" />;
+						}
+					})()}
 				</div>
 				<OutsideClickHandler
 					onOutsideClick={() => {

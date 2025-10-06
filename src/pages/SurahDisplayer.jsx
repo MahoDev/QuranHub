@@ -49,6 +49,31 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
 	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
 
+	// Keyboard navigation state
+	const [isListeningMode, setIsListeningMode] = useState(false);
+	const listeningModeManagerRef = useRef(null);
+	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+	// Touch device detection
+	const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+	// Mobile gesture settings
+	const [enableSideSwipes, setEnableSideSwipes] = useState(true);
+
+	useEffect(() => {
+		// Detect touch devices - keyboard shortcuts don't make sense on touch
+		const checkTouchDevice = () => {
+			const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+			const hasCoarsePointer = window.matchMedia('(pointer: coarse)').matches;
+			setIsTouchDevice(hasTouch || hasCoarsePointer);
+		};
+
+		checkTouchDevice();
+		// Re-check on resize/orientation change
+		window.addEventListener('resize', checkTouchDevice);
+		return () => window.removeEventListener('resize', checkTouchDevice);
+	}, []);
+
 	useEffect(() => {
 		if (quranText) {
 			window.prerenderReady = true; // Signal when data is loaded
@@ -62,6 +87,184 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		setTafsirId(displaySettings.tafsirId);
 		setFontSize(displaySettings.fontSize);
 	}, []);
+
+	// Keyboard navigation
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			// Don't interfere with input fields, textareas, or when typing
+			if (
+				event.target.tagName === 'INPUT' ||
+				event.target.tagName === 'TEXTAREA' ||
+				event.target.contentEditable === 'true'
+			) {
+				return;
+			}
+
+			switch (event.key) {
+				case 'ArrowLeft':
+					event.preventDefault();
+					// Context-aware: if in listening mode, control verses; otherwise pages
+					if (mode === 'listening' && isListeningMode) {
+						handleVerseNavigation('forward'); // Reversed: left arrow = forward
+					} else {
+						handlePageChange('forward', 'keyboard'); // Reversed: left arrow = forward
+					}
+					break;
+
+				case 'ArrowRight':
+					event.preventDefault();
+					// Context-aware: if in listening mode, control verses; otherwise pages
+					if (mode === 'listening' && isListeningMode) {
+						handleVerseNavigation('backward'); // Reversed: right arrow = backward
+					} else {
+						handlePageChange('backward', 'keyboard'); // Reversed: right arrow = backward
+					}
+					break;
+
+				case 'PageUp':
+					event.preventDefault();
+					handlePageChange('backward', 'keyboard');
+					break;
+
+				case 'PageDown':
+					event.preventDefault();
+					handlePageChange('forward', 'keyboard');
+					break;
+
+				case ' ': // Spacebar
+					event.preventDefault();
+					// Play/Pause audio if in listening mode
+					if (mode === 'listening') {
+						// Find and control the audio element directly
+						const audioElements = document.querySelectorAll('audio');
+						const quranAudio = Array.from(audioElements).find(audio =>
+							audio.src && audio.src.includes('everyayah.com')
+						);
+
+						if (quranAudio) {
+							if (quranAudio.paused) {
+								quranAudio.play().catch(e => console.log('Play failed:', e));
+							} else {
+								quranAudio.pause();
+							}
+						}
+					}
+					break;
+
+				case 'm':
+				case 'M':
+					event.preventDefault();
+					// Mute/Unmute if in listening mode
+					if (mode === 'listening') {
+						// Find and control the audio element directly
+						const audioElements = document.querySelectorAll('audio');
+						const quranAudio = Array.from(audioElements).find(audio =>
+							audio.src && audio.src.includes('everyayah.com')
+						);
+
+						if (quranAudio) {
+							quranAudio.muted = !quranAudio.muted;
+						}
+					}
+					break;
+
+				default:
+					break;
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [mode, isListeningMode, surahNumber, currentPage, currentVerse]);
+
+	// Touch gesture navigation for mobile devices - STRICT side swipes only
+	useEffect(() => {
+		if (!isTouchDevice || !enableSideSwipes) {
+			return;
+		}
+
+		let touchStartX = 0;
+		let touchStartY = 0;
+		let touchStartTime = 0;
+		let isTracking = false;
+		let initialTouchX = 0;
+		let initialTouchY = 0;
+
+		// VERY STRICT thresholds for professional gesture detection
+		const MIN_SWIPE_DISTANCE = 120; // Much larger - requires strong swipe
+		const MIN_SWIPE_TIME = 150;     // Minimum time to prevent accidental triggers
+		const MAX_SWIPE_TIME = 800;     // Maximum time to complete swipe
+		const VERTICAL_TOLERANCE = 80;  // Must be mostly horizontal movement
+
+		const handleTouchStart = (e) => {
+			if (e.touches.length !== 1) return;
+
+			const touch = e.touches[0];
+			initialTouchX = touch.clientX;
+			initialTouchY = touch.clientY;
+			touchStartX = touch.clientX;
+			touchStartY = touch.clientY;
+			touchStartTime = Date.now();
+			isTracking = true;
+		};
+
+		const handleTouchMove = (e) => {
+			if (!isTracking || e.touches.length !== 1) return;
+
+			const touch = e.touches[0];
+			const currentX = touch.clientX;
+			const currentY = touch.clientY;
+			const deltaX = currentX - touchStartX;
+			const deltaY = currentY - touchStartY;
+			const deltaTime = Date.now() - touchStartTime;
+
+			// Prevent default scrolling during strong swipe detection
+			if (Math.abs(deltaX) > 30 || Math.abs(deltaY) > 30) {
+				e.preventDefault();
+			}
+
+			// STRICT HORIZONTAL SWIPE DETECTION
+			// Must be primarily horizontal movement (vertical tolerance check)
+			if (Math.abs(deltaX) > Math.abs(deltaY) + VERTICAL_TOLERANCE) {
+				// RIGHT SWIPE: Go to previous page (backward)
+				if (deltaX > MIN_SWIPE_DISTANCE && deltaTime > MIN_SWIPE_TIME && deltaTime < MAX_SWIPE_TIME) {
+					handlePageChange('backward', 'touch');
+					isTracking = false;
+				}
+				// LEFT SWIPE: Go to next page (forward)
+				else if (deltaX < -MIN_SWIPE_DISTANCE && deltaTime > MIN_SWIPE_TIME && deltaTime < MAX_SWIPE_TIME) {
+					handlePageChange('forward', 'touch');
+					isTracking = false;
+				}
+			}
+		};
+
+		const handleTouchEnd = (e) => {
+			isTracking = false;
+			initialTouchX = 0;
+			initialTouchY = 0;
+			touchStartX = 0;
+			touchStartY = 0;
+			touchStartTime = 0;
+		};
+
+		// Add touch event listeners to the container
+		const container = containerRef.current;
+		if (container) {
+			container.addEventListener('touchstart', handleTouchStart, { passive: false });
+			container.addEventListener('touchmove', handleTouchMove, { passive: false });
+			container.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+			return () => {
+				container.removeEventListener('touchstart', handleTouchStart);
+				container.removeEventListener('touchmove', handleTouchMove);
+				container.removeEventListener('touchend', handleTouchEnd);
+			};
+		}
+	}, [isTouchDevice, enableSideSwipes]);
 
 	// Updates each state based on the key-value pairs in newState
 	// Usage:
@@ -245,7 +448,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		content = <LoadingView />;
 	}
 
-	const handlePageChange = (changeType) => {
+	const handlePageChange = (changeType, source = 'mouse') => {
 		if (loadingSurah) {
 			return; // Do nothing if a surah is currently being loaded
 		}
@@ -286,19 +489,21 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 							: currentPage - 1;
 						navigate(`/surah/${+surahNumber - 1}`);
 
-						//probably unwise to parse all of quranText
-						const firstVerseInDesiredPageObj = quranText
-							.get(surahNumber - 1)
-							?.find((verse) => verse.page === desiredPage)?.aya_no;
+						// For keyboard navigation, ensure state is updated properly
+						setTimeout(() => {
+							const firstVerseInDesiredPageObj = quranText
+								.get(surahNumber - 1)
+								?.find((verse) => verse.page === desiredPage)?.aya_no;
 
-						handleSurahSettingsChange({
-							currentPage: desiredPage,
-							currentVerse: firstVerseInDesiredPageObj,
-							currentSurah: +surahNumber - 1,
-						});
+							handleSurahSettingsChange({
+								currentPage: desiredPage,
+								currentVerse: firstVerseInDesiredPageObj,
+								currentSurah: +surahNumber - 1,
+							});
+							setLoadingSurah(false);
+						}, source === 'keyboard' ? 100 : 0);
 					} catch (error) {
 						console.error("Error navigating to the previous surah:", error);
-					} finally {
 						setLoadingSurah(false);
 					}
 				}
@@ -326,16 +531,19 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 						surahNumToPagesMap[+surahNumber][1] ==
 						surahNumToPagesMap[+surahNumber + 1][0];
 
-					handleSurahSettingsChange({
-						currentSurah: +surahNumber + 1,
-						currentPage: currAndNextSurahsAreSharingPage
-							? currentPage
-							: currentPage + 1,
-						currentVerse: 1,
-					});
+					// For keyboard navigation, ensure state is updated properly
+					setTimeout(() => {
+						handleSurahSettingsChange({
+							currentSurah: +surahNumber + 1,
+							currentPage: currAndNextSurahsAreSharingPage
+								? currentPage
+								: currentPage + 1,
+							currentVerse: 1,
+						});
+						setLoadingSurah(false);
+					}, source === 'keyboard' ? 100 : 0);
 				} catch (error) {
 					console.error("Error navigating to the next surah:", error);
-				} finally {
 					setLoadingSurah(false);
 				}
 			}
@@ -450,12 +658,47 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								</select>
 							</div>
 						</div>
+						{/* Mobile Touch Gesture Settings - Only show on touch devices */}
+						{isTouchDevice && (
+							<div className="mobile-gestures lg:border-l-2 lg:pl-6 pt-2 border-gray-300 text-black dark:text-white w-full lg:w-auto">
+								<div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 w-full">
+									<p className="text-black dark:text-white font-semibold mb-2 text-center">إيماءات اللمس</p>
+									<div className="space-y-2">
+										<label className="flex items-center justify-between text-sm">
+											<span className="text-gray-700 dark:text-gray-300">السحب من الجانبين:</span>
+											<input
+												type="checkbox"
+												checked={enableSideSwipes}
+												onChange={(e) => setEnableSideSwipes(e.target.checked)}
+												className="w-4 h-4 text-emerald-600 bg-gray-100 border-gray-300 rounded focus:ring-emerald-500 dark:focus:ring-emerald-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+											/>
+										</label>
+									</div>
+									<div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+										اسحب يميناً للصفحة السابقة، واسحب يساراً للتالية
+									</div>
+								</div>
+							</div>
+						)}
 						<div className="w-full lg:w-auto">
 							<AddBookmarkForm
 								ayahsInCurrentPage={ayahsInCurrentPage}
 								currentPage={currentPage}
 								currentSurahNum={surahNumber}
 							/>
+						</div>
+						{/* Keyboard Shortcuts Help Button */}
+						<div className="w-full lg:w-auto flex justify-center">
+							<button
+								onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+								className="flex items-center gap-2 px-3  text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors duration-200"
+								title="اختصارات لوحة المفاتيح"
+							>
+								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+								</svg>
+								<span className="hidden sm:inline">اختصارات لوحة المفاتيح</span>
+							</button>
 						</div>
 					</div>
 					<div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-300 dark:via-emerald-600 to-transparent my-6"></div>
@@ -470,13 +713,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 												>
 													{surahNames[+surahData[0]["sura_no"]]}
 												</h1>
-												<div className="flex items-center justify-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-													<span>سورة {surahNames[+surahData[0]["sura_no"]]}</span>
-													<span>•</span>
-													<span>{surahVerses[+surahNumber]?.[1] || 0} آية</span>
-													<span>•</span>
-													<span>صفحة {currentPage}</span>
-												</div>
+
 											</div>
 											{surahNumber != 1 && (
 												<div className="flex justify-center mb-6">
@@ -498,6 +735,27 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						>
 							{content}
 						</div>
+						{/* Mobile Touch Navigation Hints - Only show on touch devices */}
+						{isTouchDevice && enableSideSwipes && (
+							<>
+								{/* Left side swipe hint - RIGHT ARROW for next page */}
+								<div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none opacity-20 hover:opacity-40 transition-opacity duration-200">
+									<div className="flex items-center justify-center w-12 h-20 bg-emerald-600/80 rounded-r-lg shadow-lg">
+										<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+										</svg>
+									</div>
+								</div>
+								{/* Right side swipe hint - LEFT ARROW for previous page */}
+								<div className="fixed right-0 top-1/2 transform -translate-y-1/2 z-10 pointer-events-none opacity-20 hover:opacity-40 transition-opacity duration-200">
+									<div className="flex items-center justify-center w-12 h-20 bg-emerald-600/80 rounded-l-lg shadow-lg">
+										<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+										</svg>
+									</div>
+								</div>
+							</>
+						)}
 					</div>
 				</div>
 
@@ -517,6 +775,10 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 							{convertToArabicNumbers(currentPage)}
 						</div>
 						<div className="text-sm text-gray-600 dark:text-gray-400">الصفحة الحالية</div>
+						{/* Keyboard shortcuts hint */}
+						<div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+							⌨️ ← → للتنقل
+						</div>
 					</div>
 					<div
 						onClick={(e) => {
@@ -574,6 +836,75 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						currentWordInfo={currentWordInfo}
 						bottomBarDisplayed={bottomBarVisible}
 					/>
+				)}
+
+				{/* Keyboard Shortcuts Help */}
+				{showKeyboardHelp && (
+					<div className="fixed top-20 right-4 z-50">
+						<div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xl border border-emerald-200 dark:border-emerald-700 max-w-xs">
+							<div className="flex items-center justify-between mb-3">
+								<h3 className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+									⌨️ اختصارات لوحة المفاتيح
+								</h3>
+								<button
+									onClick={() => setShowKeyboardHelp(false)}
+									className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+								>
+									<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</div>
+
+							<div className="space-y-2 text-xs">
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">التنقل في الصفحات:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">← →</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">التنقل في الآيات:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">← →</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">تشغيل/إيقاف الصوت:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">Space</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">كتم/إلغاء كتم الصوت:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">M</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">التنقل بالصفحات:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">Page Up/Down</kbd>
+								</div>
+
+								{/* Mobile Touch Gestures - Only show on touch devices */}
+								{isTouchDevice && (
+									<>
+										<div className="border-t border-gray-200 dark:border-gray-600 pt-2 mt-2">
+											<div className="text-emerald-700 dark:text-emerald-300 font-medium mb-1">إيماءات اللمس:</div>
+											<div className="space-y-1">
+												<div className="flex justify-between items-center">
+													<span className="text-gray-600 dark:text-gray-400">السحب يميناً:</span>
+													<span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded">الصفحة السابقة</span>
+												</div>
+												<div className="flex justify-between items-center">
+													<span className="text-gray-600 dark:text-gray-400">السحب يساراً:</span>
+													<span className="text-xs bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded">الصفحة التالية</span>
+												</div>
+											</div>
+										</div>
+									</>
+								)}
+							</div>
+
+					
+						</div>
+					</div>
 				)}
 				{/* Static reciters list for crawlers */}
 				<div style={{ display: "none" }} aria-hidden="true">
