@@ -576,7 +576,9 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 			</Helmet>
 			<div
 				ref={containerRef}
-				className="container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white "
+				className={`container mb-20 min-h-screen flex flex-col justify-between h-full text-black dark:text-white ${
+					bottomBarVisible && mode === "listening" ? "mb-40" : bottomBarVisible ? "mb-32" : ""
+				}`}
 			>
 				<div>
 					<div className="relative gap-4 lg:gap-6 rounded-2xl pt-6 pb-4 flex flex-col lg:flex-row justify-center items-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
@@ -651,14 +653,14 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								: ""}
 						</div>
 						<div
-							className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto `}
+							className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto max-w-4xl`}
 						>
 							{content}
 						</div>
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
+				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
 					<div
 						onClick={(e) => {
 							handlePageChange("backward");
@@ -674,10 +676,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 							{convertToArabicNumbers(currentPage)}
 						</div>
 						<div className="text-sm text-gray-600 dark:text-gray-400">الصفحة الحالية</div>
-						{/* Keyboard shortcuts hint */}
-						<div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
-							⌨️ ← → للتنقل
-						</div>
+
 					</div>
 					<div
 						onClick={(e) => {
