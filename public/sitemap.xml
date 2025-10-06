@@ -3,722 +3,722 @@
 	xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	<url>
 		<loc>https://koranread.com/</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>1.0</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/user/login</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>yearly</changefreq>
 		<priority>0.3</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/user/reset</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>yearly</changefreq>
 		<priority>0.3</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/user/reset-confirmation</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>yearly</changefreq>
 		<priority>0.3</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/user/signup</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>yearly</changefreq>
 		<priority>0.3</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/user/profile</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>yearly</changefreq>
 		<priority>0.3</priority>
 	</url>
 	<!-- Surahs -->
 	<url>
 		<loc>https://koranread.com/surah/1</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/2</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/3</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/4</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/5</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/6</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/7</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/8</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/9</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/10</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/11</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/12</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/13</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/14</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/15</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/16</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/17</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/18</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/19</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/20</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/21</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/22</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/23</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/24</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/25</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/26</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/27</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/28</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/29</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/30</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/31</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/32</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/33</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/34</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/35</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/36</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/37</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/38</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/39</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/40</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/41</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/42</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/43</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/44</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/45</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/46</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/47</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/48</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/49</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/50</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/51</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/52</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/53</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/54</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/55</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/56</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/57</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/58</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/59</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/60</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/61</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/62</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/63</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/64</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/65</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/66</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/67</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/68</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/69</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/70</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/71</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/72</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/73</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/74</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/75</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/76</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/77</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/78</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/79</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/80</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/81</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/82</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/83</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/84</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/85</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/86</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/87</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/88</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/89</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/90</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/91</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/92</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/93</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/94</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/95</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/96</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/97</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/98</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/99</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/100</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/101</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/102</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/103</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/104</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/105</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/106</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/107</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/108</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/109</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/110</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/111</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/112</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/113</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
 	<url>
 		<loc>https://koranread.com/surah/114</loc>
-		<lastmod>2025-03-21</lastmod>
+		<lastmod>2025-10-06</lastmod>
 		<changefreq>monthly</changefreq>
 		<priority>0.8</priority>
 	</url>
