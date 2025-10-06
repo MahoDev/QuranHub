@@ -59,7 +59,7 @@ function Home() {
             "@context": "https://schema.org",
             "@type": "WebSite",
             "name": "منصة القرآن",
-            "url": "https://quran-hub.vercel.app/",
+            "url": "https://koranread.com/",
             "description": "موقع يقدم القران الكريم مكتوب بخط واضح وبالتشكيل مع امكانية تكبير وتصغير الخط والقراءة بالوضع الليلي مع تفسير الايات والاستماع لتلاوات مختلف القراء وحفظ مواضع القراءة"
           }
         `}

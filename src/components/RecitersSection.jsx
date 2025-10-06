@@ -177,9 +177,21 @@ function RecitersSection() {
 
   // Effect to scroll when showAllReciters changes from true to false
   useEffect(() => {
-    if (!showAllReciters) {
-		scrollToRecitersSection();
+    // Only scroll if we're transitioning from showing all to showing less
+    // Don't scroll on initial mount (when showAllReciters starts as false)
+    if (showAllReciters === false && recitersSectionRef.current) {
+      // Check if this is not the initial render by checking if we've ever shown all reciters
+      const hasShownAllBefore = sessionStorage.getItem('hasShownAllReciters');
+      if (hasShownAllBefore === 'true') {
+        scrollToRecitersSection();
+      }
+    }
+  }, [showAllReciters]);
 
+  // Track when user has shown all reciters at least once
+  useEffect(() => {
+    if (showAllReciters) {
+      sessionStorage.setItem('hasShownAllReciters', 'true');
     }
   }, [showAllReciters]);
 

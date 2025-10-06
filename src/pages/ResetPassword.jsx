@@ -17,7 +17,7 @@ function ResetPassword() {
         return;
       }
       await sendPasswordResetEmail(auth, email, {
-        url: "https://quran-hub.vercel.app/user/reset-confirmation",
+        url: "https://koranread.com/user/reset-confirmation",
       });
       setMessage("تم ارسال رسالة التأكيد بنجاح");
       setEmail("");

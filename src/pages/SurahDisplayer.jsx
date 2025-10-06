@@ -598,7 +598,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 				<meta property="og:description" content={surahMetaDescription} />
 				<meta
 					property="og:url"
-					content={`https://quran-hub.vercel.app/surah/${surahNumber}`}
+					content={`https://koranread.com/surah/${surahNumber}`}
 				/>
 				<meta property="og:image" content="/public/social-media-pic.png" />
 
@@ -611,7 +611,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 				<meta name="twitter:description" content={surahMetaDescription} />
 				<meta
 					name="twitter:image"
-					content="https://quran-hub.vercel.app/social-media-pic.png"
+					content="https://koranread.com/social-media-pic.png"
 				/>
 
 				<script type="application/ld+json">
@@ -621,12 +621,12 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
             "@type": "CollectionPage",
             "name": "${surahNames[surahNumber]}",
             "description": "صفحة لعرض سورة ${surahNames[surahNumber]} من القرآن الكريم.",
-            "url": "https://quran-hub.vercel.app/surah/${surahNumber}",
+            "url": "https://koranread.com/surah/${surahNumber}",
             "inLanguage": "ar",
             "about": {
               "@type": "Book",
               "name": "القرآن الكريم",
-              "url": "https://quran-hub.vercel.app"
+              "url": "https://koranread.com"
             }
           }
         `}
