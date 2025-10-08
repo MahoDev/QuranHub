@@ -13,11 +13,11 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 		<div className="navbar-element px-8 z-[1] bg-white/90 dark:bg-gray-900/90 drop-shadow-lg sticky w-full top-0 border-b border-emerald-200/50 dark:border-emerald-700/50">
 			<ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
 				<li className="font-extrabold">
-					<Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse group">
+					<Link to="/" className="flex items-center space-x-1 rtl:space-x-reverse group">
 						<span className="text-2xl mx-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200">
 							منصة القرآن
 						</span>
-						<FaBookOpen className="inline-block pr-2 mb-1 group-hover:text-emerald-600 transition-colors duration-200" size="30" />
+						<FaBookOpen className="inline-block mt-[2px] pr-2 mb-1 group-hover:text-emerald-600 transition-colors duration-200" size="30" />
 					</Link>
 				</li>
 				<li className="relative md:flex">

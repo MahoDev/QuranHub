@@ -151,6 +151,31 @@ function HeroSection() {
             </div>
           </div>
         </div>
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => {
+              const surahsSection = document.getElementById('SurahsSection');
+              if (surahsSection) {
+                surahsSection.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start'
+                });
+              }
+            }}
+            className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-emerald-50 to-emerald-100 dark:from-emerald-900/30 dark:to-emerald-800/40 hover:from-emerald-100 hover:to-emerald-200 dark:hover:from-emerald-800/40 dark:hover:to-emerald-700/50 text-emerald-700 dark:text-emerald-300 px-8 py-4 rounded-full font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 border-emerald-300 dark:border-emerald-600 hover:border-emerald-400 dark:hover:border-emerald-500 backdrop-blur-sm transform hover:scale-105 hover:-translate-y-1"
+          >
+            <span className="text-base font-medium">تصفح السور</span>
+            <div className="relative">
+              <div className="absolute -inset-1 bg-emerald-400 rounded-full blur opacity-25 group-hover:opacity-40 transition-opacity duration-300"></div>
+              <div className="relative p-1.5 rounded-full bg-emerald-500 group-hover:bg-emerald-600 transition-colors duration-300">
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
