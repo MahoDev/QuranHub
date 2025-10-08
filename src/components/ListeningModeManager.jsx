@@ -9,6 +9,8 @@ function ListeningModeManager({
 	onVerseNavigation,
 	currentWordInfo,
 	bottomBarDisplayed,
+	audioPlayerVisible,
+	onAudioPlayerVisibilityChange,
 }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 	const [recitationId, setRecitationId] = useState(30);
@@ -204,6 +206,8 @@ function ListeningModeManager({
 				currentWordAudioSrc={currentWordAudioSrc}
 				onVerseNavigation={onVerseNavigation}
 				bottomBarDisplayed={bottomBarDisplayed}
+				audioPlayerVisible={audioPlayerVisible}
+				onVisibilityChange={onAudioPlayerVisibilityChange}
 			/>
 
 			{/* Quality Notification */}

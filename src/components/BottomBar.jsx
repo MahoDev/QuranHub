@@ -13,6 +13,7 @@ function BottomBar({
 	fontSize,
 	onDisplayStateChange,
 	isListeningMode, // Add this prop to know if audio player is present
+	audioPlayerVisible, // Add this prop to know if audio player is visible
 	onVisibilityChange, // Callback to notify parent of visibility changes
 }) {
 	const [tafsirBoxVisible, setIsTafirBoxVisible] = useState(false);
@@ -27,6 +28,33 @@ function BottomBar({
 		}
 	}, [isVisible, onVisibilityChange]);
 
+	// Keyboard shortcut for bottom bar minimize/maximize (B key)
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			// Don't interfere with input fields, textareas, or when typing
+			if (
+				event.target.tagName === 'INPUT' ||
+				event.target.tagName === 'TEXTAREA' ||
+				event.target.contentEditable === 'true'
+			) {
+				return;
+			}
+
+			if (event.key === 'b' || event.key === 'B') {
+				event.preventDefault();
+				// Toggle bottom bar visibility and close any open dropdowns
+				setIsVisible(!isVisible);
+				setTafirBoxVisible(false);
+				setFontBoxVisible(false);
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [isVisible]);
+
 	return (
 		<>
 			{/* Floating Toggle Button - Shows when bar is hidden */}
@@ -34,7 +62,7 @@ function BottomBar({
 				<button
 					onClick={() => setIsVisible(true)}
 					className={`fixed  left-16 transform -translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 ${
-						isListeningMode ? "bottom-[90px]" : "bottom-4"
+						isListeningMode && audioPlayerVisible ? "bottom-[100px]" : "bottom-4"
 					}`}
 					title="إظهار شريط التحكم"
 				>
@@ -46,7 +74,7 @@ function BottomBar({
 			{/* Bottom Bar */}
 			<div
 				id="bottombar"
-				className={`fixed w-full z-[10] left-0 bg-emerald-800/95 dark:bg-emerald-900/95 backdrop-blur-lg text-white shadow-lg transition-all duration-300 h-[85px] p-4 pt-5 border-t border-emerald-700/50 ${
+				className={`fixed w-full  min-w-full z-[10] left-0 bg-emerald-800/95 dark:bg-emerald-900/95 backdrop-blur-lg text-white shadow-lg transition-all duration-300 h-[85px] p-4 pt-5 border-t border-emerald-700/50 ${
 					isVisible ? "bottom-0" : "bottom-[-100px]"
 				}`}
 			>
@@ -248,7 +276,7 @@ function BottomBar({
 									onSideBarDisplayedChange(!isSideBarDisplayed);
 								}}
 							>
-								<span className="font-semibold">الانتقال</span>
+								<span className="font-semibold hidden sm:inline-block">الانتقال</span>
 								<FaBars className="text-xl min-w-[15px]" />
 							</div>
 						</div>

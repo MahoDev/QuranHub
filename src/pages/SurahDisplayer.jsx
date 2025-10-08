@@ -40,6 +40,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	const [mode, setMode] = useState("reading");
 	const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
 	const [bottomBarVisible, setBottomBarVisible] = useState(true);
+	const [audioPlayerVisible, setAudioPlayerVisible] = useState(true);
 	const [tafsirModeActive, setTafsirModeActive] = useState(false);
 	const [loadingSurah, setLoadingSurah] = useState(false);
 	const [currentVerse, setCurrentVerse] = useState(1);
@@ -475,7 +476,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		}
 
 		// Scroll to top after page change
-		window.scrollTo({ top: 10, behavior: 'instant' });
+		window.scrollTo({ top: 12, behavior: 'instant' });
 	};
 
 	const handleVerseNavigation = (direction) => {
@@ -699,6 +700,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					currentTafsirId={tafsirId}
 					fontSize={fontSize}
 					isListeningMode={mode === "listening"}
+					audioPlayerVisible={audioPlayerVisible}
 					onVisibilityChange={setBottomBarVisible}
 					//used to set TafsirMode and TafsirId and fontSize
 					onDisplayStateChange={handleDisplayStateChange}
@@ -733,6 +735,8 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						onVerseNavigation={handleVerseNavigation}
 						currentWordInfo={currentWordInfo}
 						bottomBarDisplayed={bottomBarVisible}
+						audioPlayerVisible={audioPlayerVisible}
+						onAudioPlayerVisibilityChange={setAudioPlayerVisible}
 					/>
 				)}
 
@@ -780,6 +784,16 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								<div className="flex justify-between items-center">
 									<span className="text-gray-700 dark:text-gray-300">كتم/إلغاء كتم الصوت:</span>
 									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">M</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">تصغير/تكبير مشغل الصوت:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">A</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">تصغير/تكبير شريط التحكم:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">B</kbd>
 								</div>
 
 								<div className="flex justify-between items-center">

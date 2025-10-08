@@ -3,6 +3,7 @@ import { IoMdPause, IoMdPlay } from "react-icons/io";
 import { MdSpatialAudioOff, MdSkipNext, MdSkipPrevious } from "react-icons/md";
 import { IoVolumeHigh, IoVolumeMedium } from "react-icons/io5";
 import { HiVolumeOff } from "react-icons/hi";
+import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 
 import { useAudio } from "react-use";
 import { formatTime } from "../utility/text-utilities";
@@ -20,6 +21,8 @@ function AudioPlayer({
 	onVerseNavigation,
 	onDisplayStateChange,
 	bottomBarDisplayed,
+	audioPlayerVisible,
+	onVisibilityChange,
 }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 
@@ -34,11 +37,40 @@ function AudioPlayer({
 	const [volumeDisplayed, setVolumeDisplayed] = useState(false);
 	const [ayahWordAudio, setAyahWordAudio] = useState(null);
 	const scrollToRef = useRef();
+	const [isVisible, setIsVisible] = useState(true);
 
 	const handleVolumeChange = (newValue) => {
 		onDisplaySettingsChange({ ...displaySettings, volume: newValue });
 		setVolume(newValue);
 	};
+
+	// Keyboard shortcut for audio player minimize/maximize (A key)
+	useEffect(() => {
+		const handleKeyDown = (event) => {
+			// Don't interfere with input fields, textareas, or when typing
+			if (
+				event.target.tagName === 'INPUT' ||
+				event.target.tagName === 'TEXTAREA' ||
+				event.target.contentEditable === 'true'
+			) {
+				return;
+			}
+
+			if (event.key === 'a' || event.key === 'A') {
+				event.preventDefault();
+				// Toggle audio player visibility and close any open dropdowns
+				onVisibilityChange(!audioPlayerVisible);
+				setRecitersDisplayed(false);
+				setBitratesDisplayed(false);
+				setVolumeDisplayed(false);
+			}
+		};
+
+		document.addEventListener('keydown', handleKeyDown);
+		return () => {
+			document.removeEventListener('keydown', handleKeyDown);
+		};
+	}, [audioPlayerVisible, onVisibilityChange]);
 
 	useEffect(() => {
 		if (scrollToRef.current) {
@@ -200,12 +232,31 @@ function AudioPlayer({
 	}
 
 	return (
-		<div
-			id="audioPlayer"
-			className={`fixed left-0 bottom-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
-			${bottomBarDisplayed ? " bottom-[80px] z-[0] " : " z-[5] "}
-			`}
-		>
+		<>
+			{/* Floating Toggle Button - Shows when player is hidden */}
+			{!audioPlayerVisible && (
+				<button
+					onClick={() => onVisibilityChange(true)}
+					className={`fixed right-16 transform translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 ${
+						bottomBarDisplayed ? "bottom-[100px]" : "bottom-4"
+					}`}
+					title="إظهار مشغل الصوت"
+				>
+					<FaChevronUp className="text-lg" />
+					<span className="font-semibold">الصوت</span>
+				</button>
+			)}
+
+			{/* Audio Player */}
+			<div
+				id="audioPlayer"
+				className={`fixed left-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
+				${audioPlayerVisible
+					? bottomBarDisplayed ? "bottom-[80px] z-[0]" : "bottom-0 z-[5]"
+					: "bottom-[-100px] z-[-1]"
+				}
+				`}
+			>
 			{audio}
 			<div
 				className="buffer peer group absolute left-0 top-0 w-full h-[5px] hover:h-[7px] bg-gray-200/80 dark:bg-gray-600/80 cursor-pointer rounded-full transition-all duration-200"
@@ -332,6 +383,20 @@ function AudioPlayer({
 			<span className="full-duration text-gray-500 text-md absolute left-1 top-1">
 				{formatTime(state.duration)}
 			</span>
+
+			{/* Minimize Toggle Button */}
+			<button
+				onClick={() => {
+					onVisibilityChange(false);
+					setRecitersDisplayed(false);
+					setBitratesDisplayed(false);
+					setVolumeDisplayed(false);
+				}}
+				className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-gray-100/80 dark:bg-gray-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-full p-2 transition-all duration-200 hover:scale-110"
+				title="تصغير مشغل الصوت"
+			>
+				<FaChevronDown className="text-sm text-gray-600 dark:text-gray-300" />
+			</button>
 			<div className="relative h-fit">
 				<div
 					id="recitersBoxToggler"
@@ -389,6 +454,7 @@ function AudioPlayer({
 				</OutsideClickHandler>
 			</div>
 		</div>
+		</>
 	);
 }
 
