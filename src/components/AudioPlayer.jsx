@@ -237,7 +237,7 @@ function AudioPlayer({
 			{!audioPlayerVisible && (
 				<button
 					onClick={() => onVisibilityChange(true)}
-					className={`fixed right-16 transform translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 ${
+					className={`fixed right-16 transform translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
 						bottomBarDisplayed ? "bottom-[100px]" : "bottom-4"
 					}`}
 					title="إظهار مشغل الصوت"
@@ -250,7 +250,7 @@ function AudioPlayer({
 			{/* Audio Player */}
 			<div
 				id="audioPlayer"
-				className={`fixed left-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 backdrop-blur-sm shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
+				className={`fixed left-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
 				${audioPlayerVisible
 					? bottomBarDisplayed ? "bottom-[80px] z-[0]" : "bottom-0 z-[5]"
 					: "bottom-[-100px] z-[-1]"
@@ -259,7 +259,7 @@ function AudioPlayer({
 			>
 			{audio}
 			<div
-				className="buffer peer group absolute left-0 top-0 w-full h-[5px] hover:h-[7px] bg-gray-200/80 dark:bg-gray-600/80 cursor-pointer rounded-full transition-all duration-200"
+				className="buffer peer group absolute left-0 top-0 w-full h-[5px] hover:h-[7px] bg-gray-200/80 dark:bg-gray-600/80 cursor-pointer rounded-full transition-all duration-200" style={{ willChange: 'height' }}
 				onClick={(event) => {
 					jumpToClickPosition(event);
 				}}
@@ -279,7 +279,7 @@ function AudioPlayer({
 
 			<div
 				style={{ right: `${hoverData.xPosition}%` }}
-				className="hover-time peer-hover:flex hidden w-20 h-7 absolute top-[-40px] bg-gray-800/95 dark:bg-gray-700/95 backdrop-blur-sm rounded-lg text-sm mx-auto items-center justify-center shadow-lg border border-gray-600/50 "
+				className="hover-time peer-hover:flex hidden w-20 h-7 absolute top-[-40px] bg-gray-800/95 dark:bg-gray-700/95 rounded-lg text-sm mx-auto items-center justify-center shadow-lg border border-gray-600/50 "
 			>
 				<span className="text-white font-medium px-2">
 					{hoverData?.time}
@@ -323,7 +323,7 @@ function AudioPlayer({
 						id="volumeBox"
 						className={`${
 							!volumeDisplayed ? "hidden" : ""
-						} transform rotate-[-270deg] absolute right-[-20px] top-[-70px] w-32 h-12 bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-lg rounded-lg border border-gray-200/60 dark:border-gray-700/60 z-[1] flex items-center justify-center`}
+						} transform rotate-[-270deg] absolute right-[-20px] top-[-70px] w-32 h-12 bg-white/95 dark:bg-stone-800/95 shadow-lg rounded-lg border border-gray-200/60 dark:border-gray-700/60 z-[1] flex items-center justify-center`}
 					>
 						<input
 							type="range"
@@ -343,13 +343,13 @@ function AudioPlayer({
 			<div className="w-fit m-auto mt-3 flex justify-center items-center gap-4 md:gap-8 text-black">
 				<MdSkipNext
 					size={32}
-					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 hover:scale-110 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
 					onClick={() => {
 						onVerseNavigation("backward");
 					}}
 					title="السابق"
 				/>
-				<div className="cursor-pointer rounded-full p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 relative w-[50px] h-[50px] flex justify-center items-center shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+				<div className="cursor-pointer rounded-full p-3 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 relative w-[50px] h-[50px] flex justify-center items-center shadow-lg hover:shadow-xl transition-all duration-200">
 					{state.playing ? (
 						<IoMdPause
 							size={24}
@@ -370,7 +370,7 @@ function AudioPlayer({
 				</div>
 				<MdSkipPrevious
 					size={32}
-					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 hover:scale-110 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+					className="cursor-pointer hover:text-emerald-600 dark:text-white dark:hover:text-emerald-400 transition-colors duration-200 p-1 rounded-full hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
 					onClick={() => {
 						onVerseNavigation("forward");
 					}}
@@ -392,7 +392,7 @@ function AudioPlayer({
 					setBitratesDisplayed(false);
 					setVolumeDisplayed(false);
 				}}
-				className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-gray-100/80 dark:bg-gray-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-full p-2 transition-all duration-200 hover:scale-110"
+				className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-gray-100/80 dark:bg-gray-800/80 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 rounded-full p-2 transition-all duration-200"
 				title="تصغير مشغل الصوت"
 			>
 				<FaChevronDown className="text-sm text-gray-600 dark:text-gray-300" />
@@ -418,7 +418,7 @@ function AudioPlayer({
 						id="recitersBox"
 						className={`${
 							!recitersDisplayed ? "hidden" : ""
-						} absolute left-4 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-10`}
+						} absolute left-4 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-10`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">اختيار القارئ</div>
 						<div>{recitationsContent}</div>
@@ -446,7 +446,7 @@ function AudioPlayer({
 						id="bitratesBox"
 						className={`${
 							!bitratesDisplayed ? "hidden" : ""
-						} absolute left-16 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 backdrop-blur-sm shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-10`}
+						} absolute left-16 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-10`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">جودة الصوت</div>
 						<div>{bitratesContent}</div>

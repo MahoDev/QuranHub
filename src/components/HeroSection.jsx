@@ -47,7 +47,7 @@ function HeroSection() {
 
         <div className="flex flex-col lg:flex-row items-center justify-center gap-12 mb-16">
           <div className="flex-1 max-w-2xl">
-            <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-8 rounded-2xl shadow-xl">
+            <div className="bg-white/80 dark:bg-gray-800/80 py-8 px-12 rounded-2xl shadow-xl">
               <h2 className="text-2xl font-bold text-emerald-950 dark:text-white mb-6">
                 مميزات المنصة
               </h2>
@@ -93,7 +93,7 @@ function HeroSection() {
                     }
                     navigate(`/surah/${+surahSettings.currentSurah}`);
                   }}
-                  className="flex-1 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="flex-1 py-4 px-1 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <span>{buttonTexts[0]}</span>
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +111,7 @@ function HeroSection() {
                     }
                     navigate(`/surah/${+surahSettings.currentSurah}`);
                   }}
-                  className="flex-1 py-4 bg-amber-500 hover:bg-amber-600 text-black rounded-xl font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
+                  className="flex-1 py-4 px-1 bg-amber-500 hover:bg-amber-600 text-black rounded-xl font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
                 >
                   <span>{buttonTexts[1]}</span>
                   <span className="text-lg">🎧</span>
@@ -134,7 +134,7 @@ function HeroSection() {
         </div>
 
         <div className="text-center">
-          <div className="inline-flex items-center gap-8 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm px-8 py-4 rounded-full shadow-lg">
+          <div className="inline-flex items-center gap-8 bg-white/90 dark:bg-gray-800/90 px-8 py-4 rounded-full shadow-lg">
             <div className="text-center">
               <div className="text-2xl font-bold text-emerald-600">114</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">سورة</div>

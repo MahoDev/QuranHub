@@ -195,7 +195,7 @@ function SideBar({
   return (
     <div
       id="sidebar"
-      className="fixed left-0 top-0 text-white bg-emerald-800/95 dark:bg-emerald-900/95 backdrop-blur-lg w-[280px] h-[calc(100vh-80px)] p-6 overflow-y-hidden z-[2] border-r border-emerald-700/50 shadow-2xl"
+      className="fixed left-0 top-0 text-white bg-emerald-800/95 dark:bg-emerald-900/95 w-[280px] h-[calc(100vh-80px)] p-6 overflow-y-hidden z-[2] border-r border-emerald-700/50 shadow-2xl"
     >
       <div className="mb-6">
         <h2 className="text-xl font-bold text-center mb-4 text-emerald-100">التنقل السريع</h2>

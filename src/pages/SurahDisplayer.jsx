@@ -582,7 +582,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 				}`}
 			>
 				<div>
-					<div className="relative gap-4 lg:gap-6 rounded-2xl pt-6 pb-4 flex flex-col lg:flex-row justify-center items-center bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
+					<div className="relative gap-4 lg:gap-6 rounded-2xl pt-6 pb-4 flex flex-col lg:flex-row justify-center items-center bg-white/80 dark:bg-gray-800/80 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
 						<div className="view-mode lg:border-l-2 lg:pl-6 pt-2 border-gray-300 text-black dark:text-white w-full lg:w-auto">
 							<div className="flex gap-4 justify-center items-center bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 w-full">
 								<p className="text-black dark:text-white font-semibold whitespace-nowrap">وضع العرض:</p>
@@ -661,12 +661,12 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 backdrop-blur-md border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
+				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
 					<div
 						onClick={(e) => {
 							handlePageChange("backward");
 						}}
-						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg ${
 							+surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50 cursor-not-allowed"
 						}`}
 					>
@@ -683,7 +683,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						onClick={(e) => {
 							handlePageChange("forward");
 						}}
-						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-105 ${
+						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg ${
 							+surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50 cursor-not-allowed"
 						}`}
 					>

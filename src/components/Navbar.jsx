@@ -10,7 +10,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 	const isMediumScreen = useMedia("(min-width: 768px)");
 	const [menuDisplayed, setMenuDisplayed] = useState(isMediumScreen);
 	return (
-		<div className="navbar-element px-8 z-[1] bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg drop-shadow-lg sticky w-full top-0 border-b border-emerald-200/50 dark:border-emerald-700/50">
+		<div className="navbar-element px-8 z-[1] bg-white/90 dark:bg-gray-900/90 drop-shadow-lg sticky w-full top-0 border-b border-emerald-200/50 dark:border-emerald-700/50">
 			<ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
 				<li className="font-extrabold">
 					<Link to="/" className="flex items-center space-x-3 rtl:space-x-reverse group">
@@ -39,7 +39,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 						{menuDisplayed && (
 							<ul
 								id="menuBox"
-								className={`absolute w-[280px] left-0 top-[50px] z-3 flex flex-col items-center gap-4 px-6 py-4 bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl
+								className={`absolute w-[280px] left-0 top-[50px] z-3 flex flex-col items-center gap-4 px-6 py-4 bg-white/95 dark:bg-gray-800/95 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl
               md:static md:flex-row md:z-0 md:w-full md:bg-transparent md:border-none md:shadow-none md:dark:bg-transparent md:gap-6`}
 							>
 								{currentUser == null ||

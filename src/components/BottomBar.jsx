@@ -61,7 +61,7 @@ function BottomBar({
 			{!isVisible && (
 				<button
 					onClick={() => setIsVisible(true)}
-					className={`fixed  left-16 transform -translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg backdrop-blur-lg transition-all duration-200 hover:shadow-xl hover:scale-105 flex items-center gap-2 ${
+					className={`fixed  left-16 transform -translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
 						isListeningMode && audioPlayerVisible ? "bottom-[100px]" : "bottom-4"
 					}`}
 					title="إظهار شريط التحكم"
@@ -74,7 +74,7 @@ function BottomBar({
 			{/* Bottom Bar */}
 			<div
 				id="bottombar"
-				className={`fixed w-full  min-w-full z-[10] left-0 bg-emerald-800/95 dark:bg-emerald-900/95 backdrop-blur-lg text-white shadow-lg transition-all duration-300 h-[85px] p-4 pt-5 border-t border-emerald-700/50 ${
+				className={`fixed w-full  min-w-full z-[10] left-0 bg-emerald-800/95 dark:bg-emerald-900/95 text-white shadow-lg transition-all duration-300 h-[85px] p-4 pt-5 border-t border-emerald-700/50 ${
 					isVisible ? "bottom-0" : "bottom-[-100px]"
 				}`}
 			>
@@ -85,7 +85,7 @@ function BottomBar({
 						setTafirBoxVisible(false);
 						setFontBoxVisible(false);
 					}}
-					className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-emerald-700/80 hover:bg-emerald-600 rounded-full p-2 transition-all duration-200 hover:scale-110"
+					className="absolute top-2 left-1/2 transform -translate-x-1/2 bg-emerald-700/80 hover:bg-emerald-600 rounded-full p-2 transition-all duration-200"
 					title="إخفاء شريط التحكم"
 				>
 					<FaChevronDown className="text-sm" />
@@ -99,7 +99,7 @@ function BottomBar({
 								onClick={(e) => {
 									onPageChange("backward");
 								}}
-								className="flex items-center gap-2 p-3 cursor-pointer border-2 border-emerald-600 hover:border-white hover:bg-emerald-700 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105"
+								className="flex items-center gap-2 p-3 cursor-pointer border-2 border-emerald-600 hover:border-white hover:bg-emerald-700 rounded-xl transition-all duration-200 hover:shadow-lg"
 							>
 								<FaArrowRight className="text-xl" />
 								<span className="hidden sm:inline font-semibold">السابق</span>
@@ -108,7 +108,7 @@ function BottomBar({
 								onClick={(e) => {
 									onPageChange("forward");
 								}}
-								className="flex items-center gap-2 p-3 cursor-pointer border-2 border-emerald-600 hover:border-white hover:bg-emerald-700 rounded-xl transition-all duration-200 hover:shadow-lg hover:scale-105"
+								className="flex items-center gap-2 p-3 cursor-pointer border-2 border-emerald-600 hover:border-white hover:bg-emerald-700 rounded-xl transition-all duration-200 hover:shadow-lg"
 							>
 								<span className="hidden sm:inline font-semibold">التالي</span>
 								<FaArrowLeft className="text-xl" />
@@ -142,7 +142,7 @@ function BottomBar({
 									id="fontBox"
 									className={`${
 										!fontBoxVisible ? "hidden" : ""
-									} absolute right-20 translate-y-[-140px] rounded-xl p-4 w-[200px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg text-black dark:text-white shadow-lg border border-gray-200/50 dark:border-gray-700/50 z-[20]`}
+									} absolute right-20 translate-y-[-140px] rounded-xl p-4 w-[200px] bg-white/95 dark:bg-gray-800/95 text-black dark:text-white shadow-lg border border-gray-200/50 dark:border-gray-700/50 z-[20]`}
 								>
 									<div className="flex items-center justify-between mb-3">
 										<span className="font-semibold">حجم الخط</span>
@@ -192,7 +192,7 @@ function BottomBar({
 										id="tafseerBox"
 										className={`${
 											!tafsirBoxVisible ? "hidden" : ""
-										} absolute bottom-full left-0 mb-2 rounded-xl p-4 w-[220px] bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg text-black dark:text-white shadow-lg border border-gray-200/50 dark:border-gray-700/50 z-[20] max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-600 scrollbar-track-emerald-800/30`}
+										} absolute bottom-full left-0 mb-2 rounded-xl p-4 w-[220px] bg-white/95 dark:bg-gray-800/95 text-black dark:text-white shadow-lg border border-gray-200/50 dark:border-gray-700/50 z-[20] max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-emerald-600 scrollbar-track-emerald-800/30`}
 									>
 										<div className="flex items-center justify-between mb-4">
 											<label htmlFor="toggle" className="cursor-pointer flex items-center gap-4">

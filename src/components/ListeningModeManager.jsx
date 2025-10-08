@@ -218,7 +218,7 @@ function ListeningModeManager({
 				onMouseEnter={handleNotificationMouseEnter}
 				onMouseLeave={handleNotificationMouseLeave}
 			>
-				<div className="bg-amber-50 dark:bg-amber-900/30 border-2 border-amber-300 dark:border-amber-700 rounded-xl shadow-2xl backdrop-blur-md ring-2 ring-amber-200 dark:ring-amber-800 relative overflow-hidden">
+				<div className="bg-amber-50 dark:bg-amber-900/30 border-2 border-amber-300 dark:border-amber-700 rounded-xl shadow-2xl ring-2 ring-amber-200 dark:ring-amber-800 relative overflow-hidden">
 					{/* Progress Bar - TOP */}
 					<div className="w-full bg-amber-200 dark:bg-amber-800 h-1">
 						<div

@@ -285,7 +285,7 @@ function Profile() {
           </div>
 
           {/* User Information Card */}
-          <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8 transform transition-all duration-300 hover:shadow-3xl hover:bg-white/95 dark:hover:bg-gray-800/95">
+          <div className="bg-white/90 dark:bg-gray-800/90 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8 transition-all duration-300 hover:shadow-3xl hover:bg-white/95 dark:hover:bg-gray-800/95">
             <div className="flex items-center space-x-6 rtl:space-x-reverse">
               {/* User Avatar */}
               <div className="w-24 h-24 bg-gradient-to-br from-emerald-400 via-emerald-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-3xl font-bold shadow-lg ring-4 ring-emerald-200 dark:ring-emerald-700">
@@ -321,11 +321,11 @@ function Profile() {
           </div>
 
           {/* Bookmarks Section */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
+          <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
-                  العلامات المرجعية 📖
+                  العلامات المرجعية 
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
                   {bookmarks.length} علامة مرجعية محفوظة
@@ -381,7 +381,7 @@ function Profile() {
                       {sortedBookmarks.map((bookmark) => (
                         <div
                           key={bookmark.id}
-                          className="bg-gradient-to-br from-white to-emerald-50 dark:from-gray-700 dark:to-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 rounded-xl p-6 hover:shadow-xl hover:scale-105 transition-all duration-300 cursor-pointer group"
+                          className="bg-gradient-to-br from-white to-emerald-50 dark:from-gray-700 dark:to-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 rounded-xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group"
                           onClick={() => handleBookmarkNavigation(bookmark)}
                         >
                           {/* Header */}
@@ -453,7 +453,7 @@ function Profile() {
           </div>
 
           {/* Help & Support Section */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
+          <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
             <div className="flex items-center mb-6">
               <div className="text-4xl ml-4">💬</div>
               <div>
@@ -482,7 +482,7 @@ function Profile() {
           </div>
 
           {/* Danger Zone */}
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl border border-red-200/50 dark:border-red-700/50 shadow-2xl p-8">
+          <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-red-200/50 dark:border-red-700/50 shadow-2xl p-8">
             <div className="flex items-center mb-6">
               <div className="text-4xl ml-4">⚠️</div>
               <div>

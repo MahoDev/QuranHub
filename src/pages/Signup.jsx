@@ -138,7 +138,7 @@ function Signup() {
         />
       </Helmet>
       <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 dark:from-gray-900 dark:via-emerald-900/20 dark:to-gray-900 flex justify-center items-center p-4">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg p-8 mx-4 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl w-full max-w-md transform transition-all duration-300 hover:shadow-3xl">
+        <div className="bg-white/80 dark:bg-gray-800/80 p-8 mx-4 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl w-full max-w-md transition-all duration-300 hover:shadow-3xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="text-6xl mb-4">🌟</div>
@@ -171,7 +171,7 @@ function Signup() {
                 </div>
               ) : (
                 <>
-                  <FcGoogle className="h-6 w-6 mr-3 group-hover:scale-110 transition-transform duration-200" />
+                  <FcGoogle className="h-6 w-6 mr-3 transition-transform duration-200" />
                   <span className="font-medium">إنشاء حساب بـ Google</span>
                 </>
               )}
