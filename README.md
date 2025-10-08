@@ -11,18 +11,6 @@
 - مزايا تسهيل الاستخدام كالوضع الليلي والتحكم في حجم الخط والاحتفاظ بالاعدادات
 - القدرة على حفظ مواضع القراءة المختلفة وإكمال القراءة من أي جهاز
 
-## عرض للموقع:
-
-
-
-
-https://github.com/MahoDev/QuranHub/assets/91033213/fa036a2a-b7f9-45c8-8946-206466b15d8e
-
-
-
-
-
-
 
 ## تم الاستعانة بـ:
 
@@ -34,4 +22,3 @@ https://github.com/MahoDev/QuranHub/assets/91033213/fa036a2a-b7f9-45c8-8946-2064
 
 [Everyayah](https://everyayah.com/)
 
-[Design](https://dribbble.com/shots/22213665-Quran-Reading-Website)
