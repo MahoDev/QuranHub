@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { convertToArabicNumbers } from "../utility/text-utilities";
+import { playWordPronunciation, stopWordPronunciation } from "../utility/audio-utilities";
 
 function Ayah({
   ayahData,
@@ -8,14 +9,14 @@ function Ayah({
   onCurrentWordChange,
   mode, // Add mode prop
 }) {
-  const verseText = ayahData["aya_text"].startsWith(
+  const versesText = ayahData["aya_text"].startsWith(
     "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
   )
     ? ayahData["aya_text"].slice(38)
     : ayahData["aya_text"].slice(0, ayahData["aya_text"].length - 2);
   //example of "ayaText" = ٱللَّهُ لَآ إِلَٰهَ إِلَّا هُوَ ٱلۡحَيُّ ٱلۡقَيُّومُ ﰁ
 
-  const verseWords = verseText.split(" ");
+  const versesWords = versesText.split(" ");
   const highlightedAyah = useRef();
   const [showTooltip, setShowTooltip] = useState(false);
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
@@ -27,13 +28,26 @@ function Ayah({
     }
   }, [currentVerse]);
 
-  const handleWordClick = (e, index) => {
+  // Cleanup audio when component unmounts
+  useEffect(() => {
+    return () => {
+      stopWordPronunciation();
+    };
+  }, []);
+
+  const handleWordClick = async (e, index) => {
     if (mode === "reading") {
-      setTooltipPosition({ x: e.clientX, y: e.clientY });
-      setTooltipType("word");
-      setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 3000);
+      // Play word pronunciation in reading mode
+      const wordInfo = {
+        surahNo: ayahData["sura_no"],
+        ayahNo: ayahData["aya_no"],
+        index: index + 1,
+        hash: Math.floor(Math.random() * 1000),
+      };
+
+      await playWordPronunciation(wordInfo);
     } else {
+      // Existing listening mode behavior
       onCurrentWordChange({
         surahNo: ayahData["sura_no"],
         ayahNo: ayahData["aya_no"],
@@ -62,7 +76,7 @@ function Ayah({
       } inline group relative`}
     >
       <div className="inline">
-        {verseWords.map((word, index) => {
+        {versesWords.map((word, index) => {
           return (
             <p
               key={`${ayahData["sura_no"]}:${ayahData["aya_no"]}:${index + 1}`}
@@ -109,7 +123,7 @@ function Ayah({
         >
           <div className="relative">
             {tooltipType === "word"
-              ? "حَوِّلْ إِلَى وضع الاستماع للاستماع إلى الكلمة"
+              ? "تم تشغيل النطق"
               : "حَوِّلْ إِلَى وضع القراءة للاستماع إلى الآية كاملة"}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
           </div>

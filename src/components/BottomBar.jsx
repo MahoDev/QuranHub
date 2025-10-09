@@ -40,7 +40,7 @@ function BottomBar({
 				return;
 			}
 
-			if (event.key === 'b' || event.key === 'B') {
+			if (event.key === 'b' || event.key === 'B' || event.key === 'لا' || event.code === 'KeyB') {
 				event.preventDefault();
 				// Toggle bottom bar visibility and close any open dropdowns
 				setIsVisible(!isVisible);

@@ -56,7 +56,7 @@ function AudioPlayer({
 				return;
 			}
 
-			if (event.key === 'a' || event.key === 'A') {
+			if (event.key === 'a' || event.key === 'A' || event.key === 'ش' || event.code === 'KeyA') {
 				event.preventDefault();
 				// Toggle audio player visibility and close any open dropdowns
 				onVisibilityChange(!audioPlayerVisible);
