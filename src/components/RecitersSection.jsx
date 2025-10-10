@@ -262,10 +262,10 @@ function RecitersSection() {
         <div className="text-center">
           <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 rounded-lg inline-block">
             <p className="text-emerald-800 dark:text-emerald-200 mb-2">
-               جودات متعددة متاحة لكل قارئ
+               جودات متعددة متاحة لأغلب القراء
             </p>
             <p className="text-sm text-emerald-600 dark:text-emerald-300">
-              اختر من بين جودات مختلفة حسب سرعة اتصالك بالإنترنت
+              اختر من بين الجودات مختلفة حسب سرعة اتصالك بالإنترنت
             </p>
           </div>
         </div>
@@ -275,7 +275,7 @@ function RecitersSection() {
             onClick={() => setShowAllReciters(!showAllReciters)}
             className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-full font-semibold transition-colors duration-200"
           >
-            {showAllReciters ? 'عرض أقل' : 'اكتشف جميع القراء'}
+            {showAllReciters ? 'عرض أقل' : 'الاطلاع على جميع القراء'}
           </button>
         </div>
       </div>

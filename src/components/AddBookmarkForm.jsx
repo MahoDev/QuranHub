@@ -1,23 +1,33 @@
 import React, { useEffect, useState } from "react";
-import { surahNames, quranPages } from "../assets/data/quran-info";
+import { surahNames } from "../assets/data/quran-info";
 import { auth, firestore } from "../config/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import LoadingView from "./LoadingView";
 
-function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
-	const [pageNumber, setPageNumber] = useState(currentPage);
+function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage, surahData }) {
 	const [ayahNumber, setAyahNumber] = useState("");
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 
-	const handleAddBookmark = async () => {
-		// Check if ayahsInCurrentPage is available and not empty
-		if (!ayahsInCurrentPage || ayahsInCurrentPage.length === 0) {
-			setError("جاري تحميل بيانات السورة، يرجى المحاولة مرة أخرى");
-			return;
-		}
+	console.log(surahData)
 
+	// Get all ayahs in the current surah
+	const getAllAyahsInSurah = () => {
+		if (!surahData || surahData.length === 0) return [];
+
+		// Group ayahs by aya_no to get unique ayahs
+		const ayahMap = new Map();
+		surahData.forEach(ayah => {
+			if (!ayahMap.has(ayah.aya_no)) {
+				ayahMap.set(ayah.aya_no, ayah);
+			}
+		});
+
+		return Array.from(ayahMap.values()).sort((a, b) => a.aya_no - b.aya_no);
+	};
+
+	const handleAddBookmark = async () => {
 		// Check if ayahNumber is valid
 		if (!ayahNumber) {
 			setError("يرجى اختيار آية صالحة");
@@ -25,13 +35,12 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 		}
 
 		try {
-			const ayahText = ayahsInCurrentPage?.find(
-				(ayah) => ayahNumber == ayah.aya_no
-			)?.aya_text;
+			// Get the selected ayah data
+			const allAyahs = getAllAyahsInSurah();
+			const selectedAyah = allAyahs.find(ayah => ayah.aya_no == ayahNumber);
 
-			// Check if ayahText is available
-			if (!ayahText) {
-				setError("لم يتم العثور على نص الآية، يرجى المحاولة مرة أخرى");
+			if (!selectedAyah) {
+				setError("لم يتم العثور على الآية المحددة");
 				return;
 			}
 
@@ -39,9 +48,9 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 				userId: auth.currentUser.uid,
 				surahNumber: currentSurahNum,
 				surahName: surahNames[currentSurahNum],
-				pageNumber: currentPage,
+				pageNumber: selectedAyah.page || currentPage,
 				ayahNumber: ayahNumber,
-				ayahText: ayahText?.slice(0, ayahText?.length - 2),
+				ayahText: selectedAyah.aya_text?.slice(0, selectedAyah.aya_text?.length - 2) || selectedAyah.aya_text,
 				bookmarkDate: Timestamp.fromDate(new Date()),
 			};
 			console.log(bookmarkObj);
@@ -67,18 +76,31 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 	};
 
 	useEffect(() => {
-		const firstAyahInPage = ayahsInCurrentPage?.at(0)?.aya_no;
-		if (firstAyahInPage) {
-			setAyahNumber(firstAyahInPage);
+		// Auto-select first ayah of current page when page or surah data changes
+		if (surahData && surahData.length > 0 && currentPage) {
+			// Find the first ayah in the current page
+			const ayahsInCurrentPage = surahData.filter(ayah => ayah.page === currentPage);
+			const firstAyahInPage = ayahsInCurrentPage.length > 0 ? ayahsInCurrentPage[0] : null;
+
+			if (firstAyahInPage) {
+				setAyahNumber(firstAyahInPage.aya_no);
+			}
 		}
-		setPageNumber(currentPage);
-	}, [currentPage, ayahsInCurrentPage]);
+	}, [surahData, currentPage]);
+
+	const allAyahsInSurah = getAllAyahsInSurah();
+
+	// Helper function to clip text
+	const clipText = (text, maxLength = 50) => {
+		if (!text) return "";
+		return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+	};
 
 	return (
 		<div className="text-black dark:text-white text-center w-full">
 			<h2 className="text-lg font-semibold mt-4 md:mt-2 mb-4">احفظ نقطة مرجعية</h2>
 			<div className="flex flex-col gap-3 justify-center items-center max-w-full">
-				<div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full max-w-lg">
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
 					<div>
 						<p className="text-sm mb-1">السورة</p>
 						<input
@@ -91,32 +113,22 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 						/>
 					</div>
 					<div>
-						<p className="text-sm mb-1">الصفحة</p>
-						<input
-							type="text"
-							className="w-full text-center py-2 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
-							value={pageNumber}
-							readOnly
-							disabled
-						/>
-					</div>
-					<div>
 						<p className="text-sm mb-1">اختر الآية</p>
 						<select
-							className="w-full py-2 px-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
+							className="w-full py-2 px-3 text-center bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:border-emerald-500 text-sm"
 							value={ayahNumber}
 							onChange={(e) => setAyahNumber(e.target.value)}
 							required
-							disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0}
+							disabled={!allAyahsInSurah || allAyahsInSurah.length === 0}
 						>
 							<option value="" disabled>
-								{!ayahsInCurrentPage || ayahsInCurrentPage.length === 0
+								{!allAyahsInSurah || allAyahsInSurah.length === 0
 									? "جاري التحميل..."
 									: "اختر الآية"}
 							</option>
-							{ayahsInCurrentPage?.map((ayah) => (
-								<option key={ayah?.id} value={ayah?.aya_no}>
-									{ayah?.aya_no}
+							{allAyahsInSurah.map((ayah) => (
+								<option key={ayah.aya_no} value={ayah.aya_no}>
+									آية {ayah.aya_no}: {clipText(ayah.aya_text_emlaey || "", 40)}
 								</option>
 							))}
 						</select>
@@ -126,7 +138,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage }) {
 					type="submit"
 					className="bg-emerald-500 hover:bg-emerald-600 text-white py-2 px-6 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors duration-200"
 					onClick={handleAddBookmark}
-					disabled={!ayahsInCurrentPage || ayahsInCurrentPage.length === 0 || !ayahNumber}
+					disabled={!allAyahsInSurah || allAyahsInSurah.length === 0 || !ayahNumber}
 				>
 					حفظ
 				</button>

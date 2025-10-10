@@ -337,6 +337,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 						currentVerse={mode === "listening" || highlightVerse ? currentVerse : null}
 						handleSurahSettingsChange={handleSurahSettingsChange}
 						mode={mode}
+						surahNumber={surahNumber}
+						surahName={surahNames[surahNumber]}
+						pageNumber={currentPage}
 					/>
 				);
 			});
@@ -351,6 +354,9 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 							currentVerse={mode === "listening" || highlightVerse ? currentVerse : null}
 							handleSurahSettingsChange={handleSurahSettingsChange}
 							mode={mode}
+							surahNumber={surahNumber}
+							surahName={surahNames[surahNumber]}
+							pageNumber={currentPage}
 						/>
 						<div
 							className={`tafseerText  text-gray-700 dark:text-gray-300  text-${
@@ -608,6 +614,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								ayahsInCurrentPage={ayahsInCurrentPage}
 								currentPage={currentPage}
 								currentSurahNum={surahNumber}
+								surahData={surahData}
 							/>
 						</div>
 						{/* Keyboard Shortcuts Help Button */}
