@@ -265,7 +265,7 @@ function RecitersSection() {
                جودات متعددة متاحة لأغلب القراء
             </p>
             <p className="text-sm text-emerald-600 dark:text-emerald-300">
-              اختر من بين الجودات مختلفة حسب سرعة اتصالك بالإنترنت
+              اختر من بين الجودات المختلفة حسب سرعة اتصالك بالإنترنت
             </p>
           </div>
         </div>

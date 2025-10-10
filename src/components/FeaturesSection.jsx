@@ -5,7 +5,7 @@ function FeaturesSection() {
 		{
 			icon: <FaBookOpen className="text-4xl text-emerald-600 mb-4" />,
 			title: "قراءة مريحة",
-			description: "قراءة القرآن الكريم بالرسم العثماني مع إمكانية تكبير وتصغير الخط حسب الرغبة والاستماع لطريقة نطق أي كلمة بالضغط عليها"
+			description: "قراءة القرآن الكريم بالرسم العثماني برواية حفص عن عاصم مع إمكانية تكبير وتصغير الخط حسب الرغبة والاستماع لطريقة نطق أي كلمة بالضغط عليها"
 		},
 		{
 			icon: <FaMoon className="text-4xl text-emerald-600 mb-4" />,
@@ -15,7 +15,7 @@ function FeaturesSection() {
 		{
 			icon: <FaHeadphones className="text-4xl text-emerald-600 mb-4" />,
 			title: "تلاوات متنوعة",
-			description: "استماع لأكثر من 43 تسجيل لقراء مختلفين بجودات مختلفة مراعاة لسرعات الانترنت المختلفة"
+			description: "استمع لتلاوات متنوعة لأكثر من 43 قارئاً متميزاً برواية حفص عن عاصم، مع توفير جودات صوتية مختلفة تناسب مختلف سرعات الإنترنت"
 		},
 		{
 			icon: <FaSearch className="text-4xl text-emerald-600 mb-4" />,
@@ -41,9 +41,7 @@ function FeaturesSection() {
 					<h2 className="text-3xl md:text-4xl font-bold text-emerald-950 dark:text-white mb-4">
 						مميزات منصة القرآن
 					</h2>
-					<p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-						نسعى لأن نوفر لك أفضل تجربة في قراءة وتدبر القرآن الكريم 
-					</p>
+
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
