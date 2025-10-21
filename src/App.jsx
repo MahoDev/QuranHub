@@ -22,6 +22,7 @@ function App() {
 	);
 	const [quranText, setQuranText] = useState(null);
 	const [currentUser, setCurrentUser] = useState(auth.currentUser);
+	const [authLoading, setAuthLoading] = useState(true);
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 	const { surahNumber } = useParams();
 
@@ -52,15 +53,28 @@ function App() {
 	}, [isDarkMode]);
 
 	useEffect(() => {
-		onAuthStateChanged(auth, (user) => {
+		const unsubscribe = onAuthStateChanged(auth, (user) => {
 			setCurrentUser(user);
+			setAuthLoading(false);
 		});
+		return unsubscribe;
 	}, []);
 
 	//onAuthStateChanged doesn't detect emailVerified changes
 	useEffect(() => {
 		setCurrentUser(auth.currentUser);
 	}, [auth?.currentUser?.emailVerified]);
+
+	// Show loading spinner while auth state is being determined
+	if (authLoading) {
+		return (
+			<BookmarkProvider>
+				<div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 dark:from-gray-900 dark:via-emerald-900/20 dark:to-gray-900 flex items-center justify-center">
+					<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+				</div>
+			</BookmarkProvider>
+		);
+	}
 
 	return (
 		<BookmarkProvider>

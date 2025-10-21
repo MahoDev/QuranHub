@@ -39,8 +39,8 @@ function HeroSection() {
         </div>
 
         <div className="flex flex-col lg:flex-row items-center justify-center gap-6 lg:gap-8 mb-6 lg:mb-8">
-          <div className="flex-1 max-w-2xl">
-            <div className="bg-white/80 dark:bg-gray-800/80 py-4 px-6 lg:px-8 rounded-2xl shadow-xl">
+          <div className="w-full lg:w-auto lg:flex-1 lg:max-w-2xl">
+            <div className="bg-white/80 dark:bg-gray-800/80 py-6 px-6 lg:py-8 lg:px-8 rounded-2xl shadow-xl">
               <h2 className="text-lg lg:text-xl font-bold text-emerald-950 dark:text-white mb-3">
                 ابدأ رحلتك مع القرآن
               </h2>

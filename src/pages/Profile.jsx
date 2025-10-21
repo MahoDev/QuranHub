@@ -399,7 +399,7 @@ function Profile() {
                                 e.stopPropagation();
                                 handleDeleteBookmark(bookmark.id);
                               }}
-                              className="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-200 p-1"
+                              className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-200 p-2 flex-shrink-0"
                               title="حذف العلامة المرجعية"
                             >
                               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -416,17 +416,29 @@ function Profile() {
                           </div>
 
                           {/* Footer */}
-                          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <span>
-                              {bookmark.bookmarkDate.toDate().toLocaleDateString("en-US", {
-                                month: "numeric",
-                                day: "numeric",
-                                year: "numeric",
-                                hour: "numeric",
-                                minute: "numeric",
-                                hour12: true,
-                              })}
-                            </span>
+                          <div className="flex items-start justify-between text-xs text-gray-500 dark:text-gray-400">
+                            <div className="flex flex-col">
+                              <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {bookmark.bookmarkDate.toDate().toLocaleDateString("ar-SA", {
+                                  year: "numeric",
+                                  month: "numeric",
+                                  day: "numeric",
+                                  hour: "numeric",
+                                  minute: "numeric",
+                                  hour12: true,
+                                })}
+                              </span>
+                              <span className="text-xs text-gray-400 dark:text-gray-500">
+                                {bookmark.bookmarkDate.toDate().toLocaleDateString("en-US", {
+                                  month: "numeric",
+                                  day: "numeric",
+                                  year: "numeric",
+                                  hour: "numeric",
+                                  minute: "numeric",
+                                  hour12: true,
+                                })}
+                              </span>
+                            </div>
                             <span className="text-emerald-600 dark:text-emerald-400 font-medium">
                               اضغط للانتقال
                             </span>
