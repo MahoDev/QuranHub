@@ -13,6 +13,7 @@ import Profile from "./pages/Profile";
 import { useDisplaySettings } from "./contexts/display-settings-context";
 import { useParams, Navigate } from "react-router-dom";
 import SurahDisplayerWrapper from "./components/SurahDisplayerWrapper.jsx";
+import JuzHizbWrapper from "./components/JuzHizbWrapper.jsx";
 import { BookmarkProvider } from "./contexts/bookmark-context";
 import { Helmet } from "react-helmet-async";
 
@@ -127,22 +128,20 @@ function App() {
 						}
 					/>
 
-					<Route path="*" element={<Home />} />
-
-					{/* <Route
-						path="*"
+					{/* Juz and Hizb reading routes */}
+					<Route
+						path="/:type/:number"
 						element={
-							<div className="flex flex-col items-center gap-3 mt-[50%] text-center dark:text-white ">
-								<h1>لا توجد صفحة بهذا الرابط</h1>
-								<Link
-									to="/"
-									className="w-44 text-white font-bold py-3 px-6 rounded-full bg-emerald-800 hover:bg-emerald-700 dark:bg-amber-500 hover:dark:bg-amber-400"
-								>
-									الصفحة الرئيسية
-								</Link>
-							</div>
+							quranText && (
+								<JuzHizbWrapper
+									quranText={quranText}
+									isDarkMode={isDarkMode}
+								/>
+							)
 						}
-					/> */}
+					/>
+
+					<Route path="*" element={<Home />} />
 				</Routes>
 			</div>
 		</BookmarkProvider>

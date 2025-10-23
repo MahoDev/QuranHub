@@ -6,9 +6,12 @@ import {
 	convertToArabicNumbers,
 	removeHtmlFromText,
 } from "../utility/text-utilities";
-import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../components/Breadcrumb";
+import { findJuzBySurahAyah, findHizbBySurahAyah } from "../assets/data/quran-structure";
+import { useNavigate, useLocation } from "react-router-dom";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import BasmalaBlack from "/src/assets/basmala_black.svg";
+import JuzHizbIndicator from "../components/JuzHizbIndicator";
 import {
 	reciterNames,
 	surahNames,
@@ -26,14 +29,88 @@ import { useSurahSettings } from "../contexts/surah-settings-context";
 import ListeningModeManager from "../components/ListeningModeManager";
 import { Helmet } from "react-helmet-async";
 
-function SurahDisplayer({ isDarkMode, quranText }) {
+function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 	const { surahSettings, onSurahSettingsChange } = useSurahSettings();
-	const { surahNumber } = useParams();
+	const { surahNumber: paramSurahNumber } = useParams();
+	const location = useLocation();
+	
+	// Use initialState if provided, otherwise use URL param
+	const surahNumber = initialState?.surahNumber || paramSurahNumber;
 	const [currentPage, setCurrentPage] = useState(1);
 	const [surahData, setSurahData] = useState([]);
 	const [tafsirData, setTafsirData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
+	
+	// Handle Juz/Hizb navigation state
+	useEffect(() => {
+		if (location.state) {
+			const { startVerse, startPage, juzNumber, hizbNumber } = location.state;
+			const verseToUse = startVerse || surahSettings.currentVerse || 1;
+			if (startVerse) {
+				handleSurahSettingsChange({ currentVerse: startVerse });
+			}
+			if (startPage) {
+				handleSurahSettingsChange({ currentPage: startPage });
+			}
+
+			// If explicit juz/hizb numbers were provided, store them. Otherwise compute from position.
+			let currentJuz = juzNumber || null;
+			let currentHizb = hizbNumber || null;
+			let currentQuarter = null;
+
+			if (!currentJuz) {
+				const foundJuz = findJuzBySurahAyah(+surahNumber, verseToUse);
+				if (foundJuz) currentJuz = foundJuz.number;
+			}
+			if (!currentHizb) {
+				const foundHizb = findHizbBySurahAyah(+surahNumber, verseToUse);
+				if (foundHizb) currentHizb = foundHizb.number;
+			}
+
+			if (currentHizb) {
+				const hizbObj = findHizbBySurahAyah(+surahNumber, verseToUse);
+				if (hizbObj && Array.isArray(hizbObj.quarters)) {
+					// determine quarter index
+					const comparePos = (s1, a1, s2, a2) => (s1 !== s2 ? s1 - s2 : a1 - a2);
+					let qIndex = -1;
+					for (let i = 0; i < hizbObj.quarters.length; i++) {
+						const start = hizbObj.quarters[i];
+						const next = hizbObj.quarters[i + 1];
+						const end = next ? { startSurah: next.startSurah, startAyah: next.startAyah } : { startSurah: hizbObj.endSurah, startAyah: hizbObj.endAyah };
+						const afterOrEqualStart = comparePos(+surahNumber, verseToUse, start.startSurah, start.startAyah) >= 0;
+						const beforeEnd = next ? comparePos(+surahNumber, verseToUse, end.startSurah, end.startAyah) < 0 : comparePos(+surahNumber, verseToUse, end.startSurah, end.startAyah) <= 0;
+						if (afterOrEqualStart && beforeEnd) {
+							qIndex = i;
+							break;
+						}
+					}
+					if (qIndex === -1) {
+						// fallback to last quarter start <= position
+						let fallback = 0;
+						for (let i = 0; i < hizbObj.quarters.length; i++) {
+							const s = hizbObj.quarters[i];
+							if (comparePos(+surahNumber, verseToUse, s.startSurah, s.startAyah) >= 0) {
+								fallback = i;
+							} else break;
+						}
+						qIndex = fallback;
+					}
+					currentQuarter = qIndex + 1; // 1-based
+				}
+			}
+
+			handleSurahSettingsChange({
+				currentJuz,
+				currentHizb,
+				currentQuarter,
+			});
+
+			// Clear the navigation state after using it
+			navigate(location.pathname, { replace: true });
+		}
+	}, [location.state]);
+
 	const [tafsirId, setTafsirId] = useState(16);
 	const containerRef = useRef(null);
 	const navigate = useNavigate();
@@ -53,6 +130,42 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 	// Keyboard navigation state
 	const listeningModeManagerRef = useRef(null);
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
+	// Update Juz/Hizb/Quarter whenever position changes (surahNumber or currentVerse)
+	useEffect(() => {
+		// compute based on current surah and verse
+		const verseNum = currentVerse || 1;
+		const foundJuz = findJuzBySurahAyah(+surahNumber, verseNum);
+		const foundHizb = findHizbBySurahAyah(+surahNumber, verseNum);
+		let q = null;
+		if (foundHizb && Array.isArray(foundHizb.quarters)) {
+			const comparePos = (s1, a1, s2, a2) => (s1 !== s2 ? s1 - s2 : a1 - a2);
+			let qIndex = -1;
+			for (let i = 0; i < foundHizb.quarters.length; i++) {
+				const start = foundHizb.quarters[i];
+				const next = foundHizb.quarters[i + 1];
+				const end = next ? { startSurah: next.startSurah, startAyah: next.startAyah } : { startSurah: foundHizb.endSurah, startAyah: foundHizb.endAyah };
+				const afterOrEqualStart = comparePos(+surahNumber, verseNum, start.startSurah, start.startAyah) >= 0;
+				const beforeEnd = next ? comparePos(+surahNumber, verseNum, end.startSurah, end.startAyah) < 0 : comparePos(+surahNumber, verseNum, end.startSurah, end.startAyah) <= 0;
+				if (afterOrEqualStart && beforeEnd) { qIndex = i; break; }
+			}
+			if (qIndex === -1) {
+				let fallback = 0;
+				for (let i = 0; i < foundHizb.quarters.length; i++) {
+					const s = foundHizb.quarters[i];
+					if (comparePos(+surahNumber, verseNum, s.startSurah, s.startAyah) >= 0) { fallback = i; } else break;
+				}
+				qIndex = fallback;
+			}
+			q = qIndex + 1;
+		}
+
+		handleSurahSettingsChange({
+			currentJuz: foundJuz ? foundJuz.number : surahSettings.currentJuz,
+			currentHizb: foundHizb ? foundHizb.number : surahSettings.currentHizb,
+			currentQuarter: q ?? surahSettings.currentQuarter,
+		});
+	}, [surahNumber, currentVerse]);
 
 	useEffect(() => {
 		if (quranText) {
@@ -218,7 +331,17 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 				try {
 					const surah = quranText.get(+num);
 					setSurahData(surah);
-					console.log("set surah");
+					console.log("set surah with num:", num);
+					
+					// Only set the verse and page after surah data is loaded
+					if (initialState) {
+						const correctPage = surah.find(ayah => ayah.aya_no === initialState.startVerse)?.page || initialState.startPage;
+						if (correctPage) {
+							handleSurahSettingsChange({
+								currentPage: correctPage,
+							});
+						}
+					}
 				} catch (error) {
 					console.error("Error fetching surah data:", error);
 				} finally {
@@ -236,7 +359,7 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 		return () => {
 			subscribed = false;
 		};
-	}, [surahNumber]);
+	}, [surahNumber, initialState]);
 
 	//Retrieves the current surah tafseer.
 	useEffect(() => {
@@ -270,7 +393,31 @@ function SurahDisplayer({ isDarkMode, quranText }) {
 
 	//Used to retrieve previously chosen surah settings after reload
 	useEffect(() => {
-		if (surahNumber == surahSettings.currentSurah) {
+		if (initialState) {
+			// If initialState is provided, use it
+			console.log('Setting initial state:', initialState);
+			
+			// Enable highlight for juz/hizb navigation
+			setHighlightVerse(true);
+			
+			handleSurahSettingsChange({
+				currentSurah: +surahNumber,
+				currentVerse: initialState.startVerse || 1,
+				currentJuz: initialState.juzNumber,
+				currentHizb: initialState.hizbNumber,
+				currentQuarter: initialState.quarterNumber
+			});
+			
+			// Auto-scroll to the target verse and disable highlight after a delay
+			setTimeout(() => {
+				const verseElement = document.querySelector(`[data-verse-number="${initialState.startVerse}"]`);
+				if (verseElement) {
+					verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					setTimeout(() => setHighlightVerse(false), 2000);
+				}
+			}, 500); // Wait for content to load
+		} else if (surahNumber == surahSettings.currentSurah) {
+			// Otherwise use stored settings
 			handleSurahSettingsChange({ currentSurah: +surahNumber });
 
 			// Ensure page and verse are synchronized
@@ -588,51 +735,81 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 				}`}
 			>
 				<div>
-					<div className="relative gap-4 lg:gap-6 rounded-2xl pt-6 pb-4 flex flex-col lg:flex-row justify-center items-center bg-white/80 dark:bg-gray-800/80 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
-						<div className="view-mode lg:border-l-2 lg:pl-6 pt-2 border-gray-300 text-black dark:text-white w-full lg:w-auto">
-							<div className="flex gap-4 justify-center items-center bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3 w-full">
-								<p className="text-black dark:text-white font-semibold whitespace-nowrap">وضع العرض:</p>
-								<select
-									className="bg-white dark:bg-gray-700 border-2 border-emerald-200 dark:border-emerald-600 rounded-lg py-2 px-4 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-medium flex-1 min-w-[120px]"
-									value={mode}
-									onChange={(e) =>
-										handleDisplayStateChange({ displayMode: e.target.value })
-									}
-								>
-									{["reading", "listening"].map((displayMode) => {
-										return (
-											<option key={displayMode} value={displayMode}>
-												{displayMode == "reading" ? "القراءة" : "الأستماع"}
-											</option>
-										);
-									})}
-								</select>
+					<div className="relative rounded-2xl p-4 md:p-6 bg-white/80 dark:bg-gray-800/80 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
+						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+							{/* Display Mode & Navigation Section */}
+							<div className="flex flex-col gap-4">
+								{/* Juz/Hizb Indicator */}
+								{surahData && surahData.length > 0 && (
+									<div>
+										<JuzHizbIndicator
+											surahNumber={parseInt(surahNumber)}
+											ayahNumber={parseInt(currentVerse)}
+										/>
+									</div>
+								)}
+								
+								{/* Display Mode */}
+								<div className="flex flex-wrap gap-2 justify-start items-center bg-gray-50 dark:bg-gray-700/50 rounded-lg p-3">
+									<p className="text-black dark:text-white font-semibold whitespace-nowrap">وضع العرض:</p>
+									<select
+										className="bg-white dark:bg-gray-700 border-2 border-emerald-200 dark:border-emerald-600 rounded-lg py-2 px-4 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 text-emerald-800 dark:text-emerald-200 font-medium flex-1 min-w-[120px]"
+										value={mode}
+										onChange={(e) =>
+											handleDisplayStateChange({ displayMode: e.target.value })
+										}
+									>
+										{["reading", "listening"].map((displayMode) => {
+											return (
+												<option key={displayMode} value={displayMode}>
+													{displayMode == "reading" ? "القراءة" : "الأستماع"}
+												</option>
+											);
+										})}
+									</select>
+								</div>
 							</div>
-						</div>
-						<div className="w-full lg:w-auto">
-							<AddBookmarkForm
-								ayahsInCurrentPage={ayahsInCurrentPage}
-								currentPage={currentPage}
-								currentSurahNum={surahNumber}
-								surahData={surahData}
-							/>
-						</div>
-						{/* Keyboard Shortcuts Help Button */}
-						<div className="w-full lg:w-auto flex justify-center">
-							<button
-								onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
-								className="flex items-center gap-2 px-3  text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors duration-200"
-								title="اختصارات لوحة المفاتيح"
-							>
-								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-								<span className="hidden sm:inline">اختصارات لوحة المفاتيح</span>
-							</button>
+
+							{/* Bookmark Form Section */}
+							<div className="flex items-center">
+								<AddBookmarkForm
+									ayahsInCurrentPage={ayahsInCurrentPage}
+									currentPage={currentPage}
+									currentSurahNum={surahNumber}
+									surahData={surahData}
+								/>
+							</div>
+
+							{/* Controls Section */}
+							<div className="flex flex-col gap-3 justify-start">
+								{/* Keyboard Shortcuts Help Button */}
+								<div className="flex justify-start">
+									<button
+										onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+										className="flex items-center mx-auto gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors duration-200"
+										title="اختصارات لوحة المفاتيح"
+									>
+										<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+										</svg>
+										<span className="inline">اختصارات لوحة المفاتيح</span>
+									</button>
+								</div>
+							</div>
 						</div>
 					</div>
 					<div className="h-[2px] w-full bg-gradient-to-r from-transparent via-emerald-300 dark:via-emerald-600 to-transparent my-6"></div>
 					<div>
+						{/* Breadcrumb Navigation */}
+						{!isLoading && surahData && (
+							<div className="mx-4 mb-6">
+								<Breadcrumb 
+									surahNumber={parseInt(surahNumber)} 
+									currentVerse={currentVerse}
+									currentPage={currentPage}
+								/>
+							</div>
+						)}
 						<div className="mb-8">
 							{!isLoading
 								? surahData[0]?.page === currentPage && (
@@ -661,40 +838,41 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 								: ""}
 						</div>
 						<div
-							className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto max-w-4xl`}
+							className={`font-quranMain text-justify text-${fontSize}xl leading-extra-loose m-auto max-w-full sm:max-w-[95%] md:max-w-[90%] lg:max-w-4xl px-4 sm:px-0`}
 						>
 							{content}
 						</div>
 					</div>
 				</div>
 
-				<div className="flex justify-center items-center gap-6 select-none bg-white/90 dark:bg-gray-800/90 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-6 mx-4">
-					<div
-						onClick={(e) => {
-							handlePageChange("backward");
-						}}
-						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg ${
-							+surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50 cursor-not-allowed"
-						}`}
-					>
-						<FaArrowRight className="text-xl" />
-					</div>
-					<div className="text-center">
-						<div className="text-2xl font-bold text-emerald-800 dark:text-emerald-200">
-							{convertToArabicNumbers(currentPage)}
+				<div className="flex flex-col sm:flex-row justify-center items-center gap-4 sm:gap-6 select-none bg-white/90 dark:bg-gray-800/90 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl rounded-2xl p-4 sm:p-6 mx-4">
+					<div className="flex items-center gap-4 sm:gap-6">
+						<div
+							onClick={(e) => {
+								handlePageChange("backward");
+							}}
+							className={`bg-emerald-600 hover:bg-emerald-700 text-white p-3 sm:p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 ${
+								+surahData?.at(0)?.sura_no !== 1 ? "" : "opacity-50 cursor-not-allowed"
+							}`}
+						>
+							<FaArrowRight className="text-xl" />
 						</div>
-						<div className="text-sm text-gray-600 dark:text-gray-400">الصفحة الحالية</div>
-
-					</div>
-					<div
-						onClick={(e) => {
-							handlePageChange("forward");
-						}}
-						className={`bg-emerald-600 hover:bg-emerald-700 text-white p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg ${
-							+surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50 cursor-not-allowed"
-						}`}
-					>
-						<FaArrowLeft className="text-xl" />
+						<div className="text-center">
+							<div className="text-xl sm:text-2xl font-bold text-emerald-800 dark:text-emerald-200">
+								{convertToArabicNumbers(currentPage)}
+							</div>
+							<div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">الصفحة الحالية</div>
+						</div>
+						<div
+							onClick={(e) => {
+								handlePageChange("forward");
+							}}
+							className={`bg-emerald-600 hover:bg-emerald-700 text-white p-3 sm:p-4 rounded-xl cursor-pointer transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 ${
+								+surahData?.at(0)?.sura_no !== 114 ? "" : "opacity-50 cursor-not-allowed"
+							}`}
+						>
+							<FaArrowLeft className="text-xl" />
+						</div>
 					</div>
 				</div>
 

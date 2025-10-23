@@ -212,6 +212,7 @@ function Ayah({
   return (
     <div
       ref={ayahData["aya_no"] === currentVerse ? highlightedAyah : null}
+      data-verse-number={ayahData["aya_no"]}
       className={`inline ${
         currentVerse && currentVerse === ayahData["aya_no"] ? "text-emerald-700" : ""
       }`}

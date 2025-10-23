@@ -4,6 +4,9 @@ import {
   surahNames,
   surahNumToPagesMap,
 } from "../assets/data/quran-info";
+import { juzData, hizbData } from "../assets/data/quran-structure";
+import JuzSelector from "./JuzSelector";
+import HizbSelector from "./HizbSelector";
 import { useLocation, useNavigate } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
 import { convertAlifToAlifWasl } from "../utility/text-utilities";
@@ -15,7 +18,7 @@ function SideBar({
   handleSurahSettingsChange,
   onVerseNavigation,
 }) {
-  const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses || Text
+  const [filter, setFilter] = useState("Surahs"); //Surahs || Pages || Verses || Juz || Hizb
   const [searchText, setSearchText] = useState("");
   const navigate = useNavigate();
   const surahNumber = surahData[0]?.sura_no;
@@ -41,6 +44,15 @@ function SideBar({
       });
     } else if (filter === "Pages") {
       searchResults = quranPages.filter((page) => page == searchText);
+    } else if (filter === "Juz") {
+      searchResults = juzData.filter(juz => 
+        searchText ? juz.number.toString() === searchText || 
+        convertAlifToAlifWasl(juz.commonName || "").includes(convertAlifToAlifWasl(searchText)) : true
+      );
+    } else if (filter === "Hizb") {
+      searchResults = hizbData.filter(hizb => 
+        searchText ? hizb.number.toString() === searchText : true
+      );
     } else if (filter === "Verses") {
       // Search by both text content and verse number
       searchResults = surahData.filter((ayah) => {
@@ -135,6 +147,104 @@ function SideBar({
         </div>
       );
     }
+  } else if (filter === "Juz") {
+    const searchResults = applySearch(filter);
+    content = searchResults.length > 0 ? (
+      <div className="grid grid-cols-1 gap-3">
+        {searchResults.map((juz) => (
+          <div
+            key={juz.number}
+            onClick={() => {
+              navigate(`/surah/${juz.startSurah}`);
+              handleSurahSettingsChange({
+                currentSurah: juz.startSurah,
+                currentVerse: juz.startAyah,
+                currentPage: juz.startPage,
+              });
+            }}
+            className="p-4 rounded-lg cursor-pointer bg-emerald-700/20 hover:bg-emerald-700/30 transition-all duration-200"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-medium text-lg">{juz.name}</div>
+                {juz.commonName && (
+                  <div className="text-emerald-300 text-sm mt-1">{juz.commonName}</div>
+                )}
+              </div>
+              <div className="text-xs px-3 py-1 rounded-full bg-emerald-600/30">
+                صفحة {juz.startPage}
+              </div>
+            </div>
+            <div className="text-emerald-200/70 text-sm mt-2">
+              يبدأ من: {surahNames[juz.startSurah]} - آية {juz.startAyah}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-center py-8 text-emerald-200">
+        <div className="text-4xl mb-2">📖</div>
+        <p>لا يوجد جزء بهذا الرقم</p>
+      </div>
+    );
+  } else if (filter === "Hizb") {
+    const searchResults = applySearch(filter);
+    content = searchResults.length > 0 ? (
+      <div className="grid grid-cols-1 gap-3">
+        {searchResults.map((hizb) => (
+          <div
+            key={hizb.number}
+            onClick={() => {
+              navigate(`/surah/${hizb.startSurah}`);
+              handleSurahSettingsChange({
+                currentSurah: hizb.startSurah,
+                currentVerse: hizb.startAyah,
+                currentPage: juzData[hizb.juz - 1].startPage,
+              });
+            }}
+            className="p-4 rounded-lg cursor-pointer bg-emerald-700/20 hover:bg-emerald-700/30 transition-all duration-200"
+          >
+            <div className="flex justify-between items-start">
+              <div>
+                <div className="font-medium text-lg">{hizb.name}</div>
+                <div className="text-emerald-300 text-sm mt-1">
+                  {juzData[hizb.juz - 1].name}
+                </div>
+              </div>
+              <div className="text-xs px-3 py-1 rounded-full bg-emerald-600/30">
+                {hizb.quarters.length} أرباع
+              </div>
+            </div>
+            <div className="text-emerald-200/70 text-sm mt-2">
+              يبدأ من: {surahNames[hizb.startSurah]} - آية {hizb.startAyah}
+            </div>
+            <div className="grid grid-cols-4 gap-2 mt-3">
+              {hizb.quarters.map((quarter, index) => (
+                <div
+                  key={index}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/surah/${quarter.startSurah}`);
+                    handleSurahSettingsChange({
+                      currentSurah: quarter.startSurah,
+                      currentVerse: quarter.startAyah,
+                    });
+                  }}
+                  className="text-center p-2 rounded bg-emerald-600/20 hover:bg-emerald-600/30 cursor-pointer text-sm"
+                >
+                  ربع {index + 1}
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    ) : (
+      <div className="text-center py-8 text-emerald-200">
+        <div className="text-4xl mb-2">📖</div>
+        <p>لا يوجد حزب بهذا الرقم</p>
+      </div>
+    );
   } else if (filter === "Verses") {
     const searchResults = applySearch(filter);
     const toBeMapped = searchResults.length > 0 ? searchResults : surahData;
@@ -203,7 +313,9 @@ function SideBar({
           {[
             { key: "Surahs", label: "السور", active: filter === "Surahs" },
             { key: "Pages", label: "الصفحات", active: filter === "Pages" },
-            { key: "Verses", label: "الآيات", active: filter === "Verses" }
+            { key: "Verses", label: "الآيات", active: filter === "Verses" },
+            { key: "Juz", label: "الأجزاء", active: filter === "Juz" },
+            { key: "Hizb", label: "الأحزاب", active: filter === "Hizb" }
           ].map(({ key, label, active }) => (
             <li
               key={key}
@@ -226,11 +338,12 @@ function SideBar({
       <div className="flex items-center w-full h-12 p-3 mb-4 rounded-xl border-2 border-emerald-600 bg-emerald-800/50 focus-within:border-amber-400 transition-colors duration-200">
         <input
           placeholder={
-            filter === "Surahs"
-              ? "أدخل اسم السورة"
-              : filter === "Pages"
-              ? "أدخل رقم الصفحة"
-              : "أدخل رقم الآية أو نص البحث"
+            filter === "Surahs" ? "أدخل اسم السورة" :
+            filter === "Pages" ? "أدخل رقم الصفحة" :
+            filter === "Verses" ? "أدخل رقم الآية أو نص البحث" :
+            filter === "Juz" ? "أدخل رقم الجزء" :
+            filter === "Hizb" ? "أدخل رقم الحزب" :
+            ""
           }
           className="h-full w-full outline-none bg-transparent text-white placeholder:text-emerald-200 placeholder:text-sm"
           maxLength={50}

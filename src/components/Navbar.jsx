@@ -14,10 +14,15 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 			<ul className="flex justify-between items-center pt-4 pb-4 text-emerald-900 dark:text-white">
 				<li className="font-extrabold">
 					<Link to="/" className="flex items-center space-x-1 rtl:space-x-reverse group">
-						<span className="text-2xl mx-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200">
-							منصة القرآن
-						</span>
-						<FaBookOpen className="inline-block mt-[2px] pr-2 mb-1 group-hover:text-emerald-600 transition-colors duration-200" size="30" />
+						<div className="flex items-center gap-4">
+							<span className="text-2xl mx-1 group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors duration-200">
+								منصة القرآن
+							</span>
+							<FaBookOpen className="inline-block mt-[2px] pr-2 mb-1 group-hover:text-emerald-600 transition-colors duration-200" size="30" />
+							<div className="flex items-center gap-3">
+								{/* Removed Juz/Hizb dropdowns per request - keep space for future items */}
+							</div>
+						</div>
 					</Link>
 				</li>
 				<li className="relative md:flex">

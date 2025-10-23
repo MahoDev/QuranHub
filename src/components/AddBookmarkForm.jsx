@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { surahNames } from "../assets/data/quran-info";
+import JuzHizbIndicator from "./JuzHizbIndicator";
 import { auth, firestore } from "../config/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
 import LoadingView from "./LoadingView";
@@ -98,7 +99,7 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage, sur
 
 	return (
 		<div className="text-black dark:text-white text-center w-full">
-			<h2 className="text-lg font-semibold mt-4 md:mt-2 mb-4">احفظ نقطة مرجعية</h2>
+			<h2 className="text-lg font-semibold mb-4">احفظ نقطة مرجعية</h2>
 			<div className="flex flex-col gap-3 justify-center items-center max-w-full">
 				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-lg">
 					<div>
