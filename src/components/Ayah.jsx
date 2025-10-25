@@ -36,12 +36,6 @@ function Ayah({
 
   const { toggleBookmark, isBookmarked, loading: bookmarkLoading } = useBookmarks();
 
-  useEffect(() => {
-    if (highlightedAyah.current && currentVerse) {
-      highlightedAyah.current.scrollIntoView({ block: "center" });
-    }
-  }, [currentVerse]);
-
   // Cleanup timeouts on unmount
   useEffect(() => {
     return () => {
@@ -57,6 +51,23 @@ function Ayah({
       stopWordPronunciation();
     };
   }, []);
+
+  useEffect(() => {
+    if (mode === 'listening' && currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]) {
+      setTimeout(() => {
+        const verseElement = document.querySelector(`[data-verse-number="${currentVerse.verseNo}"][data-surah-number="${currentVerse.surahNo}"]`);
+        if (verseElement) {
+          verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 100);
+    }
+  }, [currentVerse, mode]);
+
+  useEffect(() => {
+    if (highlightedAyah.current && currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]) {
+      highlightedAyah.current.scrollIntoView({ block: "center" });
+    }
+  }, [currentVerse]);
 
   const handleWordClick = async (e, index) => {
     if (mode === "reading") {
@@ -211,11 +222,10 @@ function Ayah({
 
   return (
     <div
-      ref={ayahData["aya_no"] === currentVerse ? highlightedAyah : null}
+      ref={currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"] ? highlightedAyah : null}
       data-verse-number={ayahData["aya_no"]}
-      className={`inline ${
-        currentVerse && currentVerse === ayahData["aya_no"] ? "text-emerald-700" : ""
-      }`}
+      data-surah-number={ayahData["sura_no"]}
+      className={`inline ${currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"] ? "text-emerald-700" : ""}`}
     >
       <div className="inline">
         {versesWords.map((word, index) => {
@@ -223,7 +233,7 @@ function Ayah({
             <p
               key={`${ayahData["sura_no"]}:${ayahData["aya_no"]}:${index + 1}`}
               className={`inline hover:text-emerald-700 hover:cursor-pointer ${
-                currentVerse === ayahData["aya_no"]
+                currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]
                   ? "hover:text-emerald-900"
                   : ""
               }`}
@@ -242,8 +252,8 @@ function Ayah({
         onMouseLeave={handleAyahNumberMouseLeave}
       >
         {" "}
-        {convertToArabicNumbers(ayahData["aya_no"])}{" "}
-
+        {convertToArabicNumbers(ayahData["aya_no"])}
+        {" "}
         {/* Bookmark indicator for bookmarked ayahs */}
         {ayahIsBookmarked && (
           <span className="absolute -top-1 -right-2 text-xs opacity-70">🔖</span>
@@ -288,7 +298,7 @@ function Ayah({
           }}
         >
           <div className="relative">
-            {ayahIsBookmarked ? "تم إزالة العلامة المرجعية" : "تم حفظ العلامة المرجعية"}
+            {ayahIsBookmarked ? "تم حفظ العلامة المرجعية" : "تم إزالة العلامة المرجعية"}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-emerald-800"></div>
           </div>
         </div>
@@ -312,46 +322,19 @@ function Ayah({
 
       {/* Listening mode toast notification */}
       {showListeningToast && (
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg shadow-lg toast-animation">
+        <div
+          className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg shadow-lg"
+          style={{
+            animation: 'toastFadeDown 3s ease-out forwards'
+          }}
+        >
           <div className="flex items-center gap-2">
             <span>حَوِّلْ إِلَى وضع الاستماع للاستماع إلى الآية كاملة</span>
           </div>
         </div>
       )}
 
-      <style jsx>{`
-        .bookmark-hover-btn {
-          position: absolute;
-          top: -8px;
-          right: -30px;
-          background: transparent;
-          border: none;
-          font-size: 16px;
-          cursor: pointer;
-          padding: 4px;
-          border-radius: 4px;
-          transition: all 0.2s ease;
-        }
-
-        .bookmark-hover-btn:hover {
-          background: rgba(5, 150, 105, 0.1);
-          transform: scale(1.1);
-        }
-
-        .bookmark-hover-btn.bookmarked {
-          opacity: 100 !important;
-          color: #059669;
-        }
-
-        .bookmark-hover-btn:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
-        }
-
-        .toast-animation {
-          animation: toastFadeDown 3s ease-out forwards;
-        }
-
+      <style>{`
         @keyframes toastFadeDown {
           0% {
             opacity: 1;

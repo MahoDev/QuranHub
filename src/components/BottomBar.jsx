@@ -61,7 +61,7 @@ function BottomBar({
 			{!isVisible && (
 				<button
 					onClick={() => setIsVisible(true)}
-					className={`fixed  left-16 transform -translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
+					className={`fixed  left-16 transform -translate-x-1/2 z-[11] bg-emerald-600/80 hover:bg-emerald-700 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
 						isListeningMode && audioPlayerVisible ? "bottom-[100px]" : "bottom-4"
 					}`}
 					title="إظهار شريط التحكم"

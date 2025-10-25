@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSurahSettings } from '../contexts/surah-settings-context';
 import { surahNames, surahNumToPagesMap } from '../assets/data/quran-info';
+import { convertToArabicNumbers } from '../utility/text-utilities';
 
 function QuranSearchResults({ searchResults, searchText, onNavigate }) {
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ function QuranSearchResults({ searchResults, searchText, onNavigate }) {
     <div className="space-y-4">
       <div className="text-center mb-6">
         <p className="text-lg text-gray-600 dark:text-gray-400">
-          تم العثور على <span className="font-bold text-emerald-600">{searchResults.length}</span> نتيجة لـ "{searchText}"
+          تم العثور على <span className="font-bold text-emerald-600">{convertToArabicNumbers(searchResults.length)}</span> نتيجة لـ "{searchText}"
         </p>
       </div>
 
@@ -75,10 +76,10 @@ function QuranSearchResults({ searchResults, searchText, onNavigate }) {
               </div>
               <div className="text-right">
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  الآية {result.verse}
+                  الآية {convertToArabicNumbers(result.verse)}
                 </div>
                 <div className="text-sm text-gray-500 dark:text-gray-400">
-                  الصفحة {result.page}
+                  الصفحة {convertToArabicNumbers(result.page)}
                 </div>
               </div>
             </div>

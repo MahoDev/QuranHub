@@ -221,11 +221,11 @@ export const hizbData = [
 export const findJuzBySurahAyah = (surahNum, ayahNum) => {
     return juzData.find(juz => {
         if (juz.startSurah === juz.endSurah) {
-            return surahNum === juz.startSurah && 
-                   ayahNum >= juz.startAyah && 
+            return surahNum === juz.startSurah &&
+                   ayahNum >= juz.startAyah &&
                    ayahNum <= juz.endAyah;
         }
-        
+
         return (surahNum > juz.startSurah || (surahNum === juz.startSurah && ayahNum >= juz.startAyah)) &&
                (surahNum < juz.endSurah || (surahNum === juz.endSurah && ayahNum <= juz.endAyah));
     });
@@ -234,11 +234,11 @@ export const findJuzBySurahAyah = (surahNum, ayahNum) => {
 export const findHizbBySurahAyah = (surahNum, ayahNum) => {
     return hizbData.find(hizb => {
         if (hizb.startSurah === hizb.endSurah) {
-            return surahNum === hizb.startSurah && 
-                   ayahNum >= hizb.startAyah && 
+            return surahNum === hizb.startSurah &&
+                   ayahNum >= hizb.startAyah &&
                    ayahNum <= hizb.endAyah;
         }
-        
+
         return (surahNum > hizb.startSurah || (surahNum === hizb.startSurah && ayahNum >= hizb.startAyah)) &&
                (surahNum < hizb.endSurah || (surahNum === hizb.endSurah && ayahNum <= hizb.endAyah));
     });

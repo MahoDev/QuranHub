@@ -1,19 +1,15 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
 import HeroSection from "../components/HeroSection";
 import SurahsSection from "../components/SurahsSection";
+import JuzHizbSection from "../components/JuzHizbSection";
 import FeaturesSection from "../components/FeaturesSection";
 import RecitersSection from "../components/RecitersSection";
-import JuzsSection from "../components/JuzsSection";
-import HizbsSection from "../components/HizbsSection";
-import NavigationTabs from "../components/NavigationTabs";
 import { Helmet } from "react-helmet-async";
 import { useEffect } from "react";
 import { reciterNames } from "../assets/data/quran-info";
 
 function Home() {
 	const [searchParams, setSearchParams] = useSearchParams();
-	const [activeTab, setActiveTab] = useState("surahs");
 
 	const navigate = useNavigate();
 	const mode = searchParams.get("mode");
@@ -75,18 +71,14 @@ function Home() {
 			<HeroSection />
 			<FeaturesSection />
 			<RecitersSection />
-			
+
 			{/* Quran Navigation Sections */}
 			<div className="py-8">
-				<NavigationTabs 
-					activeTab={activeTab} 
-					onTabChange={setActiveTab} 
-				/>
-				
-				{activeTab === "surahs" && <SurahsSection />}
-				{activeTab === "juz" && <JuzsSection />}
-				{activeTab === "hizb" && <HizbsSection />}
+				<SurahsSection />
 			</div>
+
+			{/* Juz and Hizb Navigation */}
+			<JuzHizbSection />
 
 			{/* Static reciters list for crawlers */}
 			<div style={{ display: "none" }} aria-hidden="true">

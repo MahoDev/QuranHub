@@ -25,6 +25,7 @@ export default {
       fontFamily: {
         quranMain: ["UthmanicHafs_v22"],
         surahName: ['"Surah Name - Ejazah style"'],
+        tajwal: ['"Tajwal"', 'Arial', 'sans-serif'],
       },
     },
   },

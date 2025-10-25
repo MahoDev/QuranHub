@@ -3,6 +3,7 @@ import SurahCard from "./SurahCard";
 import { useNavigate } from "react-router-dom";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import { surahNumToPagesMap } from "../assets/data/quran-info";
+import { convertToArabicNumbers } from "../utility/text-utilities";
 
 function SurahCards({ surahs, isSearching }) {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
@@ -55,8 +56,8 @@ function SurahCards({ surahs, isSearching }) {
   }
 
   return (
-    <div className="min-h-[400px]" ref={surahsSectionRef}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
+    <div className="min-h-[300px]" ref={surahsSectionRef}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mb-10">
         {surahsToDisplay.length != 0 ? (
           surahsToDisplay
         ) : (
@@ -76,7 +77,7 @@ function SurahCards({ surahs, isSearching }) {
               onClick={() => setDisplayAll(true)}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-3 rounded-xl font-semibold transition-colors duration-200 shadow-lg hover:shadow-xl"
             >
-              عرض جميع السور ({surahs.length})
+              عرض جميع السور ({convertToArabicNumbers(surahs.length)})
             </button>
           ) : (
             <button

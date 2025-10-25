@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
-import { DiAptana } from "react-icons/di";
 import {
 	convertToArabicNumbers,
 	removeHtmlFromText,
@@ -42,6 +41,26 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 	const [tafsirData, setTafsirData] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	
+	const [tafsirId, setTafsirId] = useState(16);
+	const containerRef = useRef(null);
+	const navigate = useNavigate();
+	const [mode, setMode] = useState("reading");
+	const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
+	const [bottomBarVisible, setBottomBarVisible] = useState(true);
+	const [audioPlayerVisible, setAudioPlayerVisible] = useState(true);
+	const [tafsirModeActive, setTafsirModeActive] = useState(false);
+	const [loadingSurah, setLoadingSurah] = useState(false);
+	const [currentVerse, setCurrentVerse] = useState(1);
+	const [currentWordInfo, setCurrentWordInfo] = useState(null);
+	const [fontSize, setFontSize] = useState(3);
+	const [highlightVerse, setHighlightVerse] = useState(false); // For bookmark navigation
+	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
+	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
+
+	// Keyboard navigation state
+	const listeningModeManagerRef = useRef(null);
+	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+
 	// Handle Juz/Hizb navigation state
 	useEffect(() => {
 		if (location.state) {
@@ -111,25 +130,7 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 		}
 	}, [location.state]);
 
-	const [tafsirId, setTafsirId] = useState(16);
-	const containerRef = useRef(null);
-	const navigate = useNavigate();
-	const [mode, setMode] = useState("reading");
-	const [sideBarDisplayed, setSideBarDisplayed] = useState(false);
-	const [bottomBarVisible, setBottomBarVisible] = useState(true);
-	const [audioPlayerVisible, setAudioPlayerVisible] = useState(true);
-	const [tafsirModeActive, setTafsirModeActive] = useState(false);
-	const [loadingSurah, setLoadingSurah] = useState(false);
-	const [currentVerse, setCurrentVerse] = useState(1);
-	const [currentWordInfo, setCurrentWordInfo] = useState(null);
-	const [fontSize, setFontSize] = useState(3);
-	const [highlightVerse, setHighlightVerse] = useState(false); // For bookmark navigation
-	const internalVerseChangeRequest = useRef({ exist: false, verse: 1 });
-	const internalPageChangeRequest = useRef({ exist: false, page: 1 });
 
-	// Keyboard navigation state
-	const listeningModeManagerRef = useRef(null);
-	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
 
 	// Update Juz/Hizb/Quarter whenever position changes (surahNumber or currentVerse)
 	useEffect(() => {
@@ -331,7 +332,6 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 				try {
 					const surah = quranText.get(+num);
 					setSurahData(surah);
-					console.log("set surah with num:", num);
 					
 					// Only set the verse and page after surah data is loaded
 					if (initialState) {
@@ -347,7 +347,6 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 				} finally {
 					setIsLoading(false);
 					setLoadingSurah(false);
-					console.log("Finished loading");
 				}
 			}
 		}
@@ -395,7 +394,6 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 	useEffect(() => {
 		if (initialState) {
 			// If initialState is provided, use it
-			console.log('Setting initial state:', initialState);
 			
 			// Enable highlight for juz/hizb navigation
 			setHighlightVerse(true);
@@ -922,6 +920,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 						bottomBarDisplayed={bottomBarVisible}
 						audioPlayerVisible={audioPlayerVisible}
 						onAudioPlayerVisibilityChange={setAudioPlayerVisible}
+						juzHizbMode={false}
 					/>
 				)}
 

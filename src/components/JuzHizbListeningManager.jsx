@@ -3,7 +3,7 @@ import { quranRecitations, surahVerses } from "../assets/data/quran-info";
 import AudioPlayer from "./AudioPlayer";
 import { useDisplaySettings } from "../contexts/display-settings-context";
 
-function ListeningModeManager({
+function JuzHizbListeningManager({
 	surahNumber,
 	currentVerse,
 	onVerseNavigation,
@@ -11,6 +11,7 @@ function ListeningModeManager({
 	bottomBarDisplayed,
 	audioPlayerVisible,
 	onAudioPlayerVisibilityChange,
+	surahData,
 	juzHizbMode,
 }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
@@ -155,6 +156,32 @@ function ListeningModeManager({
 		return "عالية جداً";
 	};
 
+	// Find current verse in surahData
+	const findCurrentVerseInData = (verseInfo) => {
+		if (typeof verseInfo === 'object' && verseInfo.verseNo) {
+			return surahData.find(ayah => ayah.aya_no === verseInfo.verseNo && ayah.sura_no === verseInfo.surahNo);
+		}
+		// Fallback for old format (just verse number)
+		return surahData.find(ayah => ayah.aya_no === verseInfo);
+	};
+
+	// Get next verse in juz/hizb
+	const getNextVerse = (verseInfo) => {
+		if (typeof verseInfo === 'object' && verseInfo.verseNo) {
+			const currentIndex = surahData.findIndex(ayah => ayah.aya_no === verseInfo.verseNo && ayah.sura_no === verseInfo.surahNo);
+			if (currentIndex !== -1 && currentIndex < surahData.length - 1) {
+				return surahData[currentIndex + 1];
+			}
+		} else {
+			// Fallback for old format (just verse number)
+			const currentIndex = surahData.findIndex(ayah => ayah.aya_no === verseInfo);
+			if (currentIndex !== -1 && currentIndex < surahData.length - 1) {
+				return surahData[currentIndex + 1];
+			}
+		}
+		return null;
+	};
+
 	let subfolder = "";
 	if (
 		quranRecitations &&
@@ -186,14 +213,21 @@ function ListeningModeManager({
 			.padStart(3, "0")}.mp3#${hash}`;
 	};
 
+	// Find current verse data
+	const currentVerseData = findCurrentVerseInData(currentVerse);
+	const nextVerseData = getNextVerse(currentVerse);
+
+	if (!currentVerseData) {
+		return null;
+	}
+
 	const currentVerseAudioSrc = generateVerseAudioSrc(
 		subfolder,
-		surahNumber,
-		currentVerse
+		currentVerseData.sura_no,
+		currentVerseData.aya_no
 	);
-	const nextVerseAvailable = currentVerse !== surahVerses[surahNumber][1];
-	const nextVerseAudioSrc = nextVerseAvailable
-		? generateVerseAudioSrc(subfolder, surahNumber, currentVerse + 1)
+	const nextVerseAudioSrc = nextVerseData
+		? generateVerseAudioSrc(subfolder, nextVerseData.sura_no, nextVerseData.aya_no)
 		: null;
 	const currentWordAudioSrc = generateWordAudioSrc(currentWordInfo);
 
@@ -269,4 +303,4 @@ function ListeningModeManager({
 	);
 }
 
-export default ListeningModeManager;
+export default JuzHizbListeningManager;

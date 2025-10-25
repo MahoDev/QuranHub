@@ -17,6 +17,7 @@ import LoadingView from "../components/LoadingView";
 import Modal from "../components/Modal";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import { Helmet } from "react-helmet-async";
+import { convertToArabicNumbers } from "../utility/text-utilities";
 
 function Profile() {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
@@ -39,12 +40,10 @@ function Profile() {
     const fetchBookmarks = async () => {
       // Wait for auth to be ready
       if (!auth.currentUser) {
-        console.log("Auth not ready, waiting...");
         return;
       }
 
       try {
-        console.log("Fetching bookmarks for user:", auth.currentUser.uid);
         setLoading(true);
 
         const dataPath = collection(firestore, "bookmarks");
@@ -57,7 +56,6 @@ function Profile() {
               return { ...doc.data(), id: doc.id };
             });
 
-            console.log("Bookmarks loaded:", userBookmarks.length);
             setBookmarks(userBookmarks);
             setLoading(false);
             retryCount = 0; // Reset retry count on successful load
@@ -70,7 +68,6 @@ function Profile() {
             if (retryCount < maxRetries) {
               retryCount++;
               setRetrying(true);
-              console.log(`Retrying bookmark fetch (${retryCount}/${maxRetries})...`);
               setTimeout(() => {
                 if (auth.currentUser) {
                   setRetrying(false);
@@ -90,7 +87,6 @@ function Profile() {
         if (retryCount < maxRetries) {
           retryCount++;
           setRetrying(true);
-          console.log(`Retrying bookmark setup (${retryCount}/${maxRetries})...`);
           setTimeout(() => {
             setRetrying(false);
             fetchBookmarks();
@@ -108,7 +104,6 @@ function Profile() {
       // Wait for auth state to be ready
       const authUnsubscribe = onAuthStateChanged(auth, (user) => {
         if (user) {
-          console.log("Auth state ready, fetching bookmarks...");
           fetchBookmarks();
           authUnsubscribe(); // Unsubscribe from auth listener
         }
@@ -118,7 +113,6 @@ function Profile() {
     // Cleanup function
     return () => {
       if (unsubscribeRef.current) {
-        console.log("Cleaning up bookmark listener");
         unsubscribeRef.current();
         unsubscribeRef.current = null;
       }
@@ -207,7 +201,6 @@ function Profile() {
       if (!auth.currentUser) return;
 
       try {
-        console.log("Manual refresh - fetching bookmarks for user:", auth.currentUser.uid);
         setLoading(true);
 
         const dataPath = collection(firestore, "bookmarks");
@@ -220,7 +213,6 @@ function Profile() {
               return { ...doc.data(), id: doc.id };
             });
 
-            console.log("Bookmarks loaded via manual refresh:", userBookmarks.length);
             setBookmarks(userBookmarks);
             setLoading(false);
           },
@@ -328,7 +320,7 @@ function Profile() {
                   العلامات المرجعية 
                 </h2>
                 <p className="text-gray-600 dark:text-gray-300">
-                  {bookmarks.length} علامة مرجعية محفوظة
+                  {convertToArabicNumbers(bookmarks.length)} علامة مرجعية محفوظة
                 </p>
               </div>
 
@@ -391,7 +383,7 @@ function Profile() {
                                 {bookmark.surahName}
                               </h3>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
-                                الصفحة {bookmark.pageNumber} • الآية {bookmark.ayahNumber}
+                                الصفحة {convertToArabicNumbers(bookmark.pageNumber)} • الآية {convertToArabicNumbers(bookmark.ayahNumber)}
                               </p>
                             </div>
                             <button

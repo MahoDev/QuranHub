@@ -3,6 +3,7 @@ import quranPic1 from "../assets/imgs/quran1.png";
 import quranPic2 from "../assets/imgs/quran2.png";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import { useDisplaySettings } from "../contexts/display-settings-context";
+import { convertToArabicNumbers } from "../utility/text-utilities";
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -146,17 +147,17 @@ function HeroSection() {
         <div className="text-center quran-stats-btn lg:hidden">
           <div className="inline-flex items-center gap-4 lg:gap-6 bg-white/90 dark:bg-gray-800/90 px-4 lg:px-6 py-2 lg:py-3 rounded-full shadow-lg">
             <div className="text-center">
-              <div className="text-lg lg:text-xl font-bold text-emerald-600">114</div>
+              <div className="text-lg lg:text-xl font-bold text-emerald-600">{convertToArabicNumbers(114)}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">سورة</div>
             </div>
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
-              <div className="text-lg lg:text-xl font-bold text-emerald-600">6,236</div>
+              <div className="text-lg lg:text-xl font-bold text-emerald-600">{convertToArabicNumbers(6236)}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">آية</div>
             </div>
             <div className="w-px h-8 bg-gray-300 dark:bg-gray-600"></div>
             <div className="text-center">
-              <div className="text-lg lg:text-xl font-bold text-emerald-600">43</div>
+              <div className="text-lg lg:text-xl font-bold text-emerald-600">{convertToArabicNumbers(43)}</div>
               <div className="text-sm text-gray-600 dark:text-gray-400">تلاوة</div>
             </div>
           </div>

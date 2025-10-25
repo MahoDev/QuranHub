@@ -90,7 +90,6 @@ const reciterImageMap = {
   43: khaalidAbdullaahAlQahtaanee
 };
 
-console.log(reciterImageMap[41])
 function RecitersSection() {
   const [playingReciter, setPlayingReciter] = useState(null);
   const [currentRandomVerse, setCurrentRandomVerse] = useState(null);
@@ -135,32 +134,37 @@ function RecitersSection() {
 
       // Get the reciter's bitrate information
       const reciterData = quranRecitations[reciterIndex + 1]; // +1 because array is 0-indexed but reciter IDs start from 1
-      if (reciterData && selectedVerse) {
-        // Use the first available bitrate (usually the highest quality)
-        const bitrateName = Object.keys(reciterData.bitrate)[Object.keys(reciterData.bitrate).length -1];
-        const bitrateFolder = reciterData.bitrate[bitrateName];
+      if (reciterData && reciterData.bitrate && selectedVerse) {
+        const bitrateKeys = Object.keys(reciterData.bitrate);
+        if (bitrateKeys.length > 0) {
+          // Use the first available bitrate (usually the highest quality)
+          const bitrateName = bitrateKeys[bitrateKeys.length - 1];
+          const bitrateFolder = reciterData.bitrate[bitrateName];
 
-        // Construct the audio URL
-        const audioUrl = `https://everyayah.com/data/${bitrateFolder}/${selectedVerse}.mp3`;
+          if (bitrateFolder) {
+            // Construct the audio URL
+            const audioUrl = `https://everyayah.com/data/${bitrateFolder}/${selectedVerse}.mp3`;
 
-        // Create and play audio
-        const audio = new Audio(audioUrl);
+            // Create and play audio
+            const audio = new Audio(audioUrl);
 
-        audio.onended = () => {
-          stopCurrentAudio();
-        };
+            audio.onended = () => {
+              stopCurrentAudio();
+            };
 
-        audio.onerror = () => {
-          console.error(`Failed to load audio for reciter ${reciterData.name}`);
-          stopCurrentAudio();
-        };
+            audio.onerror = () => {
+              console.error(`Failed to load audio for reciter ${reciterData.name}`);
+              stopCurrentAudio();
+            };
 
-        audio.play().then(() => {
-          setCurrentAudio(audio);
-        }).catch(err => {
-          console.error('Audio play failed:', err);
-          stopCurrentAudio();
-        });
+            audio.play().then(() => {
+              setCurrentAudio(audio);
+            }).catch(err => {
+              console.error('Audio play failed:', err);
+              stopCurrentAudio();
+            });
+          }
+        }
       }
     }
   };
@@ -212,7 +216,6 @@ function RecitersSection() {
             const reciterId = index + 1; // Convert to 1-based reciter ID
             const imageFilename = reciterImages[reciterId];
 
-			console.log(reciterImageMap[reciterId]);
             return (
               <div
                 key={reciterId}

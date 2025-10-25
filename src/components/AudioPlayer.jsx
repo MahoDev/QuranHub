@@ -23,6 +23,7 @@ function AudioPlayer({
 	bottomBarDisplayed,
 	audioPlayerVisible,
 	onVisibilityChange,
+	juzHizbMode,
 }) {
 	const { displaySettings, onDisplaySettingsChange } = useDisplaySettings();
 
@@ -205,7 +206,7 @@ function AudioPlayer({
 
 	let bitratesContent = [""];
 
-	if (quranRecitations !== null && quranRecitations[recitationId] !== null) {
+	if (quranRecitations && quranRecitations[recitationId] && quranRecitations[recitationId].bitrate) {
 		bitratesContent = Object.keys(quranRecitations[recitationId].bitrate).map(
 			(bitr, index) => {
 				return (
@@ -237,8 +238,10 @@ function AudioPlayer({
 			{!audioPlayerVisible && (
 				<button
 					onClick={() => onVisibilityChange(true)}
-					className={`fixed right-16 transform translate-x-1/2 z-[11] bg-emerald-700/95 hover:bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
-						bottomBarDisplayed ? "bottom-[100px]" : "bottom-4"
+					className={`fixed transform translate-x-1/2 z-[11] bg-emerald-600/80 hover:bg-emerald-700 text-white px-6 py-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl flex items-center gap-2 ${
+						juzHizbMode
+							? "left-[50%] translate-x-[-50%] bottom-6"
+							: `right-16 ${bottomBarDisplayed ? "bottom-[100px]" : "bottom-4"}`
 					}`}
 					title="إظهار مشغل الصوت"
 				>
@@ -418,7 +421,7 @@ function AudioPlayer({
 						id="recitersBox"
 						className={`${
 							!recitersDisplayed ? "hidden" : ""
-						} absolute left-4 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-10`}
+						} absolute left-4 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-15`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">اختيار القارئ</div>
 						<div>{recitationsContent}</div>
@@ -446,7 +449,7 @@ function AudioPlayer({
 						id="bitratesBox"
 						className={`${
 							!bitratesDisplayed ? "hidden" : ""
-						} absolute left-16 translate-y-[-220px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-10`}
+						} absolute left-16 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-15`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">جودة الصوت</div>
 						<div>{bitratesContent}</div>
