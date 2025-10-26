@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { convertToArabicNumbers } from "../utility/text-utilities";
 import { playWordPronunciation, stopWordPronunciation } from "../utility/audio-utilities";
 import { useBookmarks } from "../contexts/bookmark-context";
@@ -12,6 +12,10 @@ function Ayah({
   surahNumber,
   surahName,
   pageNumber,
+  bookmarkType = 'surah', // Add bookmark type prop
+  juzNumber = null, // Add juz number prop
+  hizbNumber = null, // Add hizb number prop
+  highlightedVerse,
 }) {
   const versesText = ayahData["aya_text"].startsWith(
     "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ"
@@ -34,7 +38,14 @@ function Ayah({
   const [isClicking, setIsClicking] = useState(false);
   const [showListeningToast, setShowListeningToast] = useState(false);
 
-  const { toggleBookmark, isBookmarked, loading: bookmarkLoading } = useBookmarks();
+  const { addBookmark, toggleBookmark, isBookmarked, loading: bookmarkLoading } = useBookmarks();
+
+  // Check if this is a brief highlight from search navigation
+  const isBriefHighlight = highlightedVerse &&
+    typeof highlightedVerse === 'object' &&
+    highlightedVerse !== null &&
+    highlightedVerse.surahNo === ayahData["sura_no"] &&
+    highlightedVerse.verseNo === ayahData["aya_no"];
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -63,11 +74,32 @@ function Ayah({
     }
   }, [currentVerse, mode]);
 
+  const isCurrentVerse = useMemo(() => {
+    // Check for brief highlighting from search navigation (works in both modes)
+    if (highlightedVerse && typeof highlightedVerse === 'object' && highlightedVerse !== null) {
+      return highlightedVerse.surahNo === ayahData["sura_no"] && highlightedVerse.verseNo === ayahData["aya_no"];
+    }
+
+    // Only highlight verses in listening mode, not in reading mode for regular currentVerse
+    if (mode !== 'listening') {
+      return false;
+    }
+
+    if (typeof currentVerse === 'object' && currentVerse !== null) {
+      // Listening mode: currentVerse is an object with surahNo and verseNo
+      return currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"];
+    } else if (typeof currentVerse === 'number') {
+      // Reading mode/bookmark navigation: currentVerse is a number
+      return currentVerse === ayahData["aya_no"];
+    }
+    return false;
+  }, [currentVerse, highlightedVerse, ayahData, mode]);
+
   useEffect(() => {
-    if (highlightedAyah.current && currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]) {
+    if (highlightedAyah.current && isCurrentVerse) {
       highlightedAyah.current.scrollIntoView({ block: "center" });
     }
-  }, [currentVerse]);
+  }, [currentVerse, highlightedVerse, isCurrentVerse]);
 
   const handleWordClick = async (e, index) => {
     if (mode === "reading") {
@@ -103,18 +135,28 @@ function Ayah({
 
   const handleBookmarkClick = async (e) => {
     e.stopPropagation();
+    // Only add bookmark here; do not remove from inline control
+    if (ayahIsBookmarked) {
+      // Already bookmarked - show confirmation tooltip
+      setShowBookmarkTooltip(true);
+      setTimeout(() => setShowBookmarkTooltip(false), 1400);
+      return;
+    }
 
-    const success = await toggleBookmark(
+    const success = await addBookmark(
       surahNumber,
       surahName,
       pageNumber,
       ayahData["aya_no"],
-      ayahData["aya_text"]
+      ayahData["aya_text"],
+      bookmarkType,
+      juzNumber,
+      hizbNumber
     );
 
     if (success) {
       setShowBookmarkTooltip(true);
-      setTimeout(() => setShowBookmarkTooltip(false), 2000);
+      setTimeout(() => setShowBookmarkTooltip(false), 1400);
     }
   };
 
@@ -179,17 +221,26 @@ function Ayah({
     }
 
     // Execute bookmark action
-    const success = await toggleBookmark(
-      surahNumber,
-      surahName,
-      pageNumber,
-      ayahData["aya_no"],
-      ayahData["aya_text"]
-    );
-
-    if (success) {
+    // Only add a bookmark from the tooltip; do not remove here.
+    if (ayahIsBookmarked) {
       setShowBookmarkTooltip(true);
-      setTimeout(() => setShowBookmarkTooltip(false), 2000);
+      setTimeout(() => setShowBookmarkTooltip(false), 1200);
+    } else {
+      const success = await addBookmark(
+        surahNumber,
+        surahName,
+        pageNumber,
+        ayahData["aya_no"],
+        ayahData["aya_text"],
+        bookmarkType,
+        juzNumber,
+        hizbNumber
+      );
+
+      if (success) {
+        setShowBookmarkTooltip(true);
+        setTimeout(() => setShowBookmarkTooltip(false), 1200);
+      }
     }
 
     // Clear clicking state after a short delay
@@ -218,24 +269,32 @@ function Ayah({
     }
   }, [showAyahBookmarkTooltip]);
 
-  const ayahIsBookmarked = isBookmarked(surahNumber, ayahData["aya_no"]);
+  const ayahIsBookmarked = isBookmarked(surahNumber, ayahData["aya_no"], bookmarkType, juzNumber, hizbNumber);
 
   return (
     <div
-      ref={currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"] ? highlightedAyah : null}
+      ref={isCurrentVerse ? highlightedAyah : null}
       data-verse-number={ayahData["aya_no"]}
       data-surah-number={ayahData["sura_no"]}
-      className={`inline ${currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"] ? "text-emerald-700" : ""}`}
+      className={`inline transition-colors duration-500 ${
+        isBriefHighlight
+          ? "text-emerald-700 dark:text-emerald-400"
+          : isCurrentVerse
+          ? "text-emerald-700"
+          : ""
+      }`}
     >
       <div className="inline">
         {versesWords.map((word, index) => {
           return (
             <p
               key={`${ayahData["sura_no"]}:${ayahData["aya_no"]}:${index + 1}`}
-              className={`inline hover:text-emerald-700 hover:cursor-pointer ${
-                currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]
-                  ? "hover:text-emerald-900"
-                  : ""
+              className={`inline hover:text-emerald-700 hover:cursor-pointer transition-colors duration-200 dark:text-white ${
+                isBriefHighlight
+                  ? "text-emerald-700 dark:text-emerald-400"
+                  : isCurrentVerse
+                  ? "hover:text-emerald-900 dark:text-emerald-400"
+                  : "dark:text-white"
               }`}
               onClick={(e) => handleWordClick(e, index)}
             >
@@ -246,7 +305,13 @@ function Ayah({
       </div>
       <span
         ref={ayahNumberRef}
-        className={`hover:cursor-pointer relative ${ayahIsBookmarked ? 'text-emerald-600' : ''}`}
+        className={`hover:cursor-pointer relative transition-colors duration-200 dark:text-white ${
+          isBriefHighlight
+            ? 'text-emerald-700 dark:text-emerald-400'
+            : ayahIsBookmarked
+            ? 'text-emerald-600 dark:text-emerald-400'
+            : 'dark:text-white'
+        }`}
         onClick={handleAyahClick}
         onMouseEnter={handleAyahNumberMouseEnter}
         onMouseLeave={handleAyahNumberMouseLeave}
@@ -255,9 +320,8 @@ function Ayah({
         {convertToArabicNumbers(ayahData["aya_no"])}
         {" "}
         {/* Bookmark indicator for bookmarked ayahs */}
-        {ayahIsBookmarked && (
-          <span className="absolute -top-1 -right-2 text-xs opacity-70">🔖</span>
-        )}
+        {/* Note: Do not show inline bookmark icon or removal affordance here.
+            Bookmark removal is intentionally only available in the Profile page. */}
       </span>
 
       {/* Bookmark tooltip - appears only on ayah number hover */}
@@ -274,15 +338,15 @@ function Ayah({
           onMouseEnter={handleTooltipMouseEnter}
           onMouseLeave={handleTooltipMouseLeave}
         >
-          <div className="flex items-center gap-2">
-            <button
-              className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200"
-              onClick={handleBookmarkButtonClick}
-              disabled={bookmarkLoading}
-            >
-              {ayahIsBookmarked ? 'إزالة مرجع' : 'حفظ مرجع'}
-            </button>
-          </div>
+            <div className="flex items-center gap-2">
+              <button
+                className="bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded text-xs transition-colors duration-200 disabled:opacity-60"
+                onClick={handleBookmarkButtonClick}
+                disabled={bookmarkLoading || ayahIsBookmarked}
+              >
+                {ayahIsBookmarked ? 'تم الحفظ' : 'حفظ مرجع'}
+              </button>
+            </div>
           <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-emerald-200 dark:border-t-emerald-700"></div>
         </div>
       )}
@@ -298,7 +362,8 @@ function Ayah({
           }}
         >
           <div className="relative">
-            {ayahIsBookmarked ? "تم حفظ العلامة المرجعية" : "تم إزالة العلامة المرجعية"}
+            {/* If already bookmarked we show saved message, otherwise show saved confirmation */}
+            {ayahIsBookmarked ? "تم حفظ العلامة المرجعية" : "ًلآية محفوظة مسبقا"}
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-emerald-800"></div>
           </div>
         </div>

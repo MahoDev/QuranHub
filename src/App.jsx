@@ -33,7 +33,7 @@ function App() {
 	};
 
 	useEffect(() => {
-		document.body.classList.add("dark:bg-[rgb(33,33,33)]");
+		document.body.classList.add("dark:bg-gray-800");
 	}, []);
 
 	useEffect(() => {
@@ -100,8 +100,9 @@ function App() {
 							</div>
 						}
 					>
-						{currentUser == null ||
-						(currentUser != null && currentUser.emailVerified == false) ? (
+						{/* Auth routes */}
+						{(currentUser == null ||
+						(currentUser != null && currentUser.emailVerified == false)) && (
 							<>
 								<Route path="login" element={<Login />} />
 								<Route path="reset" element={<ResetPassword />} />
@@ -111,9 +112,9 @@ function App() {
 								/>
 								<Route path="signup" element={<Signup />} />
 							</>
-						) : (
-							<Route path="profile" element={<Profile />} />
 						)}
+						{/* Profile is accessible to all users */}
+						<Route path="profile" element={<Profile />} />
 					</Route>
 
 					<Route

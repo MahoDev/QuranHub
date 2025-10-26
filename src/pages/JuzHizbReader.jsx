@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FaArrowLeft, FaArrowRight, FaChevronDown, FaArrowUp } from 'react-icons/fa';
+import { FaArrowLeft, FaArrowRight, FaChevronDown, FaArrowUp, FaSearch, FaBookmark } from 'react-icons/fa';
 import {
 	convertToArabicNumbers,
 } from '../utility/text-utilities';
@@ -11,12 +12,13 @@ import LoadingView from '../components/LoadingView';
 import BasmalaBlack from "/src/assets/basmala_black.svg";
 import BasmalaWhite from "/src/assets/basmala_white.svg";
 import JuzHizbListeningManager from '../components/JuzHizbListeningManager';
-import OutsideClickHandler from '../components/OutsideClickHandler';
+import JuzHizbBookmarkForm from '../components/JuzHizbBookmarkForm';
 import { Helmet } from 'react-helmet-async';
 
 function JuzHizbReader({ quranText, isDarkMode, type }) {
 	const { number } = useParams();
 	const navigate = useNavigate();
+	const location = useLocation();
 	const parsedNumber = parseInt(number);
 
 	const [scrollProgress, setScrollProgress] = useState(0);
@@ -31,12 +33,20 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 	const [currentWordInfo, setCurrentWordInfo] = useState(null);
 	const [showDropdown, setShowDropdown] = useState(false);
 	const [dropdownType, setDropdownType] = useState("juz"); // "juz" or "hizb"
-
-	const [isNavigating, setIsNavigating] = useState(false);
-
-	// Audio player and UI visibility states
+	const [showVerseJump, setShowVerseJump] = useState(false);
+	const [verseJumpSearch, setVerseJumpSearch] = useState('');
+	const [filteredVerses, setFilteredVerses] = useState([]);
 	const [audioPlayerVisible, setAudioPlayerVisible] = useState(true);
 	const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+	const [isNavigating, setIsNavigating] = useState(false);
+	const [highlightedVerse, setHighlightedVerse] = useState(null); // For brief highlighting after search navigation
+	const [showFloatingSearch, setShowFloatingSearch] = useState(false); // For floating search window
+	const [showBookmarkForm, setShowBookmarkForm] = useState(false);
+
+	const handleCurrentWordChange = (wordInfo) => {
+		setCurrentWordInfo(wordInfo);
+		// The word audio will be handled by JuzHizbListeningManager through the currentWordInfo prop
+	};
 
 	const handleNavigation = (direction) => {
 		setIsNavigating(true);
@@ -100,19 +110,95 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 		}
 	};
 
-	const jumpToVerse = (surahNum, ayahNum) => {
-		setCurrentVerse({surahNo: surahNum, verseNo: ayahNum});
+	// Handle verse jump and navigation
+	const handleVerseJump = (surahNo, verseNo) => {
+		setCurrentVerse({ surahNo, verseNo });
+		setShowVerseJump(false);
+		setVerseJumpSearch('');
+
+		// Set brief highlighting for the navigated verse
+		setHighlightedVerse({ surahNo, verseNo });
+
+		// Scroll to the verse after a short delay
 		setTimeout(() => {
-			const verseElement = document.querySelector(`[data-verse-number="${ayahNum}"][data-surah-number="${surahNum}"]`);
+			const verseElement = document.querySelector(`[data-verse-number="${verseNo}"][data-surah-number="${surahNo}"]`);
 			if (verseElement) {
 				verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 			}
 		}, 100);
 	};
 
+	// Handle search filtering for verse jump
+	const handleVerseJumpSearch = (searchText) => {
+		setVerseJumpSearch(searchText);
+
+		if (!searchText.trim()) {
+			setFilteredVerses(surahData);
+			return;
+		}
+
+		const searchLower = searchText.toLowerCase();
+
+		const filtered = surahData.filter(ayah => {
+			// Search in multiple fields
+			const surahName = surahNames[ayah.sura_no]?.toLowerCase() || '';
+			const uthmaniText = ayah.aya_text?.toLowerCase() || ''; // Text with tashkeel
+			const imlaeyText = ayah.aya_text_emlaey?.toLowerCase() || ''; // Text without tashkeel
+			const verseNumber = ayah.aya_no.toString();
+			const verseNumberArabic = convertToArabicNumbers(ayah.aya_no);
+
+			// Check both Uthmani (with tashkeel) and Imla'iy (without tashkeel) text
+			const matchesSurahName = surahName.includes(searchLower);
+			const matchesUthmaniText = uthmaniText.includes(searchLower);
+			const matchesImlaeyText = imlaeyText.includes(searchLower);
+			const matchesVerseNumber = verseNumber.includes(searchLower) || verseNumberArabic.includes(searchLower);
+			const matchesSurahNumber = ayah.sura_no.toString().includes(searchLower);
+
+			return matchesSurahName || matchesUthmaniText || matchesImlaeyText || matchesVerseNumber || matchesSurahNumber;
+		});
+
+		setFilteredVerses(filtered);
+	};
+
+	// Handle floating search filtering (reuses existing logic)
+	const handleFloatingSearch = (searchText) => {
+		setVerseJumpSearch(searchText);
+
+		if (!searchText.trim()) {
+			setFilteredVerses(surahData);
+			return;
+		}
+
+		const searchLower = searchText.toLowerCase();
+
+		const filtered = surahData.filter(ayah => {
+			// Search in multiple fields
+			const surahName = surahNames[ayah.sura_no]?.toLowerCase() || '';
+			const uthmaniText = ayah.aya_text?.toLowerCase() || ''; // Text with tashkeel
+			const imlaeyText = ayah.aya_text_emlaey?.toLowerCase() || ''; // Text without tashkeel
+			const verseNumber = ayah.aya_no.toString();
+			const verseNumberArabic = convertToArabicNumbers(ayah.aya_no);
+
+			// Check both Uthmani (with tashkeel) and Imla'iy (without tashkeel) text
+			const matchesSurahName = surahName.includes(searchLower);
+			const matchesUthmaniText = uthmaniText.includes(searchLower);
+			const matchesImlaeyText = imlaeyText.includes(searchLower);
+			const matchesVerseNumber = verseNumber.includes(searchLower) || verseNumberArabic.includes(searchLower);
+			const matchesSurahNumber = ayah.sura_no.toString().includes(searchLower);
+
+			return matchesSurahName || matchesUthmaniText || matchesImlaeyText || matchesVerseNumber || matchesSurahNumber;
+		});
+
+		setFilteredVerses(filtered);
+	};
+
 	const handleClickOutside = (event) => {
-		if (!event.target.closest('.dropdown-container')) {
+		if (!event.target.closest('.dropdown-container') && !event.target.closest('.verse-jump-container')) {
 			setShowDropdown(false);
+			setShowVerseJump(false);
+		}
+		if (!event.target.closest('.floating-search-container') && !event.target.closest('.floating-search-button')) {
+			setShowFloatingSearch(false);
 		}
 	};
 
@@ -151,12 +237,14 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 
 	useEffect(() => {
 		document.addEventListener('mousedown', handleClickOutside);
+
 		return () => {
 			document.removeEventListener('mousedown', handleClickOutside);
 		};
 	}, []);
 
 	useEffect(() => {
+		// Data-loading effect for the current juz/hizb
 		if (!quranText) return;
 
 		let data = null;
@@ -194,6 +282,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 			});
 
 			setSurahData(filteredAyahs);
+			setFilteredVerses(filteredAyahs); // Initialize filtered verses for search
 			setCurrentPage(data.startPage || 1);
 			if (filteredAyahs.length > 0) {
 				setCurrentVerse({surahNo: filteredAyahs[0].sura_no, verseNo: filteredAyahs[0].aya_no});
@@ -203,16 +292,44 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 		setIsLoading(false);
 	}, [quranText, type, parsedNumber]);
 
+	// If navigated here with a target verse (from Profile), wait until surahData
+	// is populated and then scroll + highlight the target verse. Clear the
+	// navigation state afterwards so this only runs once.
 	useEffect(() => {
-		if (currentVerse) {
-			setTimeout(() => {
-				const verseElement = document.querySelector(`[data-verse-number="${currentVerse.verseNo}"][data-surah-number="${currentVerse.surahNo}"]`);
-				if (verseElement) {
-					verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-				}
-			}, 100);
+		if (!location?.state) return;
+		const startSurah = location.state.startSurah;
+		const startVerse = location.state.startVerse;
+		if (!startSurah || !startVerse) return;
+		if (!surahData || surahData.length === 0) return; // wait until content rendered
+
+		setHighlightedVerse({ surahNo: startSurah, verseNo: startVerse });
+
+		const verseElement = document.querySelector(`[data-verse-number="${startVerse}"][data-surah-number="${startSurah}"]`);
+		if (verseElement) {
+			verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
 		}
-	}, [currentVerse]);
+
+		// Clear the location state so repeated renders won't re-trigger
+		navigate(location.pathname, { replace: true });
+	}, [surahData, location?.state]);
+
+	// Reset currentWordInfo when switching from listening to reading mode
+	useEffect(() => {
+		if (mode === 'reading') {
+			setCurrentWordInfo(null);
+		}
+	}, [mode]);
+
+	// Clear highlighted verse when mode changes or after timeout
+	useEffect(() => {
+		if (highlightedVerse) {
+			const timer = setTimeout(() => {
+				setHighlightedVerse(null);
+			}, 2000); // Clear after 2 seconds
+
+			return () => clearTimeout(timer);
+		}
+	}, [highlightedVerse]);
 
 	// Keyboard navigation
 	useEffect(() => {
@@ -290,9 +407,23 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 					// Toggle audio player visibility and close any open dropdowns
 					setAudioPlayerVisible(!audioPlayerVisible);
 					setShowDropdown(false);
+					setShowVerseJump(false);
 					break;
 
-				default:
+				case 'v':
+				case 'V':
+					event.preventDefault();
+					// Toggle verse jump modal
+					setShowVerseJump(!showVerseJump);
+					setShowDropdown(false);
+					break;
+
+				case 'Escape':
+					event.preventDefault();
+					// Close all modals
+					setShowVerseJump(false);
+					setShowDropdown(false);
+					setShowBookmarkForm(false);
 					break;
 			}
 		};
@@ -302,7 +433,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 		return () => {
 			document.removeEventListener('keydown', handleKeyDown);
 		};
-	}, [mode, parsedNumber, type, handleVerseNavigation, handleNavigation]);
+	}, [mode, parsedNumber, type, handleVerseNavigation, handleNavigation, showVerseJump, audioPlayerVisible, showKeyboardHelp, showBookmarkForm]);
 
 	if (isNavigating) {
 		return (
@@ -364,6 +495,75 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 					</div>
 
 					<div className="flex justify-center gap-4 mb-6 dropdown-container">
+						<div className="relative verse-jump-container">
+							<button
+								onClick={() => { setShowVerseJump(!showVerseJump); setShowDropdown(false); }}
+								disabled={isNavigating}
+								className="flex items-center gap-2 bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-300 px-4 py-2 rounded-lg border border-emerald-200 dark:border-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-white disabled:dark:hover:bg-gray-800"
+							>
+								<FaSearch className="text-sm" />
+								<span className="text-sm">البحث في الآيات</span>
+							</button>
+							{showVerseJump && (
+								<div className="absolute top-full mt-2 w-80 bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-lg shadow-lg z-50 max-h-96 overflow-hidden">
+									<div className="p-4 border-b border-gray-200 dark:border-gray-700">
+										<input
+											type="text"
+											placeholder="ابحث في السور، الآيات، أو النصوص..."
+											value={verseJumpSearch}
+											onChange={(e) => handleVerseJumpSearch(e.target.value)}
+											className="w-full px-3 py-2 border border-emerald-200 dark:border-emerald-600 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 bg-white dark:bg-gray-700 text-emerald-800 dark:text-emerald-200 placeholder-gray-500 dark:placeholder-gray-400"
+											autoFocus
+										/>
+									</div>
+									<div className="max-h-80 overflow-y-auto">
+										{filteredVerses.length === 0 ? (
+											<div className="text-center py-8 text-gray-500 dark:text-gray-400">
+												<FaSearch className="mx-auto mb-2 text-2xl text-gray-400" />
+												<p>لم يتم العثور على نتائج</p>
+											</div>
+										) : (
+											<>
+												<div className="px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+													<p className="text-xs text-gray-600 dark:text-gray-400">
+														تم العثور على {convertToArabicNumbers(filteredVerses.length)} نتيجة
+													</p>
+												</div>
+												{filteredVerses.map((ayah, index) => (
+													<button
+														key={`${ayah.sura_no}-${ayah.aya_no}`}
+														onClick={() => handleVerseJump(ayah.sura_no, ayah.aya_no)}
+														className="w-full text-right px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+													>
+														<div className="flex justify-between items-start">
+															<div className="flex-1 text-right">
+																<div className="text-sm font-medium text-emerald-700 dark:text-emerald-300 mb-1">
+																	{surahNames[ayah.sura_no]}
+																</div>
+																<div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+																	الآية {convertToArabicNumbers(ayah.aya_no)}
+																</div>
+																<div className="text-xs text-gray-500 dark:text-gray-500 overflow-hidden" style={{
+																	display: '-webkit-box',
+																	WebkitLineClamp: 2,
+																	WebkitBoxOrient: 'vertical'
+																}}>
+																	{ayah.aya_text?.slice(0, 100)}...
+																</div>
+															</div>
+															<div className="text-emerald-600 dark:text-emerald-400 text-lg mr-3">
+																{convertToArabicNumbers(ayah.aya_no)}
+															</div>
+														</div>
+													</button>
+												))}
+											</>
+										)}
+									</div>
+								</div>
+							)}
+						</div>
+
 						<div className="relative">
 							<button
 								onClick={() => { setShowDropdown(!showDropdown); setDropdownType("juz"); }}
@@ -436,14 +636,12 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 								<option value="listening">الاستماع</option>
 							</select>
 							<button
-								onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+								onClick={() => setShowBookmarkForm(true)}
 								className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors duration-200"
-								title="اختصارات لوحة المفاتيح"
+								title="حفظ علامة مرجعية"
 							>
-								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-								</svg>
-								<span className="">اختصارات لوحة المفاتيح</span>
+								<FaBookmark className="text-sm" />
+								<span className="">حفظ علامة مرجعية</span>
 							</button>
 						</div>
 					</div>
@@ -484,7 +682,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 				)}
 
 				{showScrollToTop && (
-					<button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`fixed right-6 z-50 bg-emerald-600/80 hover:bg-emerald-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl transform hover:-translate-y-0.5 ${mode === 'listening' ? (audioPlayerVisible ? 'bottom-[184px]' : 'bottom-[104px]') : 'bottom-24'}`} title="العودة للأعلى">
+					<button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className={`fixed left-6 z-50 bg-emerald-600/80 hover:bg-emerald-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl transform hover:-translate-y-0.5 ${mode === 'listening' ? (audioPlayerVisible ? 'bottom-[184px]' : 'bottom-[104px]') : 'bottom-24'}`} title="العودة للأعلى">
 						<FaArrowUp className="text-lg" />
 					</button>
 				)}
@@ -492,6 +690,16 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 				<div className={`fixed right-6 z-50 ${mode === 'listening' ? (audioPlayerVisible ? 'bottom-[104px]' : 'bottom-6') : 'bottom-6'}`}>
 					<button onClick={() => handleNavigation('prev')} disabled={parsedNumber <= 1 || isNavigating} className="bg-emerald-600/80 hover:bg-emerald-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl transform hover:-translate-y-0.5" title={`الانتقال إلى ${type === 'juz' ? 'الجزء' : 'الحزب'} السابق`}>
 						<FaArrowRight className="text-lg" />
+					</button>
+				</div>
+
+				<div className={`fixed right-6 z-50 ${mode === 'listening' ? (audioPlayerVisible ? 'bottom-[184px]' : 'bottom-[104px]') : 'bottom-24'}`}>
+					<button
+						onClick={() => setShowFloatingSearch(!showFloatingSearch)}
+						className="bg-emerald-600/80 hover:bg-emerald-700 text-white p-3 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl transform hover:-translate-y-0.5"
+						title="البحث في الآيات"
+					>
+						<FaSearch className="text-lg" />
 					</button>
 				</div>
 
@@ -538,6 +746,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 									ayahData={ayah}
 									mode={mode}
 									currentVerse={currentVerse}
+									onCurrentWordChange={handleCurrentWordChange}
 									handleSurahSettingsChange={(settings) => {
 										if (settings.currentVerse) {
 											// settings.currentVerse is just a number, convert to object format
@@ -547,6 +756,10 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 									surahNumber={ayah.sura_no}
 									surahName={surahNames[ayah.sura_no]}
 									pageNumber={ayah.page}
+									bookmarkType={type}
+									juzNumber={type === 'juz' ? parsedNumber : null}
+									hizbNumber={type === 'hizb' ? parsedNumber : null}
+									highlightedVerse={highlightedVerse}
 								/>
 							</React.Fragment>
 						);
@@ -556,6 +769,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 
 			{surahData.length > 0 && mode === 'listening' && (
 				<JuzHizbListeningManager
+					surahNumber={currentVerse?.surahNo}
 					currentVerse={currentVerse}
 					onVerseNavigation={handleVerseNavigation}
 					currentWordInfo={currentWordInfo}
@@ -614,12 +828,107 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 							</div>
 
 							<div className="flex justify-between items-center">
-								<span className="text-gray-700 dark:text-gray-300">تصغير/تكبير مشغل الصوت:</span>
-								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">A</kbd>
+								<span className="text-gray-700 dark:text-gray-300">البحث في الآيات:</span>
+								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">V</kbd>
+							</div>
+
+							<div className="flex justify-between items-center">
+								<span className="text-gray-700 dark:text-gray-300">حفظ/إزالة العلامات المرجعية:</span>
+								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">انقر على رقم الآية</kbd>
+							</div>
+
+							<div className="flex justify-between items-center">
+								<span className="text-gray-700 dark:text-gray-300">نموذج حفظ المرجعية:</span>
+								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">زر المرجعية</kbd>
 							</div>
 						</div>
 					</div>
 				</div>
+			)}
+			{/* Floating Search Window */}
+			{showFloatingSearch && (
+				<div className="floating-search-container fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-96 max-w-[90vw]">
+					<div className="bg-white dark:bg-gray-800 border border-emerald-200 dark:border-emerald-700 rounded-lg shadow-xl max-h-[80vh] overflow-hidden">
+						<div className="p-4 border-b border-gray-200 dark:border-gray-700">
+							<div className="flex items-center justify-between mb-2">
+								<h3 className="text-lg font-semibold text-emerald-800 dark:text-emerald-200">
+									🔍 البحث في الآيات
+								</h3>
+								<button
+									onClick={() => setShowFloatingSearch(false)}
+									className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+								>
+									<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+									</svg>
+								</button>
+							</div>
+							<input
+								type="text"
+								placeholder="ابحث عن آية..."
+								value={verseJumpSearch}
+								onChange={(e) => handleFloatingSearch(e.target.value)}
+								className="w-full px-3 py-2 border border-emerald-200 dark:border-emerald-600 rounded-lg focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 bg-white dark:bg-gray-700 text-emerald-800 dark:text-emerald-200 placeholder-gray-500 dark:placeholder-gray-400"
+								autoFocus
+							/>
+						</div>
+						<div className="max-h-80 overflow-y-auto">
+							{filteredVerses.length === 0 ? (
+								<div className="text-center py-8 text-gray-500 dark:text-gray-400">
+									<FaSearch className="mx-auto mb-2 text-2xl text-gray-400" />
+									<p>لم يتم العثور على نتائج</p>
+								</div>
+							) : (
+								<>
+									<div className="px-4 py-2 bg-gray-50 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
+										<p className="text-xs text-gray-600 dark:text-gray-400">
+											تم العثور على {convertToArabicNumbers(filteredVerses.length)} نتيجة
+										</p>
+									</div>
+									{filteredVerses.map((ayah, index) => (
+										<button
+											key={`${ayah.sura_no}-${ayah.aya_no}`}
+											onClick={() => {
+												handleVerseJump(ayah.sura_no, ayah.aya_no);
+												setShowFloatingSearch(false);
+											}}
+											className="w-full text-right px-4 py-3 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
+										>
+											<div className="flex justify-between items-start">
+												<div className="flex-1 text-right">
+													<div className="text-sm font-medium text-emerald-700 dark:text-emerald-300 mb-1">
+														{surahNames[ayah.sura_no]}
+													</div>
+													<div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+														الآية {convertToArabicNumbers(ayah.aya_no)}
+													</div>
+													<div className="text-xs text-gray-500 dark:text-gray-500 overflow-hidden" style={{
+														display: '-webkit-box',
+														WebkitLineClamp: 2,
+														WebkitBoxOrient: 'vertical'
+													}}>
+														{ayah.aya_text?.slice(0, 100)}...
+													</div>
+												</div>
+												<div className="text-emerald-600 dark:text-emerald-400 text-lg mr-3">
+													{convertToArabicNumbers(ayah.aya_no)}
+												</div>
+											</div>
+										</button>
+									))}
+								</>
+							)}
+						</div>
+					</div>
+				</div>)}
+			{/* Bookmark Form Modal */}
+			{showBookmarkForm && (
+				<JuzHizbBookmarkForm
+					currentData={currentData}
+					surahData={surahData}
+					type={type}
+					onClose={() => setShowBookmarkForm(false)}
+				/>
 			)}
 		</>
 	);

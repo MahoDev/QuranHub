@@ -23,7 +23,7 @@ export function removeHtmlFromText(text) {
     const cleanedText = text.replace(htmlRegex, "");
     return cleanedText;
   }
-  
+
 }
 
 export function formatTime(seconds) {
@@ -38,5 +38,5 @@ export function formatTime(seconds) {
   return `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
 }
 
-/*To allow dynamic classnames in jsx
-/* text-xxl , text-3xl , text-4xl , text-5xl , text-6xl , text-7xl , text-8xl , text-9xl */
+/* To allow dynamic classnames in jsx
+ * text-xxl , text-3xl , text-4xl , text-5xl , text-6xl , text-7xl , text-8xl , text-9xl */

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { auth, firestore } from "../config/firebase";
 import {
@@ -7,9 +7,6 @@ import {
   where,
   collection,
   Timestamp,
-  deleteDoc,
-  doc,
-  onSnapshot,
   writeBatch,
 } from "firebase/firestore";
 import { deleteUser, signOut, onAuthStateChanged } from "firebase/auth";
@@ -18,9 +15,16 @@ import Modal from "../components/Modal";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import { Helmet } from "react-helmet-async";
 import { convertToArabicNumbers } from "../utility/text-utilities";
+import { useBookmarks } from "../contexts/bookmark-context";
 
 function Profile() {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
+  const { 
+    bookmarks: contextBookmarks, 
+    isUsingLocalStorage,
+    serverReadFailed,
+    retryLoadBookmarks,
+  } = useBookmarks();
 
   const [bookmarks, setBookmarks] = useState([]);
   const [sortByDate, setSortByDate] = useState(true); // true for descending, false for ascending
@@ -30,97 +34,25 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
   const navigate = useNavigate();
-  const unsubscribeRef = useRef(null);
 
   useEffect(() => {
-    let unsubscribe = null;
-    let retryCount = 0;
-    const maxRetries = 3;
-
-    const fetchBookmarks = async () => {
-      // Wait for auth to be ready
-      if (!auth.currentUser) {
-        return;
-      }
-
-      try {
-        setLoading(true);
-
-        const dataPath = collection(firestore, "bookmarks");
-        const q = query(dataPath, where("userId", "==", auth.currentUser.uid));
-
-        unsubscribeRef.current = onSnapshot(
-          q,
-          (snapshot) => {
-            const userBookmarks = snapshot.docs.map((doc) => {
-              return { ...doc.data(), id: doc.id };
-            });
-
-            setBookmarks(userBookmarks);
-            setLoading(false);
-            retryCount = 0; // Reset retry count on successful load
-          },
-          (error) => {
-            console.error("Error in bookmark listener:", error);
-            setLoading(false);
-
-            // If we haven't exceeded max retries, try to reconnect after a delay
-            if (retryCount < maxRetries) {
-              retryCount++;
-              setRetrying(true);
-              setTimeout(() => {
-                if (auth.currentUser) {
-                  setRetrying(false);
-                  fetchBookmarks();
-                }
-              }, 2000 * retryCount); // Exponential backoff
-            } else {
-              setRetrying(false);
-            }
-          }
-        );
-      } catch (error) {
-        console.error("Error setting up bookmark listener:", error);
-        setLoading(false);
-
-        // Retry mechanism for initial setup failures
-        if (retryCount < maxRetries) {
-          retryCount++;
-          setRetrying(true);
-          setTimeout(() => {
-            setRetrying(false);
-            fetchBookmarks();
-          }, 2000 * retryCount);
-        } else {
-          setRetrying(false);
-        }
-      }
-    };
-
-    // Initial fetch
-    if (auth.currentUser) {
-      fetchBookmarks();
-    } else {
-      // Wait for auth state to be ready
-      const authUnsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          fetchBookmarks();
-          authUnsubscribe(); // Unsubscribe from auth listener
-        }
-      });
-    }
-
-    // Cleanup function
-    return () => {
-      if (unsubscribeRef.current) {
-        unsubscribeRef.current();
-        unsubscribeRef.current = null;
-      }
-    };
-  }, []);
+    // Use the bookmarks directly from context
+    setBookmarks(contextBookmarks);
+    setLoading(false);
+  }, [contextBookmarks]);
 
   const handleBookmarkNavigation = (bookmark) => {
-    navigate(`/surah/${bookmark.surahNumber}`);
+    if (bookmark.bookmarkType === 'juz') {
+      // Navigate to juz reader
+      navigate(`/juz/${bookmark.juzNumber}`, { state: { startSurah: bookmark.surahNumber, startVerse: +bookmark.ayahNumber } });
+    } else if (bookmark.bookmarkType === 'hizb') {
+      // Navigate to hizb reader
+      navigate(`/hizb/${bookmark.hizbNumber}`, { state: { startSurah: bookmark.surahNumber, startVerse: +bookmark.ayahNumber } });
+    } else {
+      // Default to surah navigation (existing behavior)
+      navigate(`/surah/${bookmark.surahNumber}`);
+    }
+
     onSurahSettingsChange({
       currentSurah: bookmark.surahNumber,
       currentPage: bookmark.pageNumber,
@@ -133,11 +65,13 @@ function Profile() {
     setShowConfirmation(true);
   };
 
+  const { removeBookmark } = useBookmarks();
+  
   const confirmDeleteBookmark = async () => {
     if (!bookmarkToDelete) return;
     
     try {
-      await deleteDoc(doc(firestore, "bookmarks", bookmarkToDelete));
+      await removeBookmark(bookmarkToDelete);
     } catch (err) {
       console.error(err.message);
     } finally {
@@ -188,67 +122,52 @@ function Profile() {
   };
 
   const manualRefreshBookmarks = () => {
-    if (unsubscribeRef.current) {
-      unsubscribeRef.current();
-      unsubscribeRef.current = null;
+    // If server read failed, try to retry the cloud read; otherwise just refresh view
+    if (serverReadFailed && retryLoadBookmarks) {
+      setRetrying(true);
+      retryLoadBookmarks().finally(() => setRetrying(false));
+      return;
     }
-    setBookmarks([]);
     setLoading(true);
-    setRetrying(false);
-
-    // Reset retry count and fetch again
-    const fetchBookmarks = async () => {
-      if (!auth.currentUser) return;
-
-      try {
-        setLoading(true);
-
-        const dataPath = collection(firestore, "bookmarks");
-        const q = query(dataPath, where("userId", "==", auth.currentUser.uid));
-
-        unsubscribeRef.current = onSnapshot(
-          q,
-          (snapshot) => {
-            const userBookmarks = snapshot.docs.map((doc) => {
-              return { ...doc.data(), id: doc.id };
-            });
-
-            setBookmarks(userBookmarks);
-            setLoading(false);
-          },
-          (error) => {
-            console.error("Error in manual refresh bookmark listener:", error);
-            setLoading(false);
-          }
-        );
-      } catch (error) {
-        console.error("Error in manual refresh setup:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchBookmarks();
+    setTimeout(() => {
+      setBookmarks(contextBookmarks);
+      setLoading(false);
+    }, 500); // Add a small delay to show the loading animation
   };
 
   // Apply sorting and filtering based on state
   let sortedBookmarks = [...bookmarks];
   if (sortByDate) {
-    sortedBookmarks.sort((a, b) => b.bookmarkDate - a.bookmarkDate);
+    sortedBookmarks.sort((a, b) => {
+      const dateA = typeof a.bookmarkDate === 'string' 
+        ? new Date(a.bookmarkDate).getTime()
+        : a.bookmarkDate.toDate().getTime();
+      const dateB = typeof b.bookmarkDate === 'string'
+        ? new Date(b.bookmarkDate).getTime()
+        : b.bookmarkDate.toDate().getTime();
+      return dateB - dateA;
+    });
   } else {
-    sortedBookmarks.sort((a, b) => a.bookmarkDate - b.bookmarkDate);
+    sortedBookmarks.sort((a, b) => {
+      const dateA = typeof a.bookmarkDate === 'string'
+        ? new Date(a.bookmarkDate).getTime()
+        : a.bookmarkDate.toDate().getTime();
+      const dateB = typeof b.bookmarkDate === 'string'
+        ? new Date(b.bookmarkDate).getTime()
+        : b.bookmarkDate.toDate().getTime();
+      return dateA - dateB;
+    });
   }
 
   if (showOnlyRecent) {
-    // Convert the current date to a Firebase Timestamp
-    const todayTimestamp = Timestamp.now();
-    const sevenDaysAgoTimestamp = Timestamp.fromMillis(
-      todayTimestamp.toMillis() - 7 * 24 * 60 * 60 * 1000
-    );
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+    
     sortedBookmarks = sortedBookmarks.filter((bookmark) => {
-      // Check if the bookmark's timestamp is after sevenDaysAgoTimestamp
-      return (
-        bookmark.bookmarkDate.toMillis() >= sevenDaysAgoTimestamp.toMillis()
-      );
+      const bookmarkDate = typeof bookmark.bookmarkDate === 'string'
+        ? new Date(bookmark.bookmarkDate)
+        : bookmark.bookmarkDate.toDate();
+      return bookmarkDate >= sevenDaysAgo;
     });
   }
 
@@ -364,7 +283,37 @@ function Profile() {
               </div>
             </div>
 
-            {/* Bookmarks List */}
+            {/* LocalStorage Warning for logged-in users */}
+            {auth.currentUser && isUsingLocalStorage && (
+              <div className="mb-6 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700/50 rounded-xl p-4">
+                <div className="flex items-center">
+                  <div className="text-2xl ml-3">⚠️</div>
+                  <p className="text-orange-700 dark:text-orange-300 text-sm">
+                    بسبب مشكلة في الخادم، سيتم حفظ العلامات المرجعية الجديدة على جهازك الحالي فقط. 
+                    يرجى المحاولة مرة أخرى لاحقاً لمزامنة علاماتك المرجعية مع حسابك لإمكانية الوصول لها من أي جهاز.
+                  </p>
+                </div>
+                {serverReadFailed && (
+                  <div className="mt-3 flex gap-3">
+                    <button
+                      onClick={() => { setRetrying(true); retryLoadBookmarks().finally(() => setRetrying(false)); }}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg"
+                      disabled={retrying}
+                    >
+                      {retrying ? 'جاري المحاولة...' : 'إعادة المحاولة'}
+                    </button>
+                    <button
+                      onClick={() => { localStorage.removeItem('quranHub_localBookmarks'); setBookmarks([]); }}
+                      className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-lg"
+                    >
+                      مسح العلامات المحلية
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+          {/* Bookmarks List */}
             <div className="max-h-[600px] overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-thumb-emerald-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-700">
               {!loading ? (
                 <div>
@@ -379,10 +328,30 @@ function Profile() {
                           {/* Header */}
                           <div className="flex items-start justify-between mb-4">
                             <div>
-                              <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200 mb-1">
-                                {bookmark.surahName}
-                              </h3>
+                              <div className="flex items-center gap-2 mb-1">
+                                <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
+                                  {bookmark.surahName}
+                                </h3>
+                                {bookmark._localOnly && (
+                                  <span className="ml-2 text-xs text-yellow-700 dark:text-yellow-300">محلي</span>
+                                )}
+                                {/* Bookmark type badge */}
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  bookmark.bookmarkType === 'juz'
+                                    ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+                                    : bookmark.bookmarkType === 'hizb'
+                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
+                                    : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                                }`}>
+                                  {bookmark.bookmarkType === 'juz' ? 'الجزء' :
+                                   bookmark.bookmarkType === 'hizb' ? 'الحزب' : 'السورة'}
+                                </span>
+                              </div>
                               <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {bookmark.bookmarkType === 'juz' && bookmark.juzNumber &&
+                                  `الجزء ${convertToArabicNumbers(bookmark.juzNumber)} • `}
+                                {bookmark.bookmarkType === 'hizb' && bookmark.hizbNumber &&
+                                  `الحزب ${convertToArabicNumbers(bookmark.hizbNumber)} • `}
                                 الصفحة {convertToArabicNumbers(bookmark.pageNumber)} • الآية {convertToArabicNumbers(bookmark.ayahNumber)}
                               </p>
                             </div>
@@ -411,7 +380,10 @@ function Profile() {
                           <div className="flex items-start justify-between text-xs text-gray-500 dark:text-gray-400">
                             <div className="flex flex-col">
                               <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {bookmark.bookmarkDate.toDate().toLocaleDateString("ar-SA", {
+                                {(typeof bookmark.bookmarkDate === 'string' 
+                                  ? new Date(bookmark.bookmarkDate)
+                                  : bookmark.bookmarkDate.toDate()
+                                ).toLocaleDateString("ar-SA", {
                                   year: "numeric",
                                   month: "numeric",
                                   day: "numeric",
@@ -421,7 +393,10 @@ function Profile() {
                                 })}
                               </span>
                               <span className="text-xs text-gray-400 dark:text-gray-500">
-                                {bookmark.bookmarkDate.toDate().toLocaleDateString("en-US", {
+                                {(typeof bookmark.bookmarkDate === 'string'
+                                  ? new Date(bookmark.bookmarkDate)
+                                  : bookmark.bookmarkDate.toDate()
+                                ).toLocaleDateString("en-US", {
                                   month: "numeric",
                                   day: "numeric",
                                   year: "numeric",
@@ -455,6 +430,37 @@ function Profile() {
               )}
             </div>
           </div>
+
+          {/* Local Storage Warning - if applicable */}
+          {!auth.currentUser && (
+            <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700/50 rounded-2xl p-8 mb-8">
+              <div className="flex items-center mb-4">
+                <div className="text-4xl ml-4">⚠️</div>
+                <div>
+                  <h3 className="text-xl font-bold text-yellow-800 dark:text-yellow-200 mb-2">
+                    تنبيه: العلامات المرجعية محفوظة محلياً
+                  </h3>
+                  <p className="text-yellow-700 dark:text-yellow-300">
+                    علاماتك المرجعية محفوظة على هذا الجهاز فقط. لمزامنة علاماتك المرجعية عبر جميع أجهزتك، يرجى تسجيل الدخول.
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <button
+                  onClick={() => navigate('/user/login')}
+                  className="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                >
+                  تسجيل الدخول
+                </button>
+                <button
+                  onClick={() => navigate('/user/signup')}
+                  className="bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-6 py-2 rounded-lg font-medium transition-all duration-200"
+                >
+                  إنشاء حساب جديد
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Help & Support Section */}
           <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
