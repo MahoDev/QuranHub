@@ -123,7 +123,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 		setTimeout(() => {
 			const verseElement = document.querySelector(`[data-verse-number="${verseNo}"][data-surah-number="${surahNo}"]`);
 			if (verseElement) {
-				verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+				verseElement.scrollIntoView({ behavior: 'instant', block: 'nearest' });
 			}
 		}, 100);
 	};
@@ -401,6 +401,12 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 					}
 					break;
 
+				case 't':
+				case 'T':
+					event.preventDefault();
+					setMode(prevMode => prevMode === 'reading' ? 'listening' : 'reading');
+					break;
+
 				case 'a':
 				case 'A':
 					event.preventDefault();
@@ -643,6 +649,16 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 								<FaBookmark className="text-sm" />
 								<span className="">حفظ علامة مرجعية</span>
 							</button>
+							<button
+								onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+								className="flex items-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-emerald-600 dark:hover:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 rounded-lg transition-colors duration-200"
+								title="اختصارات لوحة المفاتيح"
+							>
+								<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 21v-1.5a3 3 0 013-3h6a3 3 0 013 3V21M9 21H5a2 2 0 01-2-2v-4.5a2 2 0 012-2h14a2 2 0 012 2V19a2 2 0 01-2 2h-4M9 21h6m-6-6h6m-6 0V9a3 3 0 013-3h0a3 3 0 013 3v6m-6 0h6m-9-9V5a3 3 0 013-3h0a3 3 0 013 3v1" />
+								</svg>
+								<span className="">اختصارات لوحة المفاتيح</span>
+							</button>
 						</div>
 					</div>
 				</div>
@@ -709,7 +725,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 					</button>
 				</div>
 
-				<div className="font-quranMain text-justify text-3xl leading-extra-loose m-auto max-w-full sm:max-w-[95%] md:max-w-[90%] lg:max-w-4xl px-4 sm:px-0" style={{ paddingBottom: mode === 'listening' ? (audioPlayerVisible ? '180px' : '100px') : '0px' }}>
+				<div className="font-quranMain mb-28 text-justify text-3xl leading-extra-loose m-auto max-w-full sm:max-w-[95%] md:max-w-[90%] lg:max-w-4xl px-4 sm:px-0" style={{ paddingBottom: mode === 'listening' ? (audioPlayerVisible ? '180px' : '100px') : '0px' }}>
 					{surahData.map((ayah, index) => {
 						const currentSurahNumber = ayah.sura_no;
 						const nextAyah = surahData[index + 1];
@@ -841,6 +857,11 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 								<span className="text-gray-700 dark:text-gray-300">نموذج حفظ المرجعية:</span>
 								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">زر المرجعية</kbd>
 							</div>
+
+							<div className="flex justify-between items-center">
+								<span className="text-gray-700 dark:text-gray-300">تبديل وضع القراءة/الاستماع:</span>
+								<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">T</kbd>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -902,7 +923,7 @@ function JuzHizbReader({ quranText, isDarkMode, type }) {
 													<div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
 														الآية {convertToArabicNumbers(ayah.aya_no)}
 													</div>
-													<div className="text-xs text-gray-500 dark:text-gray-500 overflow-hidden" style={{
+													<div className="text-xs text-gray-500 dark:text-gray-200 overflow-hidden" style={{
 														display: '-webkit-box',
 														WebkitLineClamp: 2,
 														WebkitBoxOrient: 'vertical'

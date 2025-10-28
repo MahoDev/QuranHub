@@ -44,8 +44,8 @@ function Ayah({
   const isBriefHighlight = highlightedVerse &&
     typeof highlightedVerse === 'object' &&
     highlightedVerse !== null &&
-    highlightedVerse.surahNo === ayahData["sura_no"] &&
-    highlightedVerse.verseNo === ayahData["aya_no"];
+    highlightedVerse?.surahNo === ayahData["sura_no"] &&
+    highlightedVerse?.verseNo === ayahData["aya_no"];
 
   // Cleanup timeouts on unmount
   useEffect(() => {
@@ -64,9 +64,9 @@ function Ayah({
   }, []);
 
   useEffect(() => {
-    if (mode === 'listening' && currentVerse && currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"]) {
+    if (mode === 'listening' && currentVerse && currentVerse?.surahNo === ayahData["sura_no"] && currentVerse?.verseNo === ayahData["aya_no"]) {
       setTimeout(() => {
-        const verseElement = document.querySelector(`[data-verse-number="${currentVerse.verseNo}"][data-surah-number="${currentVerse.surahNo}"]`);
+        const verseElement = document.querySelector(`[data-verse-number="${currentVerse?.verseNo}"][data-surah-number="${currentVerse?.surahNo}"]`);
         if (verseElement) {
           verseElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -77,7 +77,7 @@ function Ayah({
   const isCurrentVerse = useMemo(() => {
     // Check for brief highlighting from search navigation (works in both modes)
     if (highlightedVerse && typeof highlightedVerse === 'object' && highlightedVerse !== null) {
-      return highlightedVerse.surahNo === ayahData["sura_no"] && highlightedVerse.verseNo === ayahData["aya_no"];
+      return highlightedVerse?.surahNo === ayahData["sura_no"] && highlightedVerse?.verseNo === ayahData["aya_no"];
     }
 
     // Only highlight verses in listening mode, not in reading mode for regular currentVerse
@@ -87,7 +87,7 @@ function Ayah({
 
     if (typeof currentVerse === 'object' && currentVerse !== null) {
       // Listening mode: currentVerse is an object with surahNo and verseNo
-      return currentVerse.surahNo === ayahData["sura_no"] && currentVerse.verseNo === ayahData["aya_no"];
+      return currentVerse?.surahNo === ayahData["sura_no"] && currentVerse?.verseNo === ayahData["aya_no"];
     } else if (typeof currentVerse === 'number') {
       // Reading mode/bookmark navigation: currentVerse is a number
       return currentVerse === ayahData["aya_no"];
@@ -289,11 +289,11 @@ function Ayah({
           return (
             <p
               key={`${ayahData["sura_no"]}:${ayahData["aya_no"]}:${index + 1}`}
-              className={`inline hover:text-emerald-700 hover:cursor-pointer transition-colors duration-200 dark:text-white ${
+              className={`inline hover:text-emerald-700 hover:cursor-pointer transition-colors duration-200 ${
                 isBriefHighlight
-                  ? "text-emerald-700 dark:text-emerald-400"
+                  ? "text-emerald-700 dark:text-emerald-700"
                   : isCurrentVerse
-                  ? "hover:text-emerald-900 dark:text-emerald-400"
+                  ? "text-emerald-700 dark:text-emerald-700"
                   : "dark:text-white"
               }`}
               onClick={(e) => handleWordClick(e, index)}

@@ -253,7 +253,7 @@ function AudioPlayer({
 			{/* Audio Player */}
 			<div
 				id="audioPlayer"
-				className={`fixed left-0 translate-x-[0.5%] h-[80px] p-3 w-[99%] bg-white/95 dark:bg-stone-900/95 shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
+				className={`fixed left-0 h-[80px] p-3 w-[100%] bg-white/95 dark:bg-stone-900/95 shadow-2xl shadow-black/20 border border-gray-200/60 dark:border-gray-700/60 border-t-transparent dark:border-none select-none rounded-t-lg transition-all duration-200
 				${audioPlayerVisible
 					? bottomBarDisplayed ? "bottom-[80px] z-[0]" : "bottom-0 z-[5]"
 					: "bottom-[-100px] z-[-1]"
@@ -421,7 +421,7 @@ function AudioPlayer({
 						id="recitersBox"
 						className={`${
 							!recitersDisplayed ? "hidden" : ""
-						} absolute left-4 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-15`}
+						} absolute left-4 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] overflow-y-scroll dark:text-white bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent z-15`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">اختيار القارئ</div>
 						<div>{recitationsContent}</div>
@@ -449,7 +449,7 @@ function AudioPlayer({
 						id="bitratesBox"
 						className={`${
 							!bitratesDisplayed ? "hidden" : ""
-						} absolute left-16 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-15`}
+						} absolute left-16 translate-y-[-240px] rounded-lg p-3 w-[200px] h-[160px] bg-white/95 dark:bg-stone-800/95 shadow-xl border border-gray-200/60 dark:border-gray-700/60 select-none z-15 dark:text-white`}
 					>
 						<div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">جودة الصوت</div>
 						<div>{bitratesContent}</div>

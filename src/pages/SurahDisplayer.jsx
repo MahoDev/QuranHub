@@ -262,6 +262,12 @@ function SurahDisplayer({ isDarkMode, quranText, initialState }) {
 					}
 					break;
 
+				case 't':
+				case 'T':
+					event.preventDefault();
+					setMode(prevMode => prevMode === 'reading' ? 'listening' : 'reading');
+					break;
+
 				default:
 					break;
 			}
@@ -734,7 +740,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 			>
 				<div>
 					<div className="relative rounded-2xl p-4 md:p-6 bg-white/80 dark:bg-gray-800/80 border border-emerald-200/50 dark:border-emerald-700/50 shadow-xl mx-4 mb-6">
-						<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
+						<div className="grid grid-cols-1 md:grid-cols-2  gap-4 ">
 							{/* Display Mode & Navigation Section */}
 							<div className="flex flex-col gap-4">
 								{/* Juz/Hizb Indicator */}
@@ -929,7 +935,7 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 					<div className="fixed top-20 right-4 z-50">
 						<div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-xl border border-emerald-200 dark:border-emerald-700 max-w-xs">
 							<div className="flex items-center justify-between mb-3">
-								<h3 className="text-sm font-semibold text-emerald-800 dark:text-emerald-200">
+								<h3 className="text-sm text-center font-semibold text-emerald-800 dark:text-emerald-200">
 									⌨️ اختصارات لوحة المفاتيح
 								</h3>
 								<button
@@ -951,13 +957,18 @@ ${surahNumToPagesMap[+surahNumber][1]} حتى صفحة
 
 							<div className="space-y-2 text-xs">
 								<div className="flex justify-between items-center">
-									<span className="text-gray-700 dark:text-gray-300">التنقل في الصفحات:</span>
-									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">← →</kbd>
+									<span className="text-gray-700 dark:text-gray-300">حفظ/إزالة العلامات المرجعية:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">انقر على رقم الآية</kbd>
 								</div>
 
 								<div className="flex justify-between items-center">
-									<span className="text-gray-700 dark:text-gray-300">التنقل في الآيات:</span>
-									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">← →</kbd>
+									<span className="text-gray-700 dark:text-gray-300">نموذج حفظ المرجعية:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">زر المرجعية</kbd>
+								</div>
+
+								<div className="flex justify-between items-center">
+									<span className="text-gray-700 dark:text-gray-300">تبديل وضع القراءة/الاستماع:</span>
+									<kbd className="px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">T</kbd>
 								</div>
 
 								<div className="flex justify-between items-center">

@@ -20,7 +20,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 			// Wait for navigation to complete, then scroll instantly
 			setTimeout(() => {
 				scrollToSection(sectionId);
-			}, 10);
+			}, 25);
 		} else {
 			scrollToSection(sectionId);
 		}
@@ -34,7 +34,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 		const section = document.getElementById(sectionId);
 		if (section) {
 			section.scrollIntoView({
-				behavior: 'auto',
+				behavior: 'instant',
 				block: 'start'
 			});
 		}
@@ -92,7 +92,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 							<li className="md:order-1 flex items-center">
 								<button
 									onClick={() => handleNavClick('SurahsSection')}
-									className={getButtonClasses('default', !isMediumScreen)}
+									className={getButtonClasses('secondary', !isMediumScreen)}
 								>
 									السور
 								</button>
@@ -102,7 +102,7 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 									onClick={() => handleNavClick('JuzHizbSection')}
 									className={getButtonClasses('secondary', !isMediumScreen)}
 								>
-									📑 الأجزاء والأحزاب
+									الأجزاء والأحزاب
 								</button>
 							</li>
 							{/* Profile link - always visible */}
@@ -152,14 +152,14 @@ function Navbar({ isDarkMode, onDarkModeChange, currentUser }) {
 							<li className="md:order-6 flex items-center text-gray-700 dark:text-white">
 								{isDarkMode ? (
 									<FaSun
-										className={`${getButtonClasses('theme')} w-8 h-8`}
+										className={`${getButtonClasses('theme')} w-10 h-10`}
 										onClick={() => {
 											onDarkModeChange(!isDarkMode);
 										}}
 									/>
 								) : (
 									<FaMoon
-										className={`${getButtonClasses('theme')} w-8 h-8`}
+										className={`${getButtonClasses('theme')} w-10 h-10`}
 										onClick={() => {
 											onDarkModeChange(!isDarkMode);
 										}}
