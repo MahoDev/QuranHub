@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { auth, firestore } from "../config/firebase";
+import { auth, firestore, app } from "../config/firebase";
 import {
   getDocs,
   query,
@@ -8,38 +8,107 @@ import {
   collection,
   Timestamp,
   writeBatch,
+  setDoc,
+  doc,
+  onSnapshot
 } from "firebase/firestore";
 import { deleteUser, signOut, onAuthStateChanged } from "firebase/auth";
 import LoadingView from "../components/LoadingView";
 import Modal from "../components/Modal";
 import { useSurahSettings } from "../contexts/surah-settings-context";
 import { Helmet } from "react-helmet-async";
-import { convertToArabicNumbers } from "../utility/text-utilities";
+import { convertToArabicNumbers, removeTashkeel } from "../utility/text-utilities";
 import { useBookmarks } from "../contexts/bookmark-context";
+import { FiFilter, FiX, FiChevronDown, FiChevronUp, FiSearch } from "react-icons/fi";
 
 function Profile() {
   const { surahSettings, onSurahSettingsChange } = useSurahSettings();
   const { 
     bookmarks: contextBookmarks, 
-    isUsingLocalStorage,
-    serverReadFailed,
+    loading: bookmarksLoading, 
+    error: bookmarksError, 
+    isUsingLocalStorage, 
+    serverReadFailed, 
     retryLoadBookmarks,
+    migrateLocalBookmarksToFirebase
   } = useBookmarks();
 
   const [bookmarks, setBookmarks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [sortByDate, setSortByDate] = useState(true); // true for descending, false for ascending
   const [showOnlyRecent, setShowOnlyRecent] = useState(false);
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [bookmarkToDelete, setBookmarkToDelete] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [retrying, setRetrying] = useState(false);
+  
+  // Filter states
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedSurah, setSelectedSurah] = useState("");
+  const [selectedType, setSelectedType] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeFilters, setActiveFilters] = useState([]);
   const navigate = useNavigate();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState("");
+  const [showMigrationSuccess, setShowMigrationSuccess] = useState(false);
+  const [migrationMessage, setMigrationMessage] = useState("");
+  const [migrationStatus, setMigrationStatus] = useState("");
+
+  // Format bookmark date
+  const formatBookmarkDate = (date) => {
+    if (!date) return '';
+    
+    try {
+      const jsDate = date?.toDate ? date.toDate() : new Date(date);
+      return jsDate.toLocaleDateString("ar-SA", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    } catch (error) {
+      console.error('Error formatting date:', error, date);
+      return '';
+    }
+  };
+
+  // Format bookmark time
+  const formatBookmarkTime = (date) => {
+    if (!date) return '';
+    
+    try {
+      const jsDate = date?.toDate ? date.toDate() : new Date(date);
+      return jsDate.toLocaleTimeString("ar-SA", {
+        hour: "numeric",
+        minute: "numeric",
+        hour12: true
+      });
+    } catch (error) {
+      console.error('Error formatting time:', error, date);
+      return '';
+    }
+  };
 
   useEffect(() => {
-    // Use the bookmarks directly from context
-    setBookmarks(contextBookmarks);
-    setLoading(false);
-  }, [contextBookmarks]);
+    if (contextBookmarks) {
+      setBookmarks(contextBookmarks);
+      setLoading(bookmarksLoading);
+      setError(bookmarksError || '');
+    }
+  }, [contextBookmarks, bookmarksLoading, bookmarksError]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  useEffect(() => {
+  if (auth.currentUser) {
+    console.log('User is authenticated, testing Firestore connection...');
+    const testDoc = doc(firestore, 'test', 'test');
+    setDoc(testDoc, { test: 'test' }, { merge: true })
+      .then(() => console.log('Firestore write successful'))
+      .catch(err => console.error('Firestore write failed:', err));
+  }
+}, [auth.currentUser]);
 
   const handleBookmarkNavigation = (bookmark) => {
     if (bookmark.bookmarkType === 'juz') {
@@ -60,7 +129,11 @@ function Profile() {
     });
   };
 
-  const handleDeleteBookmark = (bookmarkId) => {
+  const [bookmarkToDelete, setBookmarkToDelete] = useState(null);
+  const [showConfirmation, setShowConfirmation] = useState(false);
+
+  const handleDeleteBookmark = (bookmarkId, e) => {
+    e.stopPropagation();
     setBookmarkToDelete(bookmarkId);
     setShowConfirmation(true);
   };
@@ -72,8 +145,11 @@ function Profile() {
     
     try {
       await removeBookmark(bookmarkToDelete);
+      // Update local state to remove the deleted bookmark
+      setBookmarks(prev => prev.filter(b => b.id !== bookmarkToDelete));
     } catch (err) {
-      console.error(err.message);
+      console.error('Error deleting bookmark:', err);
+      setError('فشل في حذف العلامة المرجعية');
     } finally {
       setBookmarkToDelete(null);
       setShowConfirmation(false);
@@ -121,55 +197,182 @@ function Profile() {
     setShowOnlyRecent(!showOnlyRecent);
   };
 
-  const manualRefreshBookmarks = () => {
-    // If server read failed, try to retry the cloud read; otherwise just refresh view
-    if (serverReadFailed && retryLoadBookmarks) {
-      setRetrying(true);
-      retryLoadBookmarks().finally(() => setRetrying(false));
-      return;
-    }
+  const manualRefreshBookmarks = async () => {
+    setRetrying(true);
     setLoading(true);
-    setTimeout(() => {
-      setBookmarks(contextBookmarks);
+    setError('');
+    
+    try {
+      
+      // If we're in local storage mode, try to migrate bookmarks first
+      if (isUsingLocalStorage && auth.currentUser) {
+        console.log('Attempting to migrate local bookmarks to cloud...');
+        const result = await migrateLocalBookmarksToFirebase();
+        if (result?.success) {
+          console.log('Migration successful:', result.message);
+          setMigrationMessage(result.message);
+          setMigrationStatus('success');
+          setShowMigrationSuccess(true);
+        }
+      }
+      
+      // Always try to reload bookmarks after migration attempt
+      if (retryLoadBookmarks) {
+        console.log('Reloading bookmarks...');
+        await retryLoadBookmarks();
+      } else {
+        console.log('No retryLoadBookmarks function available');
+        setBookmarks(contextBookmarks || []);
+      }
+      
+      // Hide success message after 5 seconds
+      setTimeout(() => {
+        setShowMigrationSuccess(false);
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Error refreshing bookmarks:', error);
+      setError(error.message || 'فشل تحديث العلامات المرجعية');
+      
+    } finally {
+      setRetrying(false);
       setLoading(false);
-    }, 500); // Add a small delay to show the loading animation
+    }
   };
 
-  // Apply sorting and filtering based on state
-  let sortedBookmarks = [...bookmarks];
-  if (sortByDate) {
-    sortedBookmarks.sort((a, b) => {
-      const dateA = typeof a.bookmarkDate === 'string' 
-        ? new Date(a.bookmarkDate).getTime()
-        : a.bookmarkDate.toDate().getTime();
-      const dateB = typeof b.bookmarkDate === 'string'
-        ? new Date(b.bookmarkDate).getTime()
-        : b.bookmarkDate.toDate().getTime();
-      return dateB - dateA;
-    });
-  } else {
-    sortedBookmarks.sort((a, b) => {
-      const dateA = typeof a.bookmarkDate === 'string'
-        ? new Date(a.bookmarkDate).getTime()
-        : a.bookmarkDate.toDate().getTime();
-      const dateB = typeof b.bookmarkDate === 'string'
-        ? new Date(b.bookmarkDate).getTime()
-        : b.bookmarkDate.toDate().getTime();
-      return dateA - dateB;
-    });
-  }
+  // Helper function to safely get timestamp from various date formats
+  const getTimestamp = (date) => {
+    if (!date) return 0;
+    try {
+      if (date.seconds) {
+        return date.seconds * 1000 + (date.nanoseconds || 0) / 1000000;
+      }
+      if (date.toDate) {
+        return date.toDate().getTime();
+      }
+      if (date.getTime) {
+        return date.getTime();
+      }
+      return new Date(date).getTime() || 0;
+    } catch (error) {
+      console.error('Error parsing date:', error, date);
+      return 0;
+    }
+  };
 
-  if (showOnlyRecent) {
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+  // Get unique surahs and types for filters
+  const { uniqueSurahs, uniqueTypes } = useMemo(() => {
+    const surahs = new Set();
+    const types = new Set();
     
-    sortedBookmarks = sortedBookmarks.filter((bookmark) => {
-      const bookmarkDate = typeof bookmark.bookmarkDate === 'string'
-        ? new Date(bookmark.bookmarkDate)
-        : bookmark.bookmarkDate.toDate();
-      return bookmarkDate >= sevenDaysAgo;
+    bookmarks.forEach(bookmark => {
+      if (bookmark.surahName) surahs.add(bookmark.surahName);
+      if (bookmark.bookmarkType) types.add(bookmark.bookmarkType);
     });
-  }
+    
+    return {
+      uniqueSurahs: Array.from(surahs).sort(),
+      uniqueTypes: Array.from(types).sort()
+    };
+  }, [bookmarks]);
+
+  // Apply sorting and filtering
+  const sortedBookmarks = useMemo(() => {
+    if (!Array.isArray(bookmarks)) return [];
+    
+    let result = [...bookmarks];
+    
+    // Apply search filter
+    if (searchQuery) {
+      const query = removeTashkeel(searchQuery).toLowerCase();
+      result = result.filter(bookmark => {
+        const surahName = removeTashkeel(bookmark.surahName || '').toLowerCase();
+        const ayahText = removeTashkeel(bookmark.ayahText || '').toLowerCase();
+        
+        return surahName.includes(query) || ayahText.includes(query);
+      });
+    }
+    
+    // Apply surah filter
+    if (selectedSurah) {
+      result = result.filter(bookmark => bookmark.surahName === selectedSurah);
+    }
+    
+    // Apply type filter
+    if (selectedType) {
+      result = result.filter(bookmark => bookmark.bookmarkType === selectedType);
+    }
+    
+    // Apply recent filter
+    if (showOnlyRecent) {
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+      
+      result = result.filter((bookmark) => {
+        const bookmarkDate = typeof bookmark.bookmarkDate === 'string'
+          ? new Date(bookmark.bookmarkDate)
+          : bookmark.bookmarkDate?.toDate?.() || new Date(0);
+        return bookmarkDate >= sevenDaysAgo;
+      });
+    }
+    
+    // Apply sorting
+    if (sortByDate) {
+      result.sort((a, b) => {
+        const timeA = getTimestamp(a?.bookmarkDate);
+        const timeB = getTimestamp(b?.bookmarkDate);
+        return timeB - timeA; // Newest first
+      });
+    } else {
+      result.sort((a, b) => {
+        if (a.surahNo !== b.surahNo) {
+          return a.surahNo - b.surahNo;
+        }
+        return a.ayahNo - b.ayahNo;
+      });
+    }
+    
+    return result;
+  }, [bookmarks, searchQuery, selectedSurah, selectedType, showOnlyRecent, sortByDate]);
+
+  // Update active filters
+  useEffect(() => {
+    const filters = [];
+    if (searchQuery) filters.push(`بحث: ${searchQuery}`);
+    if (selectedSurah) filters.push(`سورة: ${selectedSurah}`);
+    if (selectedType) filters.push(`نوع: ${getTypeLabel(selectedType)}`);
+    if (showOnlyRecent) filters.push('آخر أسبوع');
+    setActiveFilters(filters);
+  }, [searchQuery, selectedSurah, selectedType, showOnlyRecent]);
+
+  const getTypeLabel = (type) => {
+    switch(type) {
+      case 'juz': return 'الجزء';
+      case 'hizb': return 'الحزب';
+      case 'surah': return 'السورة';
+      default: return type;
+    }
+  };
+
+  const clearAllFilters = () => {
+    setSearchQuery('');
+    setSelectedSurah('');
+    setSelectedType('');
+    setShowOnlyRecent(false);
+    setSortByDate(true);
+  };
+
+  const removeFilter = (filterToRemove) => {
+    if (filterToRemove.startsWith('بحث:')) {
+      setSearchQuery('');
+    } else if (filterToRemove.startsWith('سورة:')) {
+      setSelectedSurah('');
+    } else if (filterToRemove.startsWith('نوع:')) {
+      setSelectedType('');
+    } else if (filterToRemove === 'آخر أسبوع') {
+      setShowOnlyRecent(false);
+    }
+  };
 
   return (
     <>
@@ -233,40 +436,166 @@ function Profile() {
 
           {/* Bookmarks Section */}
           <div className="bg-white/80 dark:bg-gray-800/80 rounded-2xl border border-emerald-200/50 dark:border-emerald-700/50 shadow-2xl p-8 mb-8">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4">
               <div>
-                <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-2">
+                <h2 className="text-2xl font-bold text-emerald-800 dark:text-emerald-200 mb-1">
                   العلامات المرجعية 
                 </h2>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {convertToArabicNumbers(bookmarks.length)} علامة مرجعية محفوظة
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
+                  {convertToArabicNumbers(bookmarks.length)} إجمالي العلامات • {convertToArabicNumbers(sortedBookmarks.length)} نتيجة
                 </p>
               </div>
 
-              {/* Controls */}
+              {/* Main Controls */}
               <div className="flex flex-wrap gap-3">
+                <div className="relative flex-1 min-w-[200px] max-w-md">
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                    <FiSearch className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg py-2 pl-3 pr-10 text-gray-800 dark:text-gray-200 placeholder-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all duration-200"
+                    placeholder="ابحث في العلامات المرجعية..."
+                  />
+                </div>
+                
                 <button
-                  onClick={toggleSortOrder}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    sortByDate
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+                    activeFilters.length > 0
                       ? 'bg-emerald-600 text-white shadow-lg'
                       : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
                   }`}
                 >
-                  {sortByDate ? "الأحدث أولاً" : "الأقدم أولاً"}
-                </button>
-                <button
-                  onClick={toggleRecentFilter}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-                    showOnlyRecent
-                      ? 'bg-emerald-600 text-white shadow-lg'
-                      : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  {showOnlyRecent ? "عرض الكل" : "الأسبوع الماضي"}
+                  <FiFilter />
+                  {activeFilters.length > 0 ? (
+                    <span className="flex items-center gap-1">
+                      <span className="bg-white/20 rounded-full w-5 h-5 flex items-center justify-center text-xs">
+                        {activeFilters.length}
+                      </span>
+                      الفلاتر
+                    </span>
+                  ) : (
+                    'الفلاتر'
+                  )}
                 </button>
               </div>
             </div>
+
+            {/* Active Filters */}
+            {activeFilters.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-6">
+                <button
+                  onClick={clearAllFilters}
+                  className="text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors"
+                >
+                  مسح الكل
+                </button>
+                {activeFilters.map((filter, index) => (
+                  <div key={index} className="flex items-center bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 text-sm px-3 py-1 rounded-full">
+                    {filter}
+                    <button 
+                      onClick={() => removeFilter(filter)}
+                      className="mr-1 text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-200"
+                    >
+                      <FiX size={16} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Filters Panel */}
+            {showFilters && (
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-4 mb-6 border border-gray-200 dark:border-gray-600">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Sort Order */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      ترتيب حسب
+                    </label>
+                    <div className="flex rounded-md shadow-sm">
+                      <button
+                        onClick={() => setSortByDate(true)}
+                        className={`flex-1 px-3 py-2 rounded-r-md text-sm font-medium ${
+                          sortByDate
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        الأحدث
+                      </button>
+                      <button
+                        onClick={() => setSortByDate(false)}
+                        className={`flex-1 px-3 py-2 rounded-l-md text-sm font-medium ${
+                          !sortByDate
+                            ? 'bg-emerald-600 text-white'
+                            : 'bg-white dark:bg-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-500'
+                        }`}
+                      >
+                        رقم الآية
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Surah Filter */}
+                  <div>
+                    <label htmlFor="surah-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      السورة
+                    </label>
+                    <select
+                      id="surah-filter"
+                      value={selectedSurah}
+                      onChange={(e) => setSelectedSurah(e.target.value)}
+                      className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-200 shadow-sm focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="">الكل</option>
+                      {uniqueSurahs.map((surah) => (
+                        <option key={surah} value={surah}>
+                          {surah}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Type Filter */}
+                  <div>
+                    <label htmlFor="type-filter" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      نوع العلامة
+                    </label>
+                    <select
+                      id="type-filter"
+                      value={selectedType}
+                      onChange={(e) => setSelectedType(e.target.value)}
+                      className="w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-200 shadow-sm focus:ring-emerald-500 focus:border-emerald-500"
+                    >
+                      <option value="">الكل</option>
+                      <option value="surah">سورة</option>
+                      <option value="juz">جزء</option>
+                      <option value="hizb">حزب</option>
+                    </select>
+                  </div>
+
+                  {/* Recent Filter */}
+                  <div className="flex items-center">
+                    <div className="flex items-center h-5">
+                      <input
+                        id="recent-filter"
+                        type="checkbox"
+                        checked={showOnlyRecent}
+                        onChange={() => setShowOnlyRecent(!showOnlyRecent)}
+                        className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 dark:border-gray-600 rounded"
+                      />
+                    </div>
+                    <label htmlFor="recent-filter" className="mr-2 block text-sm text-gray-700 dark:text-gray-300">
+                      آخر أسبوع فقط
+                    </label>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* LocalStorage Warning for logged-in users */}
             {auth.currentUser && isUsingLocalStorage && (
@@ -300,118 +629,122 @@ function Profile() {
 
           {/* Bookmarks List */}
             <div className="max-h-[600px] overflow-y-auto overflow-x-hidden pr-2 scrollbar-thin scrollbar-thumb-emerald-500 scrollbar-track-gray-200 dark:scrollbar-track-gray-700">
-              {!loading ? (
-                <div>
-                  {sortedBookmarks.length > 0 ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {sortedBookmarks.map((bookmark) => (
-                        <div
-                          key={bookmark.id}
-                          className="bg-gradient-to-br from-white to-emerald-50 dark:from-gray-700 dark:to-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 rounded-xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group"
-                          onClick={() => handleBookmarkNavigation(bookmark)}
-                        >
-                          {/* Header */}
-                          <div className="flex items-start justify-between mb-4">
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
-                                  {bookmark.surahName}
-                                </h3>
-                                {bookmark._localOnly && (
-                                  <span className="ml-2 text-xs text-yellow-700 dark:text-yellow-300">محلي</span>
-                                )}
-                                {/* Bookmark type badge */}
-                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                  bookmark.bookmarkType === 'juz'
-                                    ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
-                                    : bookmark.bookmarkType === 'hizb'
-                                    ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
-                                    : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
-                                }`}>
-                                  {bookmark.bookmarkType === 'juz' ? 'الجزء' :
-                                   bookmark.bookmarkType === 'hizb' ? 'الحزب' : 'السورة'}
-                                </span>
-                              </div>
-                              <p className="text-sm text-gray-600 dark:text-gray-400">
-                                {bookmark.bookmarkType === 'juz' && bookmark.juzNumber &&
-                                  `الجزء ${convertToArabicNumbers(bookmark.juzNumber)} • `}
-                                {bookmark.bookmarkType === 'hizb' && bookmark.hizbNumber &&
-                                  `الحزب ${convertToArabicNumbers(bookmark.hizbNumber)} • `}
-                                الصفحة {convertToArabicNumbers(bookmark.pageNumber)} • الآية {convertToArabicNumbers(bookmark.ayahNumber)}
-                              </p>
-                            </div>
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteBookmark(bookmark.id);
-                              }}
-                              className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-200 p-2 flex-shrink-0"
-                              title="حذف العلامة المرجعية"
-                            >
-                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            </button>
-                          </div>
-
-                          {/* Ayah Text */}
-                          <div className="mb-4">
-                            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed font-quranMain">
-                              {bookmark.ayahText}
-                            </p>
-                          </div>
-
-                          {/* Footer */}
-                          <div className="flex items-start justify-between text-xs text-gray-500 dark:text-gray-400">
-                            <div className="flex flex-col">
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {(typeof bookmark.bookmarkDate === 'string' 
-                                  ? new Date(bookmark.bookmarkDate)
-                                  : bookmark.bookmarkDate.toDate()
-                                ).toLocaleDateString("ar-SA", {
-                                  year: "numeric",
-                                  month: "numeric",
-                                  day: "numeric",
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  hour12: true,
-                                })}
-                              </span>
-                              <span className="text-xs text-gray-400 dark:text-gray-500">
-                                {(typeof bookmark.bookmarkDate === 'string'
-                                  ? new Date(bookmark.bookmarkDate)
-                                  : bookmark.bookmarkDate.toDate()
-                                ).toLocaleDateString("en-US", {
-                                  month: "numeric",
-                                  day: "numeric",
-                                  year: "numeric",
-                                  hour: "numeric",
-                                  minute: "numeric",
-                                  hour12: true,
-                                })}
-                              </span>
-                            </div>
-                            <span className="text-emerald-600 dark:text-emerald-400 font-medium">
-                              اضغط للانتقال
+              {loading ? (
+                <div className="flex justify-center items-center h-64">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-emerald-500"></div>
+                </div>
+              ) : error ? (
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-xl p-6 text-center">
+                  <div className="text-red-600 dark:text-red-400 font-medium mb-2">
+                    {error}
+                  </div>
+                  <button
+                    onClick={manualRefreshBookmarks}
+                    className="mt-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm"
+                    disabled={retrying}
+                  >
+                    {retrying ? 'جاري التحديث...' : 'إعادة المحاولة'}
+                  </button>
+                </div>
+              ) : Array.isArray(sortedBookmarks) && sortedBookmarks.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {sortedBookmarks.map((bookmark) => (
+                    <div
+                      key={bookmark.id + bookmark.bookmarkDate}
+                      className="bg-gradient-to-br from-white to-emerald-50 dark:from-gray-700 dark:to-emerald-900/30 border-2 border-emerald-200 dark:border-emerald-700/50 rounded-xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group"
+                      onClick={() => handleBookmarkNavigation(bookmark)}
+                    >
+                      {/* Header */}
+                      <div className="flex items-start justify-between mb-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <h3 className="text-lg font-bold text-emerald-800 dark:text-emerald-200">
+                              {bookmark.surahName}
+                            </h3>
+                            {bookmark._localOnly && (
+                              <span className="ml-2 text-xs text-yellow-700 dark:text-yellow-300">محلي</span>
+                            )}
+                            {/* Bookmark type badge */}
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              bookmark.bookmarkType === 'juz'
+                                ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+                                : bookmark.bookmarkType === 'hizb'
+                                ? 'bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-300'
+                                : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300'
+                            }`}>
+                              {bookmark.bookmarkType === 'juz' ? 'الجزء' :
+                               bookmark.bookmarkType === 'hizb' ? 'الحزب' : 'السورة'}
                             </span>
                           </div>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {bookmark.bookmarkType === 'juz' && bookmark.juzNumber &&
+                              `الجزء ${convertToArabicNumbers(bookmark.juzNumber)} • `}
+                            {bookmark.bookmarkType === 'hizb' && bookmark.hizbNumber &&
+                              `الحزب ${convertToArabicNumbers(bookmark.hizbNumber)} • `}
+                            الصفحة {convertToArabicNumbers(bookmark.pageNumber)} • الآية {convertToArabicNumbers(bookmark.ayahNumber)}
+                          </p>
                         </div>
-                      ))}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteBookmark(bookmark.id);
+                          }}
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-all duration-200 p-2 flex-shrink-0"
+                          title="حذف العلامة المرجعية"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Ayah Text */}
+                      <div className="mb-4">
+                        <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed font-quranMain">
+                          {bookmark.ayahText}
+                        </p>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="flex items-start justify-between text-xs text-gray-500 dark:text-gray-400">
+                        <div className="flex flex-col">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
+                            {formatBookmarkDate(bookmark.bookmarkDate)}
+                          </span>
+                          <span className="text-xs text-gray-400 dark:text-gray-500">
+                            {formatBookmarkTime(bookmark.bookmarkDate)}
+                          </span>
+                        </div>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                          اضغط للانتقال
+                        </span>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center py-16">
-                      <div className="text-6xl mb-4">📚</div>
-                      <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-                        لا توجد علامات مرجعية
-                      </h3>
-                      <p className="text-gray-500 dark:text-gray-500">
-                        ابدأ في القراءة وحفظ العلامات المرجعية للعودة إليها لاحقاً
-                      </p>
-                    </div>
-                  )}
+                  ))}
                 </div>
               ) : (
-                <LoadingView />
+                <div className="text-center py-12">
+                  <div className="text-6xl mb-4 text-gray-300 dark:text-gray-600">📑</div>
+                  <h3 className="text-xl font-medium text-gray-600 dark:text-gray-300 mb-2">
+                    {isUsingLocalStorage ? 
+                      'العلامات المرجعية محفوظة محلياً فقط' : 
+                      'لا توجد علامات مرجعية'}
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 mb-4">
+                    {isUsingLocalStorage ? 
+                      'سجل الدخول لمزامنة علاماتك المرجعية عبر الأجهزة' : 
+                      'قم بإضافة علامات مرجعية للعودة إليها لاحقاً'}
+                  </p>
+                  {isUsingLocalStorage && auth.currentUser && (
+                    <button
+                      onClick={manualRefreshBookmarks}
+                      className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm"
+                      disabled={retrying}
+                    >
+                      {retrying ? 'جاري المزامنة...' : 'مزامنة العلامات المرجعية'}
+                    </button>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -505,6 +838,16 @@ function Profile() {
             </button>
           </div>
         </div>
+
+        {/* Migration Success Message */}
+        {showMigrationSuccess && (
+          <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-100 border border-green-400 text-green-700 px-6 py-3 rounded-lg shadow-lg flex items-center z-50">
+            <svg className="w-6 h-6 ml-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            <span>{migrationMessage || 'تمت مزامنة العلامات المرجعية بنجاح'}</span>
+          </div>
+        )}
 
         {/* Confirmation Modal */}
         {showConfirmation && (

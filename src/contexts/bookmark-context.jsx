@@ -13,6 +13,7 @@ import {
   getDocs
 } from 'firebase/firestore';
 import { FirebaseError } from 'firebase/app';
+import { juzData } from '../assets/data/quran-structure';
 
 const BookmarkContext = createContext();
 
@@ -26,12 +27,24 @@ export const useBookmarks = () => {
 
 const LOCAL_STORAGE_KEY = 'quranHub_localBookmarks';
 
+// Helper to check if a bookmark already exists
+const isBookmarkDuplicate = (existingBookmarks, newBookmark) => {
+  return existingBookmarks.some(bm => 
+    bm.surahNumber == newBookmark.surahNumber && 
+    bm.ayahNumber == newBookmark.ayahNumber
+  );
+};
+
+// Save bookmarks to local storage
 const saveToLocalStorage = (bookmarks) => {
   if(!localStorage.getItem(LOCAL_STORAGE_KEY)) {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(bookmarks));
   } else {
-    const existingBookmarks = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY));
-    const mergedBookmarks = [...existingBookmarks, ...bookmarks];
+    const currentBookmarks = getFromLocalStorage();
+    const filteredBookmarks = bookmarks.filter(bookmark => 
+      !isBookmarkDuplicate(currentBookmarks, bookmark)
+    );
+    const mergedBookmarks = [...currentBookmarks, ...filteredBookmarks];
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mergedBookmarks));
   }
 };
@@ -53,42 +66,88 @@ export const BookmarkProvider = ({ children }) => {
   const [isUsingLocalStorage, setIsUsingLocalStorage] = useState(false);
   const [serverReadFailed, setServerReadFailed] = useState(false);
 
-  // Function to migrate local bookmarks to Firebase
+  // Function to check if there are bookmarks that need migration
+  const checkForLocalBookmarks = () => {
+    const localBookmarks = getFromLocalStorage();
+    return localBookmarks.some(bm => bm._requiresMigration === true);
+  };
+
+  // Helper function to check if two bookmarks are similar (same content, similar time)
+  const isSimilarBookmark = (bm1, bm2, timeThreshold = 120000) => { // 2 minutes threshold
+    // Check if the core bookmark data matches
+    const sameContent = 
+      bm1.surahNumber === bm2.surahNumber &&
+      bm1.ayahNumber === bm2.ayahNumber &&
+      bm1.pageNumber === bm2.pageNumber;
+    
+    if (!sameContent) return false;
+    
+    // Parse dates
+    const date1 = bm1.bookmarkDate?.toDate ? bm1.bookmarkDate.toDate() : new Date(bm1.bookmarkDate);
+    const date2 = bm2.bookmarkDate?.toDate ? bm2.bookmarkDate.toDate() : new Date(bm2.bookmarkDate);
+    
+    // Check if timestamps are within the threshold
+    const timeDiff = Math.abs(date1.getTime() - date2.getTime());
+    return timeDiff <= timeThreshold;
+  };
+
+  // Function to migrate local bookmarks to Firebase - now user-initiated
   const migrateLocalBookmarksToFirebase = async () => {
     const localBookmarks = getFromLocalStorage();
-    if (localBookmarks.length === 0) return;
+    if (localBookmarks.length === 0) return { success: false, message: 'لا توجد علامات مرجعية محلية للهجرة' };
+
+    if (!auth.currentUser) {
+      return { success: false, message: 'يجب تسجيل الدخول أولاً' };
+    }
 
     setLoading(true);
     setError('');
 
     try {
-      // First, get all user's bookmarks in one query to minimize reads
+      // Filter bookmarks that need migration (either no userId or _requiresMigration is true)
+      const bookmarksToMigrate = localBookmarks.filter(bm => 
+        !bm.userId || bm._requiresMigration === true
+      );
+
+      if (bookmarksToMigrate.length === 0) {
+        return { success: true, message: 'لا توجد علامات مرجعية جديدة للهجرة' };
+      }
+
+      // Get existing bookmarks to avoid duplicates
       const q = query(
         collection(firestore, 'bookmarks'),
         where('userId', '==', auth.currentUser.uid)
       );
       const snapshot = await getDocs(q);
       
-      // Create a Set of existing bookmark timestamps for quick lookup
-      const existingTimestamps = new Set(
-        snapshot.docs.map(doc => doc.data().bookmarkDate?.toDate?.()?.toISOString())
-      );
+      // Store existing bookmarks for comparison
+      const existingBookmarks = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
 
       const batch = writeBatch(firestore);
       const bookmarksCol = collection(firestore, 'bookmarks');
       let migratedCount = 0;
       let duplicateCount = 0;
 
-      for (const bookmark of localBookmarks) {
-        // Only consider it a duplicate if the exact timestamp matches
-        const bookmarkTimestamp = new Date(bookmark.bookmarkDate).toISOString();
+      for (const localBookmark of bookmarksToMigrate) {
+        // Check if a similar bookmark already exists
+        const isDuplicate = existingBookmarks.some(existingBm => 
+          isSimilarBookmark(localBookmark, existingBm)
+        );
         
-        if (!existingTimestamps.has(bookmarkTimestamp)) {
+        if (!isDuplicate) {
           const newBookmarkRef = doc(bookmarksCol);
           batch.set(newBookmarkRef, {
-            ...bookmark,
+            ...localBookmark,
             userId: auth.currentUser.uid,
-            bookmarkDate: Timestamp.fromDate(new Date(bookmark.bookmarkDate))
+            bookmarkDate: Timestamp.fromDate(
+              localBookmark.bookmarkDate?.toDate?.() || new Date(localBookmark.bookmarkDate)
+            ),
+            _offline: false,
+            _requiresMigration: false,
+            _migratedAt: Timestamp.now()
           });
           migratedCount++;
         } else {
@@ -100,21 +159,35 @@ export const BookmarkProvider = ({ children }) => {
         await batch.commit();
       }
 
-      localStorage.removeItem(LOCAL_STORAGE_KEY); // Clear local storage after handling all bookmarks
+      // Only remove migrated bookmarks from local storage
+      const remainingBookmarks = localBookmarks.filter(bm => 
+        !bookmarksToMigrate.some(migrated => 
+          new Date(migrated.bookmarkDate).toISOString() === new Date(bm.bookmarkDate).toISOString()
+        )
+      );
       
-      if (migratedCount > 0 && duplicateCount > 0) {
-        setError(`تم نقل ${migratedCount} علامة مرجعية إلى حسابك. تم تخطي ${duplicateCount} علامات مكررة`);
-      } else if (migratedCount > 0) {
-        setError('تم نقل العلامات المرجعية المحلية إلى حسابك بنجاح');
-      } else if (duplicateCount > 0) {
-        setError('جميع العلامات المرجعية المحلية موجودة بالفعل في حسابك');
+      if (remainingBookmarks.length > 0) {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(remainingBookmarks));
+      } else {
+        localStorage.removeItem(LOCAL_STORAGE_KEY);
       }
 
-    } catch (err) {
-      console.error('Error migrating bookmarks:', err);
+      let message = '';
+      if (migratedCount > 0 && duplicateCount > 0) {
+        message = `تم نقل ${migratedCount} علامة مرجعية إلى حسابك. تم تخطي ${duplicateCount} علامات مكررة`;
+      } else if (migratedCount > 0) {
+        message = 'تم نقل العلامات المرجعية المحلية إلى حسابك بنجاح';
+      } else if (duplicateCount > 0) {
+        message = 'جميع العلامات المرجعية المحلية موجودة بالفعل في حسابك';
+      }
+
+      return { success: true, message };
+    } catch (error) {
+      console.error('Error migrating bookmarks:', error);
       setError('فشل في نقل العلامات المرجعية المحلية');
       setIsUsingLocalStorage(true);
       setServerReadFailed(true);
+      return { success: false, message: 'حدث خطأ أثناء نقل العلامات المرجعية' };
     } finally {
       setLoading(false);
     }
@@ -213,6 +286,7 @@ export const BookmarkProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    
     // If user is not logged in, load from localStorage
     if (!auth.currentUser) {
       const localBookmarks = getFromLocalStorage();
@@ -224,27 +298,43 @@ export const BookmarkProvider = ({ children }) => {
     setIsUsingLocalStorage(false);
 
     // Try to migrate local bookmarks when user logs in
-    migrateLocalBookmarksToFirebase();
+    migrateLocalBookmarksToFirebase().catch(err => {
+      console.error('Error migrating bookmarks:', err);
+    });
 
-    // Set up real-time listener but be resilient: if the listener errors (quota),
-    // attempt a retried one-time read and fall back to local bookmarks in the meantime.
-    const bookmarksQuery = query(collection(firestore, 'bookmarks'), where('userId', '==', auth.currentUser.uid));
+    // Set up real-time listener
+    const bookmarksQuery = query(
+      collection(firestore, 'bookmarks'), 
+      where('userId', '==', auth.currentUser.uid)
+    );
 
     const unsubscribe = onSnapshot(
       bookmarksQuery,
       (snapshot) => {
-        const userBookmarks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        // merge with any local bookmarks (avoid hiding local-only ones)
-        const localBookmarks = getFromLocalStorage();
-        const merged = mergeAndDedupBookmarks(userBookmarks, localBookmarks);
-        setBookmarks(merged);
-        setIsUsingLocalStorage(false);
+        const userBookmarks = snapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+          // Convert Firestore Timestamp to Date if needed
+          bookmarkDate: doc.data().bookmarkDate?.toDate?.() || doc.data().bookmarkDate
+        }));
+        
+        
+        // Only merge with local bookmarks if we're not using local storage
+        if (!isUsingLocalStorage) {
+          const localBookmarks = getFromLocalStorage();
+          const merged = mergeAndDedupBookmarks(userBookmarks, localBookmarks);
+          setBookmarks(merged);
+        } else {
+          setBookmarks(userBookmarks);
+        }
+        
         setServerReadFailed(false);
       },
       async (error) => {
-        console.error('Error listening to bookmarks:', error);
+        console.error('Error in bookmarks listener:', error);
+        
         // If Firebase quota is exceeded or other read error, try a retried read
-        if (error instanceof FirebaseError && error.code === 'resource-exhausted') {
+        if (error instanceof FirebaseError) {
           try {
             const cloud = await readCloudWithRetry(3, 600);
             const localBookmarks = getFromLocalStorage();
@@ -253,20 +343,24 @@ export const BookmarkProvider = ({ children }) => {
             setIsUsingLocalStorage(false);
             setServerReadFailed(false);
           } catch (err) {
-            // final fallback to localStorage
+            console.error('All retry attempts failed, falling back to local storage');
             const localBookmarks = getFromLocalStorage();
             setBookmarks(localBookmarks);
             setIsUsingLocalStorage(true);
             setServerReadFailed(true);
+            setError('Failed to sync bookmarks. Using local storage.');
           }
         } else {
-          setError('Failed to load bookmarks');
+          setError('Failed to load bookmarks: ' + error.message);
         }
       }
     );
 
-    return () => unsubscribe();
-  }, []);
+    return () => {
+      console.log('Cleaning up bookmarks listener');
+      unsubscribe();
+    };
+  }, [auth.currentUser, isUsingLocalStorage]);
 
   const addBookmark = async (surahNumber, surahName, pageNumber, ayahNumber, ayahText, bookmarkType = 'surah', juzNumber = null, hizbNumber = null, juzName = null, hizbName = null) => {
     setLoading(true);
@@ -286,10 +380,10 @@ export const BookmarkProvider = ({ children }) => {
       // Add juz/hizb specific fields if applicable
       if (bookmarkType === 'juz') {
         bookmarkObj.juzNumber = parseInt(juzNumber);
-        bookmarkObj.juzName = juzName;
+        bookmarkObj.juzName = juzName || juzData[juzNumber - 1].commonName;
       } else if (bookmarkType === 'hizb') {
         bookmarkObj.hizbNumber = parseInt(hizbNumber);
-        bookmarkObj.hizbName = hizbName;
+        bookmarkObj.hizbName = hizbName ;
       }
 
       if (!auth.currentUser || isUsingLocalStorage) {

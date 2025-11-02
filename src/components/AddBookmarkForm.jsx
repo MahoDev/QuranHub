@@ -3,15 +3,51 @@ import { surahNames } from "../assets/data/quran-info";
 import JuzHizbIndicator from "./JuzHizbIndicator";
 import { auth, firestore } from "../config/firebase";
 import { addDoc, collection, Timestamp } from "firebase/firestore";
+import { FirebaseError } from 'firebase/app';
 import LoadingView from "./LoadingView";
+
+const LOCAL_STORAGE_KEY = 'quranHub_localBookmarks';
+
+const saveToLocalStorage = (bookmark) => {
+  try {
+    const existingBookmarks = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || '[]');
+    
+    // Standardize the bookmark object to match the format in bookmark-context.jsx
+    const standardizedBookmark = {
+      bookmarkType: 'surah', // Default type
+      surahNumber: parseInt(bookmark.surahNumber),
+      surahName: bookmark.surahName,
+      pageNumber: parseInt(bookmark.pageNumber),
+      ayahNumber: parseInt(bookmark.ayahNumber),
+      ayahText: bookmark.ayahText,
+      bookmarkDate: new Date().toISOString(),
+      id: Date.now().toString(),
+      _localOnly: true // Using _localOnly instead of _offline
+    };
+    
+    // Check for duplicates based on surah and ayah numbers
+    const isDuplicate = existingBookmarks.some(b => 
+      b.surahNumber === standardizedBookmark.surahNumber && 
+      b.ayahNumber === standardizedBookmark.ayahNumber
+    );
+    
+    if (!isDuplicate) {
+      existingBookmarks.push(standardizedBookmark);
+      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(existingBookmarks));
+      return { success: true, isDuplicate: false };
+    }
+    return { success: false, isDuplicate: true };
+  } catch (err) {
+    console.error('Error saving to localStorage:', err);
+    return { success: false, error: err };
+  }
+};
 
 function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage, surahData }) {
 	const [ayahNumber, setAyahNumber] = useState("");
 	const [success, setSuccess] = useState(false);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
-
-	console.log(surahData)
 
 	// Get all ayahs in the current surah
 	const getAllAyahsInSurah = () => {
@@ -46,32 +82,69 @@ function AddBookmarkForm({ currentSurahNum, currentPage, ayahsInCurrentPage, sur
 			}
 
 			const bookmarkObj = {
-				userId: auth.currentUser.uid,
 				surahNumber: currentSurahNum,
 				surahName: surahNames[currentSurahNum],
 				pageNumber: selectedAyah.page || currentPage,
 				ayahNumber: ayahNumber,
 				ayahText: selectedAyah.aya_text?.slice(0, selectedAyah.aya_text?.length - 2) || selectedAyah.aya_text,
-				bookmarkDate: Timestamp.fromDate(new Date()),
+				// Note: The actual date will be set in saveToLocalStorage to ensure consistency
 			};
-			console.log(bookmarkObj);
-			const collectionRef = collection(firestore, "bookmarks");
+
 			setLoading(true);
-			await addDoc(collectionRef, bookmarkObj);
-			setSuccess(true);
-			setError("");
+
+			try {
+				// First try to save to Firestore
+				if(auth.currentUser){
+				const collectionRef = collection(firestore, "bookmarks");
+				let doc = await addDoc(collectionRef, bookmarkObj);
+				setSuccess(true);
+				setError("");
+				}
+				else{
+										// Mark as offline save
+					bookmarkObj._offline = true;
+					const result = saveToLocalStorage(bookmarkObj);
+					
+					if (result.success) {
+						setSuccess(true);
+						setError("تم الحفظ محليًا وسيتم مزامنته عند اتصالك بالإنترنت");
+					} else if (result.isDuplicate) {
+						setError("هذه الآية محفوظة مسبقًا");
+					} else {
+						throw new Error("فشل الحفظ المحلي");
+					}
+				}
+			} catch (firebaseError) {
+				// If Firestore fails, save to local storage
+				if (firebaseError instanceof FirebaseError && 
+					(firebaseError.code === 'unavailable' || !navigator.onLine)) {
+					
+					// Mark as offline save
+					bookmarkObj._offline = true;
+					const result = saveToLocalStorage(bookmarkObj);
+					
+					if (result.success) {
+						setSuccess(true);
+						setError("تم الحفظ محليًا وسيتم مزامنته عند اتصالك بالإنترنت");
+					} else if (result.isDuplicate) {
+						setError("هذه الآية محفوظة مسبقًا");
+					} else {
+						throw new Error("فشل الحفظ المحلي");
+					}
+				} else {
+					// Re-throw if it's not an offline error
+					throw firebaseError;
+				}
+			}
 		} catch (err) {
-			console.error("Error adding bookmark: " + err.message);
-			setError("فشل الحفظ");
+			console.error("Error adding bookmark:", err);
+			setError(err.message || "فشل الحفظ");
 			setSuccess(false);
 		} finally {
-			if (auth.currentUser === null) {
-				setError("يجب تسجيل الدخول أولا");
-			}
 			setTimeout(() => {
 				setSuccess(false);
 				setError("");
-			}, 3000); // Clear success or error message after 3 seconds
+			}, 3000); // Give more time for offline message
 			setLoading(false);
 		}
 	};

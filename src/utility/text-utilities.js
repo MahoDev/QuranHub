@@ -40,3 +40,17 @@ export function formatTime(seconds) {
 
 /* To allow dynamic classnames in jsx
  * text-xxl , text-3xl , text-4xl , text-5xl , text-6xl , text-7xl , text-8xl , text-9xl */
+
+/**
+ * Removes tashkeel (diacritics) from Arabic text
+ * @param {string} text - Arabic text with tashkeel
+ * @returns {string} Text with tashkeel removed
+ */
+export function removeTashkeel(text) {
+  if (!text) return '';
+  
+  // Remove all diacritics (tashkeel) from the text
+  // This includes: Fatha, Damma, Kasra, Sukun, Shadda, Tanween, etc.
+  return text.replace(/[\u064B-\u065F\u0670\u0610-\u061A\u06D6-\u06ED]/g, '')
+             .replace(/[\u0640]/g, ''); // Remove tatweel (kashida)
+}
